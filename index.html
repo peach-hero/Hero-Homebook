@@ -76,7 +76,7 @@ input:focus,select:focus{outline:none;border-color:#d4a844}
 .tbl .total-row td{background:#1a2a1a;font-weight:700;color:#4caf50}
 .tbl .total-exp td{background:#2a1a1a;font-weight:700;color:#f44336}
 .tbl .spar-row td{background:#0d1a2a;font-weight:700;color:#4da6ff}
-.tbl .pos{color:#4caf50}.tbl .neg{color:#f44336}
+.tbl .pos{color:#4caf50}.tbl .neg{color:#f44336}.tbl-cell-val{cursor:pointer;text-decoration:underline dotted;color:inherit;padding:1px 3px;border-radius:4px}.tbl-cell-val:hover{background:#2a2a2a}
 </style>
 </head>
 <body>
@@ -536,88 +536,138 @@ function showToast(msg){
 }
 
 
+
 function renderTabelle(){
   const MONTHS_SHORT=['Jan','Feb','Mär','Apr','Mai','Jun','Jul','Aug','Sep','Okt','Nov','Dez'];
   const allCatInc=['Otto','Matchbetting','Xe Om','Kleinanzeigen','Cashback','Vermietung','Zinsen/Dividenden','FEWO'];
+  const recExpMap={
+    'Miete Naumannplatz':'miete-naumann','Miete Josephstr.':'miete-josephstr',
+    'Kornpfortstr. 12a':'miete-kornpfort','Rundfunk (GEZ)':'gez',
+    'Unterhalt':'unterhalt','Gemeinschaftskonto':'gemeinschaftskonto',
+    'Zahnzusatz (Bavaria)':'zahnzusatz','Hausrat (Docura)':'hausrat',
+    'Sparpläne (ETF)':'sparplaene','Mobilfunk (Freenet)':'mobilfunk',
+    'Deutschlandticket':'deutschlandticket','Finanzierung Smartphone':'smartphone',
+    'Betriebssport':'betriebssport'
+  };
   const allCatExp=[
-    {label:'Wohnen',cats:[]},
-    {label:'Miete Naumannplatz',cats:['miete-naumann'],rec:true},
-    {label:'Miete Josephstr.',cats:['miete-josephstr'],rec:true},
-    {label:'Kornpfortstr. 12a',cats:['miete-kornpfort'],rec:true},
-    {label:'Rundfunk (GEZ)',cats:['gez'],rec:true},
-    {label:'Unterhalt',cats:['unterhalt'],rec:true},
-    {label:'Lebensmittel',cats:['Lebensmittel'],rec:false},
-    {label:'Shopping / Restaurants',cats:['Shopping','Restaurant'],rec:false},
-    {label:'Gemeinschaftskonto',cats:['gemeinschaftskonto'],rec:true},
-    {label:'Versicherungen',cats:[]},
-    {label:'Zahnzusatz (Bavaria)',cats:['zahnzusatz'],rec:true},
-    {label:'Hausrat (Docura)',cats:['hausrat'],rec:true},
-    {label:'Sparpläne (ETF)',cats:['sparplaene'],rec:true},
-    {label:'Sonstige Verträge',cats:[]},
-    {label:'Mobilfunk (Freenet)',cats:['mobilfunk'],rec:true},
-    {label:'Deutschlandticket',cats:['deutschlandticket'],rec:true},
-    {label:'Finanzierung Smartphone',cats:['smartphone'],rec:true},
-    {label:'Betriebssport',cats:['betriebssport'],rec:true},
+    {label:'Miete Naumannplatz',type:'rec',id:'miete-naumann'},
+    {label:'Miete Josephstr.',type:'rec',id:'miete-josephstr'},
+    {label:'Kornpfortstr. 12a',type:'rec',id:'miete-kornpfort'},
+    {label:'Rundfunk (GEZ)',type:'rec',id:'gez'},
+    {label:'Unterhalt',type:'rec',id:'unterhalt'},
+    {label:'Lebensmittel',type:'entry',cats:['Lebensmittel']},
+    {label:'Shopping',type:'entry',cats:['Shopping']},
+    {label:'Restaurant',type:'entry',cats:['Restaurant']},
+    {label:'Gemeinschaftskonto',type:'rec',id:'gemeinschaftskonto'},
+    {label:'Zahnzusatz (Bavaria)',type:'rec',id:'zahnzusatz'},
+    {label:'Hausrat (Docura)',type:'rec',id:'hausrat'},
+    {label:'Sparpläne (ETF)',type:'rec',id:'sparplaene'},
+    {label:'Mobilfunk (Freenet)',type:'rec',id:'mobilfunk'},
+    {label:'Deutschlandticket',type:'rec',id:'deutschlandticket'},
+    {label:'Finanzierung Smartphone',type:'rec',id:'smartphone'},
+    {label:'Betriebssport',type:'rec',id:'betriebssport'},
   ];
 
-  function getInc(cat,m){return entries.filter(e=>e.year===CUR_Y&&e.month===m&&e.type==='inc'&&e.cat===cat).reduce((s,e)=>s+(e.amount||0),0);}
-  function getExpRec(id,m){const r=recurring[id]; return(r&&r.active)?(r.amount||0):0;}
-  function getExpEntry(cats,m){return entries.filter(e=>e.year===CUR_Y&&e.month===m&&e.type==='exp'&&cats.includes(e.cat)).reduce((s,e)=>s+(e.amount||0),0);}
-  function fmtC(v){if(!v)return'<span style="color:#444">–</span>';const c=v>=0?'pos':'neg';return`<span class="${c}">${v.toLocaleString('de-DE',{minimumFractionDigits:2,maximumFractionDigits:2})} €</span>`;}
-  function fmtB(v){const c=v>=0?'pos':'neg';return`<span class="${c}">${v.toLocaleString('de-DE',{minimumFractionDigits:2,maximumFractionDigits:2})} €</span>`;}
+  function getInc(cat,m){return entries.filter(e=>e.year===CUR_Y&&e.month===m&&e.type==='inc'&&e.cat===cat);}
+  function getExpEntry(cats,m){return entries.filter(e=>e.year===CUR_Y&&e.month===m&&e.type==='exp'&&cats.includes(e.cat));}
+  function getRecVal(id,m){const r=recurring[id];return(r&&r.active)?(r.amount||0):0;}
+  function sumArr(arr){return arr.reduce((s,e)=>s+(e.amount||0),0);}
+  function fmtV(v){if(!v||v===0)return'<span style="color:#333">–</span>';return`<span class="${v>=0?'pos':'neg'}">${v.toLocaleString('de-DE',{minimumFractionDigits:2,maximumFractionDigits:2})}</span>`;}
+  function fmtT(v){return`<span class="${v>=0?'pos':'neg'}" style="font-weight:700">${v.toLocaleString('de-DE',{minimumFractionDigits:2,maximumFractionDigits:2})} €</span>`;}
 
-  let html='<table class="tbl"><thead><tr><th>Kategorie</th>';
-  MONTHS_SHORT.forEach(m=>html+=`<th>${m}</th>`);
-  html+='<th>Gesamt</th></tr></thead><tbody>';
+  let tbl='<table class="tbl"><thead><tr><th style="min-width:160px">Kategorie</th>';
+  MONTHS_SHORT.forEach(m=>tbl+=`<th style="min-width:70px">${m}</th>`);
+  tbl+='<th style="min-width:90px">Gesamt</th><th></th></tr></thead><tbody>';
 
-  // EINNAHMEN
-  html+='<tr class="sec-row"><td>EINNAHMEN</td>'+'<td></td>'.repeat(13)+'</tr>';
-  allCatInc.forEach(cat=>{
-    let total=0;
-    html+=`<tr><td>${cat}</td>`;
-    for(let m=0;m<12;m++){const v=getInc(cat,m);total+=v;html+=`<td>${fmtC(v)}</td>`;}
-    html+=`<td>${fmtC(total)}</td></tr>`;
-  });
-  // total inc row
+  // EINNAHMEN HEADER
+  tbl+='<tr class="sec-row"><td>📥 EINNAHMEN</td>'+'<td></td>'.repeat(13)+'<td></td></tr>';
   let totalIncRow=Array(12).fill(0);
-  allCatInc.forEach(cat=>{for(let m=0;m<12;m++) totalIncRow[m]+=getInc(cat,m);});
-  html+='<tr class="total-row"><td>Gesamte Einnahmen</td>';
-  let totalInc=0;totalIncRow.forEach(v=>{totalInc+=v;html+=`<td>${fmtC(v)}</td>`;});
-  html+=`<td>${fmtC(totalInc)}</td></tr>`;
-
-  // AUSGABEN
-  html+='<tr class="sec-row"><td>AUSGABEN</td>'+'<td></td>'.repeat(13)+'</tr>';
-  allCatExp.forEach(row=>{
-    if(!row.cats||row.cats.length===0){
-      html+=`<tr class="sec-row" style="background:#1a1414"><td style="color:#f44336;padding-left:8px">${row.label}</td>`+'<td></td>'.repeat(13)+'</tr>';
-      return;
-    }
-    let total=0;
-    html+=`<tr><td style="padding-left:16px">${row.label}</td>`;
+  allCatInc.forEach(cat=>{
+    let rowTotal=0;
+    tbl+=`<tr><td>${cat}</td>`;
     for(let m=0;m<12;m++){
-      const v=row.rec?getExpRec(row.cats[0],m):getExpEntry(row.cats,m);
-      total+=v;html+=`<td>${fmtC(v)}</td>`;
+      const arr=getInc(cat,m); const v=sumArr(arr); totalIncRow[m]+=v; rowTotal+=v;
+      const eIds=arr.map(e=>entries.indexOf(e));
+      const cellHtml=arr.map(e=>{const idx=entries.indexOf(e);return`<span class="tbl-cell-val" onclick="editEntry(${idx})">${e.amount.toLocaleString('de-DE',{minimumFractionDigits:2})}</span>`;}).join(' ');
+      tbl+=`<td><div style="display:flex;flex-direction:column;gap:2px;align-items:flex-end">${cellHtml||'<span style="color:#333">–</span>'}</div></td>`;
     }
-    html+=`<td>${fmtC(total)}</td></tr>`;
+    tbl+=`<td>${fmtT(rowTotal)}</td><td><button class="btn-sm" onclick="addEntryModal('${cat}','inc')" title="Eintrag hinzufügen">+</button></td></tr>`;
   });
-  // total exp row
+  // Inc total
+  tbl+='<tr class="total-row"><td>Gesamte Einnahmen</td>';
+  let totalInc=0; totalIncRow.forEach(v=>{totalInc+=v;tbl+=`<td>${fmtT(v)}</td>`;});
+  tbl+=`<td>${fmtT(totalInc)}</td><td></td></tr>`;
+
+  // AUSGABEN HEADER
+  tbl+='<tr class="sec-row"><td>📤 AUSGABEN</td>'+'<td></td>'.repeat(13)+'<td></td></tr>';
   let totalExpRow=Array(12).fill(0);
   allCatExp.forEach(row=>{
-    if(!row.cats||!row.cats.length)return;
-    for(let m=0;m<12;m++) totalExpRow[m]+= row.rec?getExpRec(row.cats[0],m):getExpEntry(row.cats,m);
+    let rowTotal=0;
+    tbl+=`<tr><td style="padding-left:14px">${row.label}</td>`;
+    for(let m=0;m<12;m++){
+      let cellHtml='';
+      if(row.type==='rec'){
+        const v=getRecVal(row.id,m); totalExpRow[m]+=v; rowTotal+=v;
+        if(v>0) cellHtml=`<span class="tbl-cell-val neg" onclick="editRec('${row.id}')">${v.toLocaleString('de-DE',{minimumFractionDigits:2})}</span>`;
+        else cellHtml='<span style="color:#333">–</span>';
+      } else {
+        const arr=getExpEntry(row.cats,m); const v=sumArr(arr); totalExpRow[m]+=v; rowTotal+=v;
+        cellHtml=arr.map(e=>{const idx=entries.indexOf(e);return`<span class="tbl-cell-val neg" onclick="editEntry(${idx})">${e.amount.toLocaleString('de-DE',{minimumFractionDigits:2})}</span>`;}).join(' ')||'<span style="color:#333">–</span>';
+      }
+      tbl+=`<td><div style="display:flex;flex-direction:column;gap:2px;align-items:flex-end">${cellHtml}</div></td>`;
+    }
+    const addBtn = row.type==='rec'
+      ? `<button class="btn-sm" onclick="editRec('${row.id}')" title="Betrag ändern">✏️</button>`
+      : `<button class="btn-sm" onclick="addEntryModal('${row.cats[0]}','exp')" title="Eintrag hinzufügen">+</button>`;
+    tbl+=`<td>${fmtT(rowTotal)}</td><td>${addBtn}</td></tr>`;
   });
-  html+='<tr class="total-exp"><td>Gesamte Ausgaben</td>';
-  let totalExp=0;totalExpRow.forEach(v=>{totalExp+=v;html+=`<td>${fmtC(v)}</td>`;});
-  html+=`<td>${fmtC(totalExp)}</td></tr>`;
+  // Exp total
+  tbl+='<tr class="total-exp"><td>Gesamte Ausgaben</td>';
+  let totalExp=0; totalExpRow.forEach(v=>{totalExp+=v;tbl+=`<td>${fmtT(v)}</td>`;});
+  tbl+=`<td>${fmtT(totalExp)}</td><td></td></tr>`;
 
   // SPAREN
-  html+='<tr class="spar-row"><td>💰 Sparen</td>';
+  tbl+='<tr class="spar-row"><td>💰 Sparen</td>';
   let totalSpar=0;
-  for(let m=0;m<12;m++){const v=totalIncRow[m]-totalExpRow[m];totalSpar+=v;html+=`<td>${fmtB(v)}</td>`;}
-  html+=`<td>${fmtB(totalSpar)}</td></tr>`;
+  for(let m=0;m<12;m++){const v=totalIncRow[m]-totalExpRow[m];totalSpar+=v;tbl+=`<td>${fmtT(v)}</td>`;}
+  tbl+=`<td>${fmtT(totalSpar)}</td><td></td></tr>`;
+  tbl+='</tbody></table>';
+  document.getElementById('tabelle-wrap').innerHTML=tbl;
 
-  html+='</tbody></table>';
-  document.getElementById('tabelle-wrap').innerHTML=html;
+  // attach tbl-cell-val styles via hover if not set
+}
+
+function editEntry(idx){
+  const e=entries[idx];
+  if(!e)return;
+  const newAmt=prompt(`Betrag für ${e.cat} (${MONTHS[e.month]}):`, String(e.amount));
+  if(newAmt===null)return;
+  if(newAmt===''||newAmt==='0'){if(confirm('Eintrag löschen?')){entries.splice(idx,1);sv('mhb2_entries',entries);refreshAll();return;}}
+  e.amount=parseFloat(newAmt)||e.amount;
+  sv('mhb2_entries',entries);refreshAll();showToast('✅ Gespeichert');
+}
+
+function editRec(id){
+  const r=recurring[id]||{};
+  const newAmt=prompt(`Monatlicher Betrag für "${id}":`, String(r.amount||0));
+  if(newAmt===null)return;
+  recurring[id]=recurring[id]||{};
+  recurring[id].amount=parseFloat(newAmt)||0;
+  recurring[id].active=true;
+  sv('mhb2_recurring',recurring);refreshAll();showToast('✅ Wiederkehrend aktualisiert');
+}
+
+function addEntryModal(cat,type){
+  const mName=prompt('Monat (1-12):',String(CUR_M+1));
+  if(!mName)return;
+  const m=parseInt(mName)-1;
+  if(m<0||m>11){alert('Ungültiger Monat');return;}
+  const amt=prompt(`Betrag für ${cat}:`,'');
+  if(!amt)return;
+  const amount=parseFloat(amt);
+  if(!amount){alert('Ungültiger Betrag');return;}
+  entries.unshift({cat,type,amount,month:m,year:CUR_Y,note:'',ts:Date.now()});
+  sv('mhb2_entries',entries);refreshAll();showToast('✅ '+cat+' hinzugefügt');
 }
 
 function refreshAll(){refreshDash();refreshKonten();refreshUebersicht();renderTabelle();}
