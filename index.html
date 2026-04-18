@@ -3,47 +3,635 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Haushaltsbuch</title>
+<title>Mahome Haushaltsbuch</title>
 <style>
-*{box-sizing:border-box;margin:0;padding:0}body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#0f0f0f;color:#f0f0f0}.tab-bar{display:none}.bottom-tabs{display:flex;position:sticky;bottom:0;z-index:9999;background:#1a1a1a;border-top:2px solid #333;overflow-x:auto}.tab{flex:1;min-width:92px;padding:14px 8px;text-align:center;color:#888;text-decoration:none;font-size:14px;font-weight:700;user-select:none;-webkit-tap-highlight-color:transparent}.tab.active{color:#4da6ff;border-top:3px solid #4da6ff;background:#111}.page{display:none;padding:12px;padding-bottom:78px}.page.active{display:block}.card{background:#1e1e1e;border:1px solid #2a2a2a;border-radius:12px;padding:14px;margin-bottom:12px}.card-title{font-size:14px;font-weight:700;color:#4da6ff;margin-bottom:10px;text-transform:uppercase;letter-spacing:.4px}.summary-bar{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:12px}.summary-item{background:#1e1e1e;border:1px solid #2a2a2a;border-radius:10px;padding:10px;text-align:center}.label{font-size:10px;color:#888;text-transform:uppercase}.value{font-size:18px;font-weight:700}.green{color:#4caf50}.red{color:#f44336}.blue{color:#4da6ff}.year-selector{display:flex;align-items:center;justify-content:center;gap:14px;margin-bottom:12px;background:#1e1e1e;border:1px solid #2a2a2a;border-radius:12px;padding:10px}.year-arrow{background:#2a2a2a;border:none;color:#4da6ff;font-size:18px;width:38px;height:38px;border-radius:8px}.year-display{font-size:20px;font-weight:700}.month-row{display:flex;gap:8px;overflow-x:auto;padding-bottom:8px;margin-bottom:12px}.month-card{flex:0 0 92px;background:#1e1e1e;border:1px solid #2a2a2a;border-radius:12px;padding:10px}.month-card.active{border-color:#4da6ff}.month-name{font-size:12px;font-weight:700;color:#ddd;margin-bottom:10px}.month-bal{font-size:16px;font-weight:700;text-align:center}.month-bal.pos{color:#4caf50}.month-bal.neg{color:#f44336}.row-item{display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid #1a1a1a}.row-item:last-child{border-bottom:none}.row-label{font-size:13px;color:#ddd}.row-amount{font-size:13px;font-weight:700}.group-board{display:flex;flex-direction:column;gap:10px}.group-card{background:#1a1a1a;border:1px solid #2a2a2a;border-radius:12px;padding:12px}.group-card.dragover{outline:2px dashed #4da6ff}.group-head{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:8px}.group-head-left{display:flex;align-items:center;gap:8px;min-width:0}.group-chip{width:12px;height:12px;border-radius:50%}.group-title{font-size:13px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.group-meta{font-size:11px;color:#777}.group-actions{display:flex;gap:6px;flex-shrink:0}.group-drop{min-height:42px;padding:6px;border-top:1px solid #222}.account-chip{background:#252525;border:1px solid #333;border-radius:10px;padding:10px 12px;margin-bottom:6px;display:flex;justify-content:space-between;align-items:center;cursor:grab}.account-chip:active{cursor:grabbing}.account-name{font-size:13px;font-weight:700}.account-sub{font-size:11px;color:#777}.drag-hint{font-size:11px;color:#666}.konto-toolbar,.add-row,.modal-actions,.type-toggle,.mode-toggle{display:grid;gap:8px}.konto-toolbar{grid-template-columns:1fr 1fr 1fr;margin-bottom:12px}.add-row{grid-template-columns:1fr 110px;margin-bottom:10px}.add-row input,.add-row select,.form-control,select{width:100%;background:#252525;border:1px solid #333;border-radius:8px;padding:11px 12px;color:#f0f0f0;font-size:13px;appearance:none}.mini-btn,.btn-save2,.btn-save,.btn-cancel{border:none;border-radius:10px;font-weight:700}.mini-btn{background:#2a2a2a;color:#ddd;padding:6px 8px;font-size:11px}.btn-save2,.btn-save{background:#4da6ff;color:#000;padding:12px;font-size:14px}.btn-cancel{background:#2a2a2a;color:#aaa;padding:12px;font-size:14px}.mode-toggle,.type-toggle{grid-template-columns:1fr 1fr;border:1px solid #333;border-radius:8px;overflow:hidden;margin-bottom:12px}.mode-btn,.type-btn{padding:10px;text-align:center;background:#1e1e1e;color:#888;font-weight:700}.mode-btn.active,.type-btn.active-inc{background:#1b3a1e;color:#4caf50}.type-btn.active-exp{background:#3a1b1b;color:#f44336}.form-group{margin-bottom:12px}.form-label{display:block;font-size:11px;color:#888;text-transform:uppercase;letter-spacing:.4px;margin-bottom:6px}.small{font-size:11px;color:#777}.hidden{display:none}.modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:10000;align-items:flex-end}.modal.open{display:flex}.sheet{width:100%;background:#1e1e1e;border-top-left-radius:16px;border-top-right-radius:16px;padding:16px;max-height:88vh;overflow:auto;border-top:1px solid #333}.sheet-title{font-size:16px;font-weight:700;margin-bottom:14px}.modal-actions{grid-template-columns:1fr 1fr;margin-top:12px}.color-row{display:flex;gap:8px;flex-wrap:wrap}.dot{width:28px;height:28px;border-radius:50%;border:3px solid transparent}.dot.sel{border-color:#fff}
-</style></head><body>
-<div class="tab-bar"><a class="tab active" href="#jahr">📅 Jahr</a><a class="tab" href="#konten">🏦 Konten</a><a class="tab" href="#flows">↔️ Alle</a><a class="tab" href="#zinsen">💹 Zinsen</a><a class="tab" href="#eingabe">➕ Eingabe</a></div>
-<div class="page active" id="jahr"><div class="year-selector"><button class="year-arrow" id="year-prev">‹</button><div class="year-display" id="year-display">2026</div><button class="year-arrow" id="year-next">›</button></div><div class="summary-bar"><div class="summary-item"><div class="label">Einnahmen</div><div class="value green" id="total-inc">0,00 €</div></div><div class="summary-item"><div class="label">Ausgaben</div><div class="value red" id="total-exp">0,00 €</div></div><div class="summary-item"><div class="label">Bilanz</div><div class="value blue" id="total-bal">0,00 €</div></div></div><div class="card"><div class="card-title">Sparrate</div><div class="row-item"><span class="row-label">Gesamtbilanz</span><span class="row-amount blue" id="saving-rate">0,00 €</span></div><div class="small" id="saving-rate-note">Einnahmen - Ausgaben</div></div><div class="card"><div class="card-title">Monate im Jahr</div><div class="month-row" id="year-month-overview"></div></div><div class="card"><div class="card-title">Gruppierte Einnahmen</div><div id="inc-rows"></div></div><div class="card"><div class="card-title">Gruppierte Ausgaben</div><div id="exp-rows"></div></div></div>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#0f0f0f;color:#f0f0f0;display:flex;flex-direction:column;height:100dvh;overflow:hidden}
+/* TOP NAV */
+.top-nav{display:flex;background:#141414;border-bottom:1px solid #2a2a2a;overflow-x:auto;flex-shrink:0}
+.top-tab{flex:1;min-width:80px;padding:13px 6px;text-align:center;color:#666;font-size:12px;font-weight:700;cursor:pointer;border-bottom:3px solid transparent;white-space:nowrap}
+.top-tab.active{color:#d4a844;border-bottom-color:#d4a844}
+/* PAGES */
+.pages{flex:1;overflow:hidden;position:relative}
+.page{position:absolute;inset:0;overflow-y:auto;padding:12px 12px 12px;display:none}
+.page.active{display:block}
+/* BOTTOM NAV */
+.bot-nav{display:flex;background:#141414;border-top:2px solid #2a2a2a;flex-shrink:0}
+.bot-tab{flex:1;padding:12px 4px 10px;text-align:center;color:#555;font-size:10px;font-weight:700;cursor:pointer;border-top:3px solid transparent;display:flex;flex-direction:column;align-items:center;gap:3px}
+.bot-tab .ico{font-size:20px}
+.bot-tab.active{color:#d4a844;border-top-color:#d4a844}
+/* CARDS */
+.card{background:#1a1a1a;border:1px solid #2a2a2a;border-radius:14px;padding:14px;margin-bottom:12px}
+.card.gold{border-color:#d4a84455}
+.card-title{font-size:12px;font-weight:700;color:#d4a844;text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px}
+/* DASHBOARD */
+.dash-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px}
+.dash-kachel{background:#1a1a1a;border:1px solid #2a2a2a;border-radius:12px;padding:12px}
+.dash-kachel.full{grid-column:1/-1;border-color:#d4a84466}
+.dk-label{font-size:10px;color:#777;text-transform:uppercase;letter-spacing:.4px;margin-bottom:4px}
+.dk-val{font-size:20px;font-weight:700}
+.green{color:#4caf50}.red{color:#f44336}.gold-c{color:#d4a844}.blue{color:#4da6ff}
+/* SCHNELLEINGABE */
+.schnell{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px}
+.schnell-full{grid-column:1/-1}
+input,select{background:#252525;border:1px solid #333;border-radius:10px;padding:11px 12px;color:#f0f0f0;font-size:13px;width:100%;-webkit-appearance:none;appearance:none}
+input:focus,select:focus{outline:none;border-color:#d4a844}
+.btn{background:#d4a844;color:#000;border:none;border-radius:10px;padding:12px;font-size:13px;font-weight:700;cursor:pointer;width:100%}
+.btn-red{background:#c0392b;color:#fff}
+.btn-sm{background:#2a2a2a;color:#ddd;border:none;border-radius:8px;padding:7px 12px;font-size:11px;font-weight:700;cursor:pointer}
+/* ROWS */
+.row-item{display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid #1e1e1e}
+.row-item:last-child{border-bottom:none}
+.row-label{font-size:13px;color:#ddd}
+.row-val{font-size:13px;font-weight:700}
+.row-sub{font-size:11px;color:#666;margin-top:2px}
+/* KONTEN */
+.konto-chip{background:#252525;border:1px solid #2a2a2a;border-radius:10px;padding:10px 12px;margin-bottom:7px;display:flex;justify-content:space-between;align-items:center}
+.konto-name{font-size:13px;font-weight:700}
+.konto-bal{font-size:13px;font-weight:700;color:#d4a844}
+.konto-actions{display:flex;gap:6px;margin-left:10px}
+/* GROUP SECTION */
+.grp{margin-bottom:10px}
+.grp-head{display:flex;justify-content:space-between;align-items:center;padding:8px 0;cursor:pointer;border-bottom:1px solid #2a2a2a}
+.grp-title{font-size:13px;font-weight:700;color:#d4a844}
+.grp-body{padding-top:4px}
+/* recurring row */
+.rec-row{display:grid;grid-template-columns:1fr 110px 28px;gap:6px;align-items:center;margin-bottom:8px}
+.rec-label{font-size:12px;color:#bbb;grid-column:1/-1;margin-top:6px;margin-bottom:2px;font-weight:700}
+.chk-row{display:flex;align-items:center;gap:6px;font-size:11px;color:#777;margin-bottom:8px}
+.chk-row input[type=checkbox]{width:16px;height:16px;cursor:pointer;flex-shrink:0;accent-color:#d4a844}
+/* toast */
+#toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:#d4a844;color:#000;font-weight:700;padding:9px 20px;border-radius:30px;font-size:13px;z-index:9999;opacity:0;transition:opacity .3s;pointer-events:none}
+.divider{height:1px;background:#222;margin:8px 0}
+.sec-label{font-size:10px;color:#555;text-transform:uppercase;letter-spacing:.5px;margin:10px 0 6px}
+.badge{font-size:10px;padding:2px 7px;border-radius:20px;background:#2a2a2a;color:#888;margin-left:5px}
 
-<div class="page" id="flows">
-  <div class="card"><div class="card-title">Alle Ein- und Ausgänge</div><div class="small">Gruppiert nach Gruppe/Kategorie. Manuell verschieb- und bearbeitbar.</div></div>
-  <div class="card"><div class="card-title">Gesamtübersicht</div><div id="flow-year-summary"></div></div>
-  <div class="card"><div class="card-title">Einträge</div><div id="flow-list"></div></div>
+.tbl{border-collapse:collapse;font-size:11px;min-width:900px;width:100%}
+.tbl th{background:#1e1e1e;color:#d4a844;padding:7px 8px;text-align:right;border:1px solid #2a2a2a;white-space:nowrap;position:sticky;top:0;z-index:2}
+.tbl th:first-child{text-align:left;position:sticky;left:0;z-index:3;background:#1e1e1e}
+.tbl td{padding:6px 8px;border:1px solid #1e1e1e;text-align:right;white-space:nowrap}
+.tbl td:first-child{text-align:left;background:#161616;position:sticky;left:0;z-index:1;font-weight:600;color:#ddd}
+.tbl tr:hover td{background:#1c1c1c}
+.tbl .sec-row td{background:#141414;color:#d4a844;font-weight:700;font-size:12px;border-top:2px solid #d4a84455}
+.tbl .total-row td{background:#1a2a1a;font-weight:700;color:#4caf50}
+.tbl .total-exp td{background:#2a1a1a;font-weight:700;color:#f44336}
+.tbl .spar-row td{background:#0d1a2a;font-weight:700;color:#4da6ff}
+.tbl .pos{color:#4caf50}.tbl .neg{color:#f44336}
+</style>
+</head>
+<body>
+
+<!-- TOP NAV -->
+<div class="top-nav">
+  <div class="top-tab active" onclick="topTab('konten',this)">🏦 Konten</div>
+  <div class="top-tab" onclick="topTab('uebersicht',this)">📊 Übersicht</div>
+  <div class="top-tab" onclick="topTab('tabelle',this)">📋 Tabelle</div>
 </div>
-<div class="page" id="konten"><div class="card"><div class="card-title">Konten einpflegen</div><div class="add-row"><input id="konto-name" type="text" placeholder="Kontoname"><select id="konto-group"><option value="bank">Bank/Cash</option><option value="invest">Invest</option><option value="wett">Wette</option><option value="other">Sonstige</option></select></div><div class="add-row"><input id="konto-balance" type="number" step="0.01" placeholder="Kontostand"><button class="btn-save2" id="konto-add">+ Konto</button></div></div><div class="card"><div class="card-title">Gruppen verwalten</div><div class="konto-toolbar"><button class="mini-btn" id="group-inc">↑ Einnahmen</button><button class="mini-btn" id="group-exp">↓ Ausgaben</button><button class="mini-btn" id="group-new">+ Gruppe</button></div><div class="small">Gruppen bearbeiten und per Drag & Drop verschieben.</div><div id="group-board" class="group-board"></div></div><div class="card"><div class="card-title">Kontenliste</div><div id="konto-list"></div></div></div>
-<div class="page" id="zinsen"><div class="card"><div class="card-title">Zinsen & Dividenden</div><div class="small">Wird im nächsten Schritt ergänzt.</div></div></div>
-<div class="page" id="eingabe"><div class="mode-toggle"><div class="mode-btn active" id="mode-single">📝 Einmalig</div><div class="mode-btn" id="mode-recurring">🔁 Wiederkehrend</div></div><div id="panel-single"><div class="card"><div class="card-title">Neuer Eintrag</div><div class="type-toggle"><div class="type-btn active-inc" id="type-inc">↑ Einnahme</div><div class="type-btn" id="type-exp">↓ Ausgabe</div></div><div class="form-group"><label class="form-label">Kategorie</label><select class="form-control" id="input-cat"></select></div><div class="form-group"><label class="form-label">Betrag (€)</label><input class="form-control" id="input-amount" type="number" step="0.01"></div><div class="form-group"><label class="form-label">Monat</label><select class="form-control" id="input-month"></select></div><div class="form-group"><label class="form-label">Notiz</label><input class="form-control" id="input-note" type="text"></div><button class="btn btn-save" id="btn-save-entry">💾 Speichern</button></div></div><div id="panel-recurring" class="hidden"><div class="card"><div class="card-title">Wiederkehrend</div><div class="type-toggle"><div class="type-btn active-inc" id="rtype-inc">↑ Einnahme</div><div class="type-btn" id="rtype-exp">↓ Ausgabe</div></div><div class="form-group"><label class="form-label">Kategorie</label><select class="form-control" id="rinput-cat"></select></div><div class="form-group"><label class="form-label">Betrag (€)</label><input class="form-control" id="rinput-amount" type="number" step="0.01"></div><div class="form-group"><label class="form-label">Startmonat</label><select class="form-control" id="rinput-start"></select></div><div class="form-group"><label class="form-label">Intervall</label><select class="form-control" id="rinput-interval"><option value="monthly">Monatlich</option><option value="quarterly">Quartalsweise</option><option value="yearly">Jährlich</option></select></div><button class="btn btn-save" id="btn-save-recurring">🔁 Speichern</button></div><div class="card"><div class="card-title">Wiederkehrende Einträge</div><div id="recurring-list"></div></div></div></div>
-<div class="modal" id="modal-group"><div class="sheet"><div class="sheet-title">Gruppe</div><div class="form-group"><label class="form-label">Gruppenname</label><input class="form-control" id="mg-name"></div><div class="form-group"><label class="form-label">Farbe</label><div class="color-row" id="color-row"></div></div><div class="modal-actions"><button class="btn-cancel" data-close>Abbrechen</button><button class="btn-save2" id="mg-save">Speichern</button></div></div></div>
+
+<!-- PAGES -->
+<div class="pages">
+
+  <!-- PAGE: KONTEN -->
+  <div class="page active" id="page-konten">
+    <div class="card gold">
+      <div class="card-title">Gesamtvermögen</div>
+      <div style="font-size:28px;font-weight:700;color:#d4a844" id="k-gesamt">0,00 €</div>
+    </div>
+    <div class="card">
+      <div class="card-title">Kontenübersicht</div>
+      <div id="konten-list"></div>
+    </div>
+    <div class="card">
+      <div class="card-title">Konto hinzufügen</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px">
+        <input id="nk-name" placeholder="Name"/>
+        <input id="nk-bal" type="number" step="0.01" placeholder="Stand (€)"/>
+      </div>
+      <select id="nk-grp" style="margin-bottom:8px">
+        <option value="bank">Bank / Cash</option>
+        <option value="invest">Invest</option>
+        <option value="wett">Wetten</option>
+        <option value="other">Sonstige</option>
+      </select>
+      <button class="btn" onclick="addKonto()">+ Konto hinzufügen</button>
+    </div>
+  </div>
+
+  <!-- PAGE: ÜBERSICHT -->
+  <div class="page" id="page-uebersicht">
+    <div class="card">
+      <div class="card-title">Einnahmen nach Kategorie (Jahr)</div>
+      <div id="ueb-einnahmen"></div>
+    </div>
+    <div class="card">
+      <div class="card-title">Ausgaben nach Gruppe (Jahr)</div>
+      <div id="ueb-ausgaben"></div>
+    </div>
+    <div class="card">
+      <div class="card-title">Letzte Buchungen</div>
+      <div id="ueb-buchungen"></div>
+    </div>
+  </div>
+
+  <!-- PAGE: DASHBOARD (bottom tab 1) -->
+  <div class="page" id="page-dash">
+    <div class="dash-grid">
+      <div class="dash-kachel full">
+        <div class="dk-label">Alle Konten gesamt</div>
+        <div class="dk-val gold-c" id="d-gesamt">0,00 €</div>
+      </div>
+      <div class="dash-kachel">
+        <div class="dk-label">Bilanz Jahresgesamt</div>
+        <div class="dk-val" id="d-jahr">0,00 €</div>
+      </div>
+      <div class="dash-kachel">
+        <div class="dk-label">Letzter Monat</div>
+        <div class="dk-val" id="d-lm">0,00 €</div>
+      </div>
+      <div class="dash-kachel">
+        <div class="dk-label">Aktueller Monat</div>
+        <div class="dk-val" id="d-am">0,00 €</div>
+      </div>
+      <div class="dash-kachel">
+        <div class="dk-label">Einnahmen (Jahr)</div>
+        <div class="dk-val green" id="d-einj">0,00 €</div>
+      </div>
+      <div class="dash-kachel">
+        <div class="dk-label">Ausgaben (Jahr)</div>
+        <div class="dk-val red" id="d-ausj">0,00 €</div>
+      </div>
+    </div>
+    <!-- SCHNELLEINGABE -->
+    <div class="card">
+      <div class="card-title">⚡ Schnelleingabe Ausgabe</div>
+      <div class="schnell">
+        <div class="schnell-full">
+          <select id="qs-cat">
+            <option value="Supermarkt">🛒 Supermarkt</option>
+            <option value="Tanken">⛽ Tanken</option>
+            <option value="Restaurant">🍽️ Restaurant</option>
+            <option value="Shopping">🛍️ Shopping</option>
+            <option value="Sonstiges">📦 Sonstiges</option>
+          </select>
+        </div>
+        <input id="qs-amt" type="number" step="0.01" placeholder="Betrag (€)" />
+        <select id="qs-monat"></select>
+      </div>
+      <button class="btn btn-red" onclick="quickSave()">➕ Ausgabe speichern</button>
+    </div>
+  </div>
+
+  <!-- PAGE: EINNAHMEN -->
+  <div class="page" id="page-ein">
+    <!-- Otto -->
+    <div class="card">
+      <div class="card-title">💼 Otto</div>
+      <div class="rec-label">Gehalt</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px">
+        <input id="otto-g" type="number" step="0.01" placeholder="Betrag (€)"/>
+        <select id="otto-gm"></select>
+      </div>
+      <div class="rec-label">Kantine <span class="badge">→ Restaurant</span></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px">
+        <input id="otto-k" type="number" step="0.01" placeholder="Betrag (€)"/>
+        <select id="otto-km"></select>
+      </div>
+      <button class="btn" onclick="saveOtto()">💾 Speichern</button>
+    </div>
+    <div class="card">
+      <div class="card-title">🏍️ Xe Om</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px">
+        <input id="xeom-a" type="number" step="0.01" placeholder="Betrag (€)"/>
+        <input id="xeom-d" type="date"/>
+      </div>
+      <button class="btn" onclick="saveXeOm()">💾 Speichern</button>
+    </div>
+    <div class="card">
+      <div class="card-title">🎰 Matchbetting</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px">
+        <input id="mb-a" type="number" step="0.01" placeholder="Betrag (€)"/>
+        <select id="mb-m"></select>
+      </div>
+      <button class="btn" onclick="saveSimple('Matchbetting','mb-a','mb-m','inc')">💾 Speichern</button>
+    </div>
+    <div class="card">
+      <div class="card-title">📢 Kleinanzeigen</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px">
+        <input id="kaz-a" type="number" step="0.01" placeholder="Betrag (€)"/>
+        <select id="kaz-m"></select>
+      </div>
+      <button class="btn" onclick="saveSimple('Kleinanzeigen','kaz-a','kaz-m','inc')">💾 Speichern</button>
+    </div>
+    <div class="card">
+      <div class="card-title">🏠 Vermietung</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px">
+        <input id="verm-a" type="number" step="0.01" placeholder="Betrag (€)"/>
+        <select id="verm-m"></select>
+      </div>
+      <button class="btn" onclick="saveSimple('Vermietung','verm-a','verm-m','inc')">💾 Speichern</button>
+    </div>
+    <div class="card">
+      <div class="card-title">🏖️ FEWO</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px">
+        <input id="fewo-a" type="number" step="0.01" placeholder="Betrag (€)"/>
+        <select id="fewo-m"></select>
+      </div>
+      <button class="btn" onclick="saveSimple('FEWO','fewo-a','fewo-m','inc')">💾 Speichern</button>
+    </div>
+    <div class="card">
+      <div class="card-title">💹 Zinsen & Dividenden</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px">
+        <input id="zins-a" type="number" step="0.01" placeholder="Betrag (€)"/>
+        <select id="zins-m"></select>
+      </div>
+      <select id="zins-konto" style="margin-bottom:8px">
+        <option value="scalable">Scalable Capital</option>
+        <option value="tr">Trade Republic</option>
+        <option value="c24">C24</option>
+        <option value="tagesgeld">Tagesgeld</option>
+      </select>
+      <button class="btn" onclick="saveZinsen()">💾 Speichern</button>
+    </div>
+    <div class="card">
+      <div class="card-title">💳 Cashback</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px">
+        <input id="cb-a" type="number" step="0.01" placeholder="Betrag (€)"/>
+        <input id="cb-q" placeholder="Quelle"/>
+      </div>
+      <select id="cb-m" style="margin-bottom:8px"></select>
+      <button class="btn" onclick="saveCashback()">💾 Speichern</button>
+    </div>
+  </div>
+
+  <!-- PAGE: AUSGABEN -->
+  <div class="page" id="page-aus">
+    <div class="card">
+      <div class="card-title">🏠 Wohnen</div>
+      <div id="body-wohnen"></div>
+    </div>
+    <div class="card">
+      <div class="card-title">📦 Sonstiges</div>
+      <div id="body-sonstiges"></div>
+    </div>
+    <div class="card">
+      <div class="card-title">🎯 Freizeit</div>
+      <div id="body-freizeit"></div>
+    </div>
+    <div class="card">
+      <div class="card-title">🛡️ Versicherungen</div>
+      <div id="body-versicherungen"></div>
+    </div>
+  </div>
+
+
+  <!-- PAGE: TABELLE -->
+  <div class="page" id="page-tabelle">
+    <div style="overflow-x:auto">
+      <div id="tabelle-wrap"></div>
+    </div>
+  </div>
+</div><!-- /pages -->
+
+<!-- BOTTOM NAV -->
+<div class="bot-nav">
+  <div class="bot-tab active" onclick="botTab('dash',this)"><div class="ico">🏠</div>Start</div>
+  <div class="bot-tab" onclick="botTab('ein',this)"><div class="ico">💶</div>Einnahmen</div>
+  <div class="bot-tab" onclick="botTab('aus',this)"><div class="ico">💸</div>Ausgaben</div>
+</div>
+
+<div id="toast"></div>
+
+
 <script>
-const MONTHS=['Jan','Feb','Mär','Apr','Mai','Jun','Jul','Aug','Sep','Okt','Nov','Dez'];
-const MONTHS_FULL=['Januar','Februar','März','April','Mai','Juni','Juli','August','September','Oktober','November','Dezember'];
-const INC_CATS=['Otto','Matchbetting','Xe Om','Kleinanzeigen','Cashback','Vermietung','Zinsen/Dividenden','FEWO'];
-const EXP_RECUR=['Miete Naumannplatz','Miete Josephstr.','Kornpfortstr. 12a','Rundfunk (GEZ)','Unterhalt','Lebensmittel','Kantine','Shopping / Restaurants','Aktien','Gemeinschaftskonto','Versicherungen','Zahnzusatz (Astra)','Hausrat (Docura)','GEVK','BavariaDirekt (Peugeot)','DEVK (BMW)','Sparpläne (ETF)','Sonstige Verträge','Lotto','Mobilfunk Freenet (Haupt)','Mobilität','Fold 7','Betriebssport'];
-const EXP_SINGLE=['Supermarkt','Kleidung','3D Druck','Shopping','Auto','Tanken','Restaurant'];
-const COLORS=['#4da6ff','#4caf50','#f44336','#ffb300','#7c4dff','#00bcd4','#ff7043','#e91e63'];
-let currentYear=2026,currentMonth=new Date().getMonth(),currentType='inc',currentMode='single',selectedColor=COLORS[0],groupType='inc';
-let entries=JSON.parse(localStorage.getItem('hb_entries')||'[]'); let recurring=JSON.parse(localStorage.getItem('hb_recurring')||'[]'); let accounts=JSON.parse(localStorage.getItem('hb_accounts')||'[]'); let accountGroups=JSON.parse(localStorage.getItem('hb_accountGroups')||'{"bank":[],"invest":[],"wett":[],"other":[]}'); let catGroups=JSON.parse(localStorage.getItem('hb_catGroups')||'{"inc":[],"exp":[]}');
-let incCats=JSON.parse(localStorage.getItem('hb_incCats')||JSON.stringify([...INC_CATS])), expRecCats=JSON.parse(localStorage.getItem('hb_expRecCats')||JSON.stringify([...EXP_RECUR])), expSingleCats=JSON.parse(localStorage.getItem('hb_expSingleCats')||JSON.stringify([...EXP_SINGLE]));
-function fmt(n){return(n||0).toLocaleString('de-DE',{minimumFractionDigits:2,maximumFractionDigits:2})+' €';}
-function persist(){localStorage.setItem('hb_entries',JSON.stringify(entries));localStorage.setItem('hb_recurring',JSON.stringify(recurring));localStorage.setItem('hb_accounts',JSON.stringify(accounts));localStorage.setItem('hb_accountGroups',JSON.stringify(accountGroups));localStorage.setItem('hb_catGroups',JSON.stringify(catGroups));localStorage.setItem('hb_incCats',JSON.stringify(incCats));localStorage.setItem('hb_expRecCats',JSON.stringify(expRecCats));localStorage.setItem('hb_expSingleCats',JSON.stringify(expSingleCats));}
-function openTab(h){document.querySelectorAll('.tab').forEach(a=>a.classList.toggle('active',a.getAttribute('href')==='#'+h));document.querySelectorAll('.page').forEach(p=>p.classList.toggle('active',p.id===h));location.hash=h;}
-function initTabs(){document.querySelectorAll('.tab').forEach(a=>a.addEventListener('click',e=>{e.preventDefault();openTab(a.getAttribute('href').slice(1));}));openTab((location.hash||'#jahr').slice(1));}
-function buildMonthSelect(){document.getElementById('input-month').innerHTML=MONTHS_FULL.map((m,i)=>`<option value="${i}">${m}</option>`).join('');document.getElementById('input-month').value=String(new Date().getMonth());document.getElementById('rinput-start').innerHTML=MONTHS_FULL.map((m,i)=>`<option value="${i}">${m}</option>`).join('');document.getElementById('rinput-start').value=0;}
-function recurringMonths(r){if(r.interval==='monthly') return [...Array(12-r.start).keys()].map(x=>x+r.start); if(r.interval==='quarterly') return [r.start,r.start+3,r.start+6,r.start+9].filter(m=>m<12); return [r.start];}
-function totalYear(){let inc=0,exp=0;entries.filter(e=>e.year===currentYear).forEach(e=>e.type==='inc'?inc+=e.amount:exp+=e.amount);recurring.forEach(r=>{recurringMonths(r).forEach(()=>{(r.type||'inc')==='inc'?inc+=r.amount:exp+=r.amount;});});return{inc,exp,bal:inc-exp};}
-function renderMonths(){const ms=Array.from({length:12},()=>({inc:0,exp:0}));entries.filter(e=>e.year===currentYear).forEach(e=>ms[e.month][e.type]+=e.amount);recurring.forEach(r=>recurringMonths(r).forEach(m=>{if((r.type||'inc')==='inc') ms[m].inc+=r.amount; else ms[m].exp+=r.amount;}));document.getElementById('year-month-overview').innerHTML=ms.map((m,i)=>`<div class="month-card ${i===currentMonth?'active':''}" data-month="${i}"><div class="month-name">${MONTHS[i]}</div><div class="month-bal ${(m.inc-m.exp)>=0?'pos':'neg'}">${fmt(m.inc-m.exp)}</div></div>`).join('');document.querySelectorAll('.month-card').forEach(el=>el.addEventListener('click',()=>{currentMonth=parseInt(el.dataset.month);renderAll();}));}
-function renderGroups(){const board=document.getElementById('group-board');const available={inc:incCats.filter(c=>!(catGroups.inc||[]).some(g=>(g.cats||[]).includes(c))),exp:expRecCats.concat(expSingleCats).filter(c=>!(catGroups.exp||[]).some(g=>(g.cats||[]).includes(c)))};board.innerHTML=['inc','exp'].map(type=>`<div><div class="small" style="margin:8px 0 6px">${type==='inc'?'Einnahmen':'Ausgaben'}</div>${(catGroups[type]||[]).map((g,i)=>`<div class="group-card" data-group-type="${type}" data-group-index="${i}" draggable="true"><div class="group-head"><div class="group-head-left"><div class="group-chip" style="background:${g.color}"></div><div style="min-width:0"><div class="group-title">${g.name}</div><div class="group-meta">${(g.cats||[]).length} Kategorien</div></div></div><div class="group-actions"><button class="mini-btn" data-edit-group="${type}:${i}">✏️</button><button class="mini-btn" data-del-group="${type}:${i}">🗑️</button></div></div><div class="group-drop">${(g.cats||[]).map(c=>`<div class="account-chip" draggable="true" data-cat="${c}"><div><div class="account-name">${c}</div><div class="account-sub">Kategorie</div></div><button class="mini-btn" data-remove-cat="${type}:${i}:${c}">✕</button></div>`).join('')||'<div class="drag-hint">Hier ablegen.</div>'}<div class="add-row" style="grid-template-columns:1fr 90px;margin-top:8px"><select data-cat-pick="${type}:${i}">${available[type].map(c=>`<option>${c}</option>`).join('')}</select><button class="btn-save2" data-cat-add="${type}:${i}">+ Add</button></div></div></div>`).join('')}</div>`).join('');document.querySelectorAll('.group-card').forEach(card=>{card.addEventListener('dragstart',e=>{e.dataTransfer.setData('text/plain',JSON.stringify({type:card.dataset.groupType,index:parseInt(card.dataset.groupIndex)}));});card.addEventListener('dragover',e=>{e.preventDefault();card.classList.add('dragover');});card.addEventListener('dragleave',()=>card.classList.remove('dragover'));card.addEventListener('drop',e=>{e.preventDefault();card.classList.remove('dragover');const raw=e.dataTransfer.getData('text/plain'); const from=JSON.parse(raw); const to={type:card.dataset.groupType,index:parseInt(card.dataset.groupIndex)}; if(from.cat){const g=catGroups[to.type][to.index]; g.cats=g.cats||[]; if(!g.cats.includes(from.cat)){g.cats.push(from.cat);} persist(); renderGroups(); renderYear(); return;} if(from.type!==to.type||from.index===to.index)return; const arr=catGroups[from.type]; const moved=arr.splice(from.index,1)[0]; arr.splice(to.index,0,moved); persist(); renderGroups(); renderYear();});});document.querySelectorAll('.account-chip[data-cat]').forEach(ch=>ch.addEventListener('dragstart',e=>{e.dataTransfer.setData('text/plain',JSON.stringify({cat:ch.dataset.cat}));}));document.querySelectorAll('[data-edit-group]').forEach(btn=>btn.onclick=()=>{const [t,i]=btn.dataset.editGroup.split(':');const g=catGroups[t][parseInt(i)];document.getElementById('mg-name').value=g.name;document.getElementById('modal-group').classList.add('open');document.getElementById('mg-save').onclick=()=>{g.name=document.getElementById('mg-name').value.trim()||g.name;g.color=selectedColor;persist();document.getElementById('modal-group').classList.remove('open');renderGroups();renderYear();};});document.querySelectorAll('[data-del-group]').forEach(btn=>btn.onclick=()=>{const [t,i]=btn.dataset.delGroup.split(':');catGroups[t].splice(parseInt(i),1);persist();renderGroups();renderYear();});document.querySelectorAll('[data-remove-cat]').forEach(btn=>btn.onclick=()=>{const [t,i,cat]=btn.dataset.removeCat.split(':');catGroups[t][parseInt(i)].cats=(catGroups[t][parseInt(i)].cats||[]).filter(x=>x!==cat);persist();renderGroups();renderYear();});document.querySelectorAll('[data-cat-add]').forEach(btn=>btn.onclick=()=>{const [t,i]=btn.dataset.catAdd.split(':');const pick=document.querySelector(`[data-cat-pick="${t}:${i}"]`);const cat=pick.value;const g=catGroups[t][parseInt(i)];g.cats=g.cats||[]; if(!g.cats.includes(cat)){g.cats.push(cat);} persist(); renderGroups(); renderYear();});}
-function renderAccounts(){const groups={bank:'Bank/Cash',invest:'Invest',wett:'Wette',other:'Sonstige'};document.getElementById('konto-list').innerHTML=Object.keys(groups).map(g=>`<div class="group-card"><div class="group-head"><div class="group-title">${groups[g]}</div><button class="mini-btn" data-add-to="${g}">+ Konto</button></div><div class="group-drop">${(accountGroups[g]||[]).map(a=>`<div class="account-chip" draggable="true" data-account-id="${a.id}"><div><div class="account-name">${a.name}</div><div class="account-sub">${fmt(a.balance||0)}</div></div><div class="group-actions"><button class="mini-btn" data-edit-account="${a.id}">✏️</button><button class="mini-btn" data-del-account="${a.id}">🗑️</button></div></div>`).join('')}</div></div>`).join('');document.querySelectorAll('.account-chip').forEach(ch=>ch.addEventListener('dragstart',e=>e.dataTransfer.setData('text/plain',ch.dataset.accountId)));document.querySelectorAll('.group-card').forEach(card=>{card.addEventListener('dragover',e=>{e.preventDefault();card.classList.add('dragover');});card.addEventListener('dragleave',()=>card.classList.remove('dragover'));card.addEventListener('drop',e=>{e.preventDefault();card.classList.remove('dragover');const id=e.dataTransfer.getData('text/plain');const a=accounts.find(x=>String(x.id)===String(id));if(!a)return;const map={'Bank/Cash':'bank','Invest':'invest','Wette':'wett','Sonstige':'other'};const target=map[card.querySelector('.group-title')?.textContent];if(target){a.group=target;accountGroups={bank:accounts.filter(x=>x.group==='bank'),invest:accounts.filter(x=>x.group==='invest'),wett:accounts.filter(x=>x.group==='wett'),other:accounts.filter(x=>x.group==='other')};persist();renderAccounts();}});});document.querySelectorAll('[data-add-to]').forEach(btn=>btn.onclick=()=>{document.getElementById('konto-group').value=btn.dataset.addTo;document.getElementById('konto-name').focus();});document.querySelectorAll('[data-edit-account]').forEach(btn=>btn.onclick=()=>{const a=accounts.find(x=>String(x.id)===btn.dataset.editAccount);if(!a)return;const n=prompt('Kontoname',a.name);if(n!==null)a.name=n.trim()||a.name;const b=prompt('Kontostand',String(a.balance||0));if(b!==null)a.balance=parseFloat(b)||0;accountGroups={bank:accounts.filter(x=>x.group==='bank'),invest:accounts.filter(x=>x.group==='invest'),wett:accounts.filter(x=>x.group==='wett'),other:accounts.filter(x=>x.group==='other')};persist();renderAccounts();});document.querySelectorAll('[data-del-account]').forEach(btn=>btn.onclick=()=>{accounts=accounts.filter(x=>String(x.id)!==btn.dataset.delAccount);accountGroups={bank:accounts.filter(x=>x.group==='bank'),invest:accounts.filter(x=>x.group==='invest'),wett:accounts.filter(x=>x.group==='wett'),other:accounts.filter(x=>x.group==='other')};persist();renderAccounts();});}
-function renderRecurring(){document.getElementById('recurring-list').innerHTML=recurring.map((r,i)=>`<div class="row-item"><span class="row-label">${r.cat} · ${r.interval} · ab ${MONTHS_FULL[r.start]}</span><span class="row-amount">${fmt(r.amount)} <button class="mini-btn" data-del-rec="${i}">✕</button></span></div>`).join('')||'<div class="small">Noch keine wiederkehrenden Einträge.</div>';document.querySelectorAll('[data-del-rec]').forEach(btn=>btn.onclick=()=>{recurring.splice(parseInt(btn.dataset.delRec),1);persist();renderRecurring();renderAll();});}
-function groupBalances(){const g={};['inc','exp'].forEach(type=>{(catGroups[type]||[]).forEach(gr=>{g[gr.name]={inc:0,exp:0};(gr.cats||[]).forEach(cat=>{entries.filter(e=>e.year===currentYear && e.cat===cat).forEach(e=>{if(e.type==='inc') g[gr.name].inc+=e.amount; else g[gr.name].exp+=e.amount;});recurring.filter(r=>r.cat===cat).forEach(r=>{recurringMonths(r).forEach(m=>{const amt=r.amount||0; if((r.type||'inc')==='inc') g[gr.name].inc+=amt; else g[gr.name].exp+=amt;});});});});});return g;}function renderYear(){const t=totalYear();document.getElementById('year-display').textContent=currentYear;document.getElementById('total-inc').textContent=fmt(t.inc);document.getElementById('total-exp').textContent=fmt(t.exp);document.getElementById('total-bal').textContent=fmt(t.bal);document.getElementById('saving-rate').textContent=fmt(t.bal);document.getElementById('saving-rate-note').textContent='Einnahmen - Ausgaben = '+fmt(t.bal);const gb=groupBalances();const keys=Object.keys(gb);document.getElementById('flow-year-summary').innerHTML=keys.length?keys.map(k=>`<div class="row-item"><span class="row-label">${k}</span><span class="row-amount ${gb[k].inc-gb[k].exp>=0?'green':'red'}">${fmt(gb[k].inc-gb[k].exp)}</span><button class="mini-btn" data-edit-flowgroup="${k}">Bearbeiten</button></div>`).join(''):'<div class="small">Noch keine Gruppen.</div>';document.getElementById('flow-list').innerHTML='';document.getElementById('inc-rows').innerHTML='';document.getElementById('exp-rows').innerHTML='';renderMonths();}
-function renderFlows(){const all=[...entries.filter(e=>e.year===currentYear).map(e=>({...e,kind:'einmalig'})),...recurring.flatMap(r=>recurringMonths(r).map(m=>({type:r.type||'inc',cat:r.cat,amount:r.amount,start:r.start,interval:r.interval,year:currentYear,month:m,kind:'wiederkehrend'})))];const grouped={};all.forEach(e=>{const key=(e.type||'inc')+'::'+e.cat; (grouped[key]=grouped[key]||[]).push(e);});const html=Object.keys(grouped).sort().map(k=>{const [type,cat]=k.split('::');const list=grouped[k];const total=list.reduce((s,x)=>s+(x.amount||0),0);return `<div class="group-card"><div class="group-head"><div class="group-title">${cat}</div><div class="group-meta">${type==='inc'?'Einnahme':'Ausgabe'} · ${fmt(total)}</div></div>${list.map((e,i)=>`<div class="row-item"><span class="row-label">${MONTHS_FULL[e.month||0]} · ${e.kind||''}</span><span class="row-amount">${fmt(e.amount)} <button class="mini-btn" data-edit-flow="${k}:${i}">✏️</button></span></div>`).join('')}</div>`}).join('');document.getElementById('flow-list').innerHTML=html||'<div class="small">Noch keine Einträge.</div>';document.querySelectorAll('[data-edit-flow]').forEach(btn=>btn.onclick=()=>{const [k,i]=btn.dataset.editFlow.split(':');const e=grouped[k][parseInt(i)];const n=prompt('Betrag',String(e.amount));if(n===null)return;e.amount=parseFloat(n)||e.amount;persist();renderAll();});document.querySelectorAll('[data-edit-flowgroup]').forEach(btn=>btn.onclick=()=>{const k=btn.dataset.editFlowgroup;alert('Gruppenbearbeitung für '+k+' ist hier als Übersicht verfügbar. Konten/Gruppen kannst du im Konten-Reiter ändern.');});}
-function renderAll(){renderYear();renderAccounts();renderGroups();renderRecurring();renderFlows();buildMonthSelect();document.getElementById('input-month').value=String(new Date().getMonth());document.getElementById('input-cat').value=currentType==='exp'?'Supermarkt':(incCats[0]||'');document.getElementById('rinput-cat').value=currentType==='exp'?'Supermarkt':(incCats[0]||'');}
-document.addEventListener('DOMContentLoaded',()=>{initTabs();buildMonthSelect();renderAll();document.getElementById('year-prev').onclick=()=>{currentYear--;renderAll();};document.getElementById('year-next').onclick=()=>{currentYear++;renderAll();};document.getElementById('type-inc').onclick=()=>{currentType='inc';document.getElementById('type-inc').className='type-btn active-inc';document.getElementById('type-exp').className='type-btn';document.getElementById('input-cat').innerHTML=incCats.map(x=>`<option>${x}</option>`).join('');document.getElementById('input-cat').value=incCats[0]||'';};document.getElementById('type-exp').onclick=()=>{currentType='exp';document.getElementById('type-exp').className='type-btn active-exp';document.getElementById('type-inc').className='type-btn';document.getElementById('input-cat').innerHTML=expSingleCats.map(x=>`<option>${x}</option>`).join('');document.getElementById('input-cat').value='Supermarkt';};document.getElementById('mode-single').onclick=()=>{document.getElementById('mode-single').classList.add('active');document.getElementById('mode-recurring').classList.remove('active');document.getElementById('panel-single').classList.remove('hidden');document.getElementById('panel-recurring').classList.add('hidden');};document.getElementById('mode-recurring').onclick=()=>{currentMode='recurring';document.getElementById('mode-recurring').classList.add('active');document.getElementById('mode-single').classList.remove('active');document.getElementById('panel-recurring').classList.remove('hidden');document.getElementById('panel-single').classList.add('hidden');};document.getElementById('btn-save-entry').onclick=()=>{const cat=document.getElementById('input-cat').value;const amount=parseFloat(document.getElementById('input-amount').value);const month=parseInt(document.getElementById('input-month').value);const note=document.getElementById('input-note').value.trim();if(!cat||isNaN(amount)||amount<=0)return;entries.unshift({type:currentType,cat,amount,month,year:currentYear,note});persist();renderAll();};document.getElementById('rtype-inc').onclick=()=>{currentType='inc';document.getElementById('rtype-inc').className='type-btn active-inc';document.getElementById('rtype-exp').className='type-btn';document.getElementById('rinput-cat').innerHTML=incCats.map(x=>`<option>${x}</option>`).join('');document.getElementById('rinput-cat').value=incCats[0]||'';};document.getElementById('rtype-exp').onclick=()=>{currentType='exp';document.getElementById('rtype-exp').className='type-btn active-exp';document.getElementById('rtype-inc').className='type-btn';document.getElementById('rinput-cat').innerHTML=expSingleCats.map(x=>`<option>${x}</option>`).join('');document.getElementById('rinput-cat').value='Supermarkt';};document.getElementById('btn-save-recurring').onclick=()=>{const cat=document.getElementById('rinput-cat').value;const amount=parseFloat(document.getElementById('rinput-amount').value);const start=parseInt(document.getElementById('rinput-start').value);const interval=document.getElementById('rinput-interval').value;if(!cat||isNaN(amount)||amount<=0)return;recurring.unshift({type:currentType,cat,amount,start,interval});persist();renderRecurring();renderAll();};document.getElementById('konto-add').onclick=()=>{const name=document.getElementById('konto-name').value.trim();if(!name)return;const a={id:Date.now(),name,balance:parseFloat(document.getElementById('konto-balance').value)||0,group:document.getElementById('konto-group').value};accounts.push(a);accountGroups={bank:accounts.filter(x=>x.group==='bank'),invest:accounts.filter(x=>x.group==='invest'),wett:accounts.filter(x=>x.group==='wett'),other:accounts.filter(x=>x.group==='other')};document.getElementById('konto-name').value='';document.getElementById('konto-balance').value='';persist();renderAccounts();};document.getElementById('group-inc').onclick=()=>{groupType='inc';document.getElementById('mg-name').value='';document.getElementById('modal-group').classList.add('open');};document.getElementById('group-exp').onclick=()=>{groupType='exp';document.getElementById('mg-name').value='';document.getElementById('modal-group').classList.add('open');};document.getElementById('group-new').onclick=()=>{document.getElementById('mg-name').value='';document.getElementById('modal-group').classList.add('open');document.getElementById('mg-save').onclick=()=>{const n=document.getElementById('mg-name').value.trim();if(!n)return;catGroups[groupType].push({name:n,color:selectedColor,cats:[]});persist();document.getElementById('modal-group').classList.remove('open');renderGroups();renderYear();};};document.getElementById('color-row').innerHTML=COLORS.map((c,i)=>`<div class="dot ${i===0?'sel':''}" style="background:${c}" data-color="${c}"></div>`).join('');document.getElementById('color-row').addEventListener('click',e=>{const d=e.target.closest('.dot');if(!d)return;selectedColor=d.dataset.color;document.querySelectorAll('.dot').forEach(x=>x.classList.remove('sel'));d.classList.add('sel');});document.querySelectorAll('[data-close]').forEach(b=>b.onclick=()=>b.closest('.modal').classList.remove('open'));document.getElementById('input-cat').innerHTML=incCats.map(x=>`<option>${x}</option>`).join('');document.getElementById('rinput-cat').innerHTML=incCats.map(x=>`<option>${x}</option>`).join('');document.getElementById('rinput-start').innerHTML=MONTHS_FULL.map((m,i)=>`<option value="${i}">${m}</option>`).join('');});
+// Prefill data from HB.xlsx (only if not already set)
+(function(){
+  if(!localStorage.getItem('mhb2_entries_prefilled')){
+    localStorage.setItem('mhb2_entries', JSON.stringify([{"cat": "Otto", "type": "inc", "amount": 3077.07, "month": 0, "year": 2026, "note": "", "ts": 1700000000000}, {"cat": "Otto", "type": "inc", "amount": 3124.87, "month": 1, "year": 2026, "note": "", "ts": 1700000000001}, {"cat": "Otto", "type": "inc", "amount": 3133.33, "month": 2, "year": 2026, "note": "", "ts": 1700000000002}, {"cat": "Matchbetting", "type": "inc", "amount": 333.34, "month": 0, "year": 2026, "note": "", "ts": 1700000000003}, {"cat": "Matchbetting", "type": "inc", "amount": 163.98, "month": 1, "year": 2026, "note": "", "ts": 1700000000004}, {"cat": "Matchbetting", "type": "inc", "amount": 261.0, "month": 2, "year": 2026, "note": "", "ts": 1700000000005}, {"cat": "Xe Om", "type": "inc", "amount": 498.5, "month": 0, "year": 2026, "note": "", "ts": 1700000000006}, {"cat": "Xe Om", "type": "inc", "amount": 999.0, "month": 1, "year": 2026, "note": "", "ts": 1700000000007}, {"cat": "Xe Om", "type": "inc", "amount": 1210.0, "month": 2, "year": 2026, "note": "", "ts": 1700000000008}, {"cat": "Xe Om", "type": "inc", "amount": 550.0, "month": 3, "year": 2026, "note": "", "ts": 1700000000009}, {"cat": "Kleinanzeigen", "type": "inc", "amount": 240.2, "month": 0, "year": 2026, "note": "", "ts": 1700000000010}, {"cat": "Kleinanzeigen", "type": "inc", "amount": 180.0, "month": 1, "year": 2026, "note": "", "ts": 1700000000011}, {"cat": "Kleinanzeigen", "type": "inc", "amount": 432.5, "month": 2, "year": 2026, "note": "", "ts": 1700000000012}, {"cat": "Vermietung", "type": "inc", "amount": 165.0, "month": 0, "year": 2026, "note": "", "ts": 1700000000013}, {"cat": "Vermietung", "type": "inc", "amount": 575.0, "month": 1, "year": 2026, "note": "", "ts": 1700000000014}, {"cat": "Zinsen/Dividenden", "type": "inc", "amount": 93.01, "month": 0, "year": 2026, "note": "", "ts": 1700000000015}, {"cat": "Zinsen/Dividenden", "type": "inc", "amount": 32.95, "month": 1, "year": 2026, "note": "", "ts": 1700000000016}, {"cat": "FEWO", "type": "inc", "amount": 393.0, "month": 0, "year": 2026, "note": "", "ts": 1700000000017}, {"cat": "FEWO", "type": "inc", "amount": 190.82, "month": 1, "year": 2026, "note": "", "ts": 1700000000018}, {"cat": "FEWO", "type": "inc", "amount": 914.89, "month": 2, "year": 2026, "note": "", "ts": 1700000000019}, {"cat": "Restaurant", "type": "exp", "amount": 28.9, "month": 1, "year": 2026, "note": "Kantine", "ts": 1700000000020}, {"cat": "Shopping", "type": "exp", "amount": 10.0, "month": 0, "year": 2026, "note": "", "ts": 1700000000021}]));
+    localStorage.setItem('mhb2_accounts', JSON.stringify([{"id": 1, "name": "C24", "balance": 2250.57, "grp": "bank"}, {"id": 2, "name": "BBVA", "balance": 6855.0, "grp": "bank"}, {"id": 3, "name": "Bargeld", "balance": 300.0, "grp": "bank"}, {"id": 4, "name": "Aktien (Scalable)", "balance": 95258.0, "grp": "invest"}, {"id": 5, "name": "Zero", "balance": 122.16, "grp": "invest"}, {"id": 6, "name": "Trade Republic", "balance": 4130.0, "grp": "invest"}, {"id": 7, "name": "Coinbase", "balance": 9683.0, "grp": "invest"}, {"id": 8, "name": "Quirion", "balance": 930.0, "grp": "invest"}, {"id": 9, "name": "Pionex", "balance": 989.0, "grp": "invest"}, {"id": 10, "name": "Paypal", "balance": 150.0, "grp": "other"}, {"id": 11, "name": "Paypal 2", "balance": 312.0, "grp": "other"}, {"id": 12, "name": "black (Karte)", "balance": 1369.0, "grp": "bank"}, {"id": 13, "name": "sharp", "balance": 80.73, "grp": "bank"}, {"id": 14, "name": "Yoroi", "balance": 620.0, "grp": "invest"}, {"id": 15, "name": "Mexc", "balance": 110.0, "grp": "wett"}, {"id": 16, "name": "Jeton", "balance": 338.7, "grp": "wett"}, {"id": 17, "name": "Paysafe", "balance": 1.29, "grp": "wett"}, {"id": 18, "name": "Revolut", "balance": 17.0, "grp": "bank"}, {"id": 19, "name": "Skrill 3", "balance": 2.86, "grp": "wett"}]));
+    localStorage.setItem('mhb2_recurring', JSON.stringify({"miete-naumann": {"label": "Miete Naumannplatz", "amount": 285.79, "active": true}, "miete-josephstr": {"label": "Miete Josephstr.", "amount": 664.0, "active": true}, "miete-kornpfort": {"label": "Kornpfortstr. 12a", "amount": 702.0, "active": true}, "gez": {"label": "Rundfunk (GEZ)", "amount": 55.08, "active": false}, "unterhalt": {"label": "Unterhalt", "amount": 500.0, "active": true}, "sparplaene": {"label": "Sparpl\u00e4ne (ETF)", "amount": 1100.0, "active": true}, "gemeinschaftskonto": {"label": "Gemeinschaftskonto", "amount": 350.0, "active": true}, "lotto": {"label": "Lotto", "amount": 0, "active": false}, "mobilfunk": {"label": "Mobilfunk (Freenet)", "amount": 19.99, "active": true}, "smartphone": {"label": "Finanzierung Smartphone", "amount": 84.0, "active": true}, "betriebssport": {"label": "Betriebssport", "amount": 3.5, "active": true}, "zahnzusatz": {"label": "Zahnzusatz (Bavaria)", "amount": 12.87, "active": true}, "hausrat": {"label": "Hausrat (Docura)", "amount": 49.6, "active": false}}));
+    localStorage.setItem('mhb2_entries_prefilled','1');
+  }
+})();
 </script>
-<div class="bottom-tabs"><a class="tab active" href="#jahr">📅 Jahr</a><a class="tab" href="#konten">🏦 Konten</a><a class="tab" href="#flows">↔️ Alle</a><a class="tab" href="#zinsen">💹 Zinsen</a><a class="tab" href="#eingabe">➕ Eingabe</a></div></body>
+<script>
+const MONTHS=['Januar','Februar','März','April','Mai','Juni','Juli','August','September','Oktober','November','Dezember'];
+const TODAY=new Date(), CUR_M=TODAY.getMonth(), CUR_Y=TODAY.getFullYear();
+function fmt(n){return(n||0).toLocaleString('de-DE',{minimumFractionDigits:2,maximumFractionDigits:2})+' €';}
+function load(k,d){try{return JSON.parse(localStorage.getItem(k))||d;}catch{return d;}}
+function sv(k,v){localStorage.setItem(k,JSON.stringify(v));}
+let entries=load('mhb2_entries',[]);
+let accounts=load('mhb2_accounts',[]);
+let recurring=load('mhb2_recurring',{});
+
+const CATS={
+  wohnen:[{id:'miete-naumann',label:'Miete Naumannplatz'},{id:'miete-josephstr',label:'Miete Josephstr.'},{id:'miete-kornpfort',label:'Kornpfortstr. 12a'},{id:'gez',label:'Rundfunk (GEZ)'}],
+  sonstiges:[{id:'unterhalt',label:'Unterhalt'},{id:'sparplaene',label:'Sparpläne (ETF)'},{id:'gemeinschaftskonto',label:'Gemeinschaftskonto'},{id:'lotto',label:'Lotto'},{id:'mobilfunk',label:'Mobilfunk (Freenet)'},{id:'deutschlandticket',label:'Deutschlandticket'},{id:'bahn',label:'Bahn'},{id:'smartphone',label:'Finanzierung Smartphone'},{id:'betriebssport',label:'Betriebssport'}],
+  freizeit:[{id:'lebensmittel',label:'Lebensmittel'},{id:'shopping',label:'Shopping'},{id:'restaurant',label:'Restaurants'}],
+  versicherungen:[{id:'zahnzusatz',label:'Zahnzusatz (Bavaria)'},{id:'hausrat',label:'Hausrat (Docura)'},{id:'haftpflicht',label:'Haftpflicht (GEVK)'},{id:'kfz-peugeot',label:'Autovers. BavariaDirekt (Peugeot)'},{id:'kfz-bmw',label:'Autovers. DEVK (BMW)'}]
+};
+
+// TAB LOGIC
+function topTab(id,el){
+  document.querySelectorAll('.top-tab').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.getElementById('page-'+id).classList.add('active');
+}
+function botTab(id,el){
+  document.querySelectorAll('.bot-tab').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');
+  document.querySelectorAll('.top-tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.getElementById('page-'+id).classList.add('active');
+}
+
+function fillMs(id,def){
+  const el=document.getElementById(id);if(!el)return;
+  el.innerHTML=MONTHS.map((m,i)=>`<option value="${i}"${i===(def!=null?def:CUR_M)?' selected':''}>${m}</option>`).join('');
+}
+
+function buildRecSection(bodyId, cats){
+  const body=document.getElementById(bodyId);
+  body.innerHTML=cats.map(c=>{
+    const r=recurring[c.id]||{};
+    return `<div class="rec-label">${c.label}</div>
+    <div class="rec-row">
+      <input id="ri-${c.id}" type="number" step="0.01" placeholder="Betrag (€)" value="${r.amount||''}" onchange="updRec('${c.id}')"/>
+      <select id="rm-${c.id}"></select>
+      <span></span>
+    </div>
+    <div class="chk-row">
+      <input type="checkbox" id="rk-${c.id}" ${r.active?'checked':''} onchange="togRec('${c.id}')"/>
+      <label for="rk-${c.id}">Monatlich wiederkehrend (alle Monate automatisch)</label>
+    </div>`;
+  }).join('<div class="divider"></div>');
+  cats.forEach(c=>fillMs('rm-'+c.id));
+}
+
+function updRec(id){
+  if(!recurring[id]) recurring[id]={active:false};
+  recurring[id].amount=parseFloat(document.getElementById('ri-'+id).value)||0;
+  recurring[id].month=parseInt(document.getElementById('rm-'+id).value);
+  sv('mhb2_recurring',recurring);refreshDash();
+}
+function togRec(id){
+  if(!recurring[id]) recurring[id]={};
+  recurring[id].active=document.getElementById('rk-'+id).checked;
+  recurring[id].amount=parseFloat(document.getElementById('ri-'+id).value)||0;
+  sv('mhb2_recurring',recurring);refreshDash();
+}
+
+// SAVE HELPERS
+function saveSimple(cat,aid,mid,type){
+  const a=parseFloat(document.getElementById(aid).value);
+  if(!a||a<=0){showToast('❌ Betrag eingeben');return;}
+  const m=parseInt(document.getElementById(mid).value);
+  entries.unshift({cat,type,amount:a,month:m,year:CUR_Y,ts:Date.now()});
+  sv('mhb2_entries',entries);
+  document.getElementById(aid).value='';
+  refreshAll();showToast('✅ '+cat+' gespeichert');
+}
+function saveOtto(){
+  const g=parseFloat(document.getElementById('otto-g').value)||0;
+  const k=parseFloat(document.getElementById('otto-k').value)||0;
+  const gm=parseInt(document.getElementById('otto-gm').value);
+  const km=parseInt(document.getElementById('otto-km').value);
+  if(g>0) entries.unshift({cat:'Otto',type:'inc',amount:g,month:gm,year:CUR_Y,ts:Date.now()});
+  if(k>0) entries.unshift({cat:'Restaurant',type:'exp',amount:k,month:km,year:CUR_Y,note:'Kantine',ts:Date.now()});
+  sv('mhb2_entries',entries);
+  document.getElementById('otto-g').value='';document.getElementById('otto-k').value='';
+  refreshAll();showToast('✅ Otto gespeichert');
+}
+function saveXeOm(){
+  const a=parseFloat(document.getElementById('xeom-a').value)||0;
+  if(!a){showToast('❌ Betrag eingeben');return;}
+  const d=new Date(document.getElementById('xeom-d').value||TODAY);
+  entries.unshift({cat:'Xe Om',type:'inc',amount:a,month:d.getMonth(),year:d.getFullYear(),note:document.getElementById('xeom-d').value,ts:Date.now()});
+  sv('mhb2_entries',entries);document.getElementById('xeom-a').value='';
+  refreshAll();showToast('✅ Xe Om gespeichert');
+}
+function saveZinsen(){
+  const a=parseFloat(document.getElementById('zins-a').value)||0;
+  if(!a){showToast('❌ Betrag eingeben');return;}
+  const m=parseInt(document.getElementById('zins-m').value);
+  const konto=document.getElementById('zins-konto').options[document.getElementById('zins-konto').selectedIndex]?.text||'';
+  entries.unshift({cat:'Zinsen/Dividenden',type:'inc',amount:a,month:m,year:CUR_Y,note:konto,ts:Date.now()});
+  sv('mhb2_entries',entries);document.getElementById('zins-a').value='';
+  refreshAll();showToast('✅ Zinsen gespeichert');
+}
+function saveCashback(){
+  const a=parseFloat(document.getElementById('cb-a').value)||0;
+  if(!a){showToast('❌ Betrag eingeben');return;}
+  const m=parseInt(document.getElementById('cb-m').value);
+  entries.unshift({cat:'Cashback',type:'inc',amount:a,month:m,year:CUR_Y,note:document.getElementById('cb-q').value,ts:Date.now()});
+  sv('mhb2_entries',entries);document.getElementById('cb-a').value='';document.getElementById('cb-q').value='';
+  refreshAll();showToast('✅ Cashback gespeichert');
+}
+function quickSave(){
+  const a=parseFloat(document.getElementById('qs-amt').value);
+  if(!a||a<=0){showToast('❌ Betrag eingeben');return;}
+  const cat=document.getElementById('qs-cat').value;
+  const m=parseInt(document.getElementById('qs-monat').value);
+  entries.unshift({cat,type:'exp',amount:a,month:m,year:CUR_Y,ts:Date.now()});
+  sv('mhb2_entries',entries);document.getElementById('qs-amt').value='';
+  refreshAll();showToast('✅ '+cat+' gespeichert');
+}
+
+// KONTEN
+function addKonto(){
+  const name=document.getElementById('nk-name').value.trim();
+  if(!name){showToast('❌ Name eingeben');return;}
+  const bal=parseFloat(document.getElementById('nk-bal').value)||0;
+  const grp=document.getElementById('nk-grp').value;
+  accounts.push({id:Date.now(),name,balance:bal,grp});
+  sv('mhb2_accounts',accounts);
+  document.getElementById('nk-name').value='';document.getElementById('nk-bal').value='';
+  refreshAll();showToast('✅ Konto gespeichert');
+}
+function editKonto(id){
+  const a=accounts.find(x=>x.id===id);if(!a)return;
+  const n=prompt('Name',a.name);if(n!==null) a.name=n.trim()||a.name;
+  const b=prompt('Kontostand (€)',String(a.balance||0));if(b!==null) a.balance=parseFloat(b)||0;
+  sv('mhb2_accounts',accounts);refreshAll();
+}
+function delKonto(id){
+  if(!confirm('Konto löschen?'))return;
+  accounts=accounts.filter(x=>x.id!==id);sv('mhb2_accounts',accounts);refreshAll();
+}
+function delEntry(idx){
+  if(!confirm('Eintrag löschen?'))return;
+  entries.splice(idx,1);sv('mhb2_entries',entries);refreshAll();
+}
+
+// TOTALS
+function recTotal(type){
+  return Object.values(recurring).filter(r=>r.active&&r.type==='exp'||(!r.type&&type==='exp')).reduce((s,r)=>s+(r.amount||0),0);
+}
+function yearTot(type){
+  const e=entries.filter(x=>x.year===CUR_Y&&x.type===type).reduce((s,x)=>s+(x.amount||0),0);
+  if(type==='exp'){const rm=Object.values(recurring).filter(r=>r.active).reduce((s,r)=>s+(r.amount||0),0);return e+rm*(CUR_M+1);}
+  return e;
+}
+function monthTot(type,m){
+  const e=entries.filter(x=>x.year===CUR_Y&&x.month===m&&x.type===type).reduce((s,x)=>s+(x.amount||0),0);
+  if(type==='exp'){const rm=Object.values(recurring).filter(r=>r.active).reduce((s,r)=>s+(r.amount||0),0);return e+rm;}
+  return e;
+}
+function setCol(id,v){const el=document.getElementById(id);if(el){el.className='dk-val '+(v>=0?'green':'red');el.textContent=fmt(v);}}
+
+// REFRESH
+function refreshDash(){
+  const kg=accounts.reduce((s,a)=>s+(a.balance||0),0);
+  document.getElementById('d-gesamt').textContent=fmt(kg);
+  document.getElementById('k-gesamt').textContent=fmt(kg);
+  const inc=yearTot('inc'),exp=yearTot('exp');
+  setCol('d-jahr',inc-exp);
+  document.getElementById('d-einj').textContent=fmt(inc);
+  document.getElementById('d-ausj').textContent=fmt(exp);
+  const lm=CUR_M===0?11:CUR_M-1;
+  setCol('d-lm',monthTot('inc',lm)-monthTot('exp',lm));
+  setCol('d-am',monthTot('inc',CUR_M)-monthTot('exp',CUR_M));
+}
+
+function refreshKonten(){
+  const grpL={bank:'🏦 Bank / Cash',invest:'📈 Invest',wett:'🎰 Wetten',other:'📂 Sonstige'};
+  const grps={bank:[],invest:[],wett:[],other:[]};
+  accounts.forEach(a=>(grps[a.grp]||grps.other).push(a));
+  let html='';
+  Object.keys(grps).forEach(g=>{
+    if(!grps[g].length)return;
+    html+=`<div class="sec-label">${grpL[g]}</div>`;
+    grps[g].forEach(a=>{
+      html+=`<div class="konto-chip"><div><div class="konto-name">${a.name}</div></div><div style="display:flex;align-items:center;gap:8px"><span class="konto-bal">${fmt(a.balance||0)}</span><button class="btn-sm" onclick="editKonto(${a.id})">✏️</button><button class="btn-sm" style="color:#f44336" onclick="delKonto(${a.id})">🗑️</button></div></div>`;
+    });
+  });
+  document.getElementById('konten-list').innerHTML=html||'<div style="color:#555;font-size:13px">Noch keine Konten.</div>';
+  // fill konto select for zinsen
+  // zins-konto is statically defined
+}
+
+function refreshUebersicht(){
+  // Einnahmen grouped
+  const incCats={};
+  entries.filter(e=>e.year===CUR_Y&&e.type==='inc').forEach(e=>{incCats[e.cat]=(incCats[e.cat]||0)+e.amount;});
+  document.getElementById('ueb-einnahmen').innerHTML=Object.keys(incCats).length
+    ?Object.keys(incCats).map(c=>`<div class="row-item"><span class="row-label">${c}</span><span class="row-val green">${fmt(incCats[c])}</span></div>`).join('')
+    :'<div style="color:#555;font-size:13px">Noch keine Einnahmen.</div>';
+  // Ausgaben grouped
+  const expCats={};
+  entries.filter(e=>e.year===CUR_Y&&e.type==='exp').forEach(e=>{expCats[e.cat]=(expCats[e.cat]||0)+e.amount;});
+  Object.values(recurring).filter(r=>r.active).forEach(r=>{expCats[r.id]=(expCats[r.id]||0)+r.amount*(CUR_M+1);});
+  document.getElementById('ueb-ausgaben').innerHTML=Object.keys(expCats).length
+    ?Object.keys(expCats).map(c=>`<div class="row-item"><span class="row-label">${c}</span><span class="row-val red">${fmt(expCats[c])}</span></div>`).join('')
+    :'<div style="color:#555;font-size:13px">Noch keine Ausgaben.</div>';
+  // Buchungen
+  const sorted=[...entries].sort((a,b)=>b.ts-a.ts);
+  document.getElementById('ueb-buchungen').innerHTML=sorted.slice(0,40).map((e,i)=>`<div class="row-item"><div><div class="row-label">${e.cat}${e.note?' · '+e.note:''}</div><div class="row-sub">${MONTHS[e.month]} ${e.year}</div></div><div style="display:flex;align-items:center;gap:8px"><span class="row-val ${e.type==='inc'?'green':'red'}">${e.type==='inc'?'+':'-'}${fmt(e.amount)}</span><button class="btn-sm" style="color:#f44336" onclick="delEntry(${entries.indexOf(e)})">✕</button></div></div>`).join('')||'<div style="color:#555;font-size:13px">Noch keine Buchungen.</div>';
+}
+
+function showToast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg;t.style.opacity='1';
+  clearTimeout(t._t);t._t=setTimeout(()=>t.style.opacity='0',2200);
+}
+
+
+function renderTabelle(){
+  const MONTHS_SHORT=['Jan','Feb','Mär','Apr','Mai','Jun','Jul','Aug','Sep','Okt','Nov','Dez'];
+  const allCatInc=['Otto','Matchbetting','Xe Om','Kleinanzeigen','Cashback','Vermietung','Zinsen/Dividenden','FEWO'];
+  const allCatExp=[
+    {label:'Wohnen',cats:[]},
+    {label:'Miete Naumannplatz',cats:['miete-naumann'],rec:true},
+    {label:'Miete Josephstr.',cats:['miete-josephstr'],rec:true},
+    {label:'Kornpfortstr. 12a',cats:['miete-kornpfort'],rec:true},
+    {label:'Rundfunk (GEZ)',cats:['gez'],rec:true},
+    {label:'Unterhalt',cats:['unterhalt'],rec:true},
+    {label:'Lebensmittel',cats:['Lebensmittel'],rec:false},
+    {label:'Shopping / Restaurants',cats:['Shopping','Restaurant'],rec:false},
+    {label:'Gemeinschaftskonto',cats:['gemeinschaftskonto'],rec:true},
+    {label:'Versicherungen',cats:[]},
+    {label:'Zahnzusatz (Bavaria)',cats:['zahnzusatz'],rec:true},
+    {label:'Hausrat (Docura)',cats:['hausrat'],rec:true},
+    {label:'Sparpläne (ETF)',cats:['sparplaene'],rec:true},
+    {label:'Sonstige Verträge',cats:[]},
+    {label:'Mobilfunk (Freenet)',cats:['mobilfunk'],rec:true},
+    {label:'Deutschlandticket',cats:['deutschlandticket'],rec:true},
+    {label:'Finanzierung Smartphone',cats:['smartphone'],rec:true},
+    {label:'Betriebssport',cats:['betriebssport'],rec:true},
+  ];
+
+  function getInc(cat,m){return entries.filter(e=>e.year===CUR_Y&&e.month===m&&e.type==='inc'&&e.cat===cat).reduce((s,e)=>s+(e.amount||0),0);}
+  function getExpRec(id,m){const r=recurring[id]; return(r&&r.active)?(r.amount||0):0;}
+  function getExpEntry(cats,m){return entries.filter(e=>e.year===CUR_Y&&e.month===m&&e.type==='exp'&&cats.includes(e.cat)).reduce((s,e)=>s+(e.amount||0),0);}
+  function fmtC(v){if(!v)return'<span style="color:#444">–</span>';const c=v>=0?'pos':'neg';return`<span class="${c}">${v.toLocaleString('de-DE',{minimumFractionDigits:2,maximumFractionDigits:2})} €</span>`;}
+  function fmtB(v){const c=v>=0?'pos':'neg';return`<span class="${c}">${v.toLocaleString('de-DE',{minimumFractionDigits:2,maximumFractionDigits:2})} €</span>`;}
+
+  let html='<table class="tbl"><thead><tr><th>Kategorie</th>';
+  MONTHS_SHORT.forEach(m=>html+=`<th>${m}</th>`);
+  html+='<th>Gesamt</th></tr></thead><tbody>';
+
+  // EINNAHMEN
+  html+='<tr class="sec-row"><td>EINNAHMEN</td>'+'<td></td>'.repeat(13)+'</tr>';
+  allCatInc.forEach(cat=>{
+    let total=0;
+    html+=`<tr><td>${cat}</td>`;
+    for(let m=0;m<12;m++){const v=getInc(cat,m);total+=v;html+=`<td>${fmtC(v)}</td>`;}
+    html+=`<td>${fmtC(total)}</td></tr>`;
+  });
+  // total inc row
+  let totalIncRow=Array(12).fill(0);
+  allCatInc.forEach(cat=>{for(let m=0;m<12;m++) totalIncRow[m]+=getInc(cat,m);});
+  html+='<tr class="total-row"><td>Gesamte Einnahmen</td>';
+  let totalInc=0;totalIncRow.forEach(v=>{totalInc+=v;html+=`<td>${fmtC(v)}</td>`;});
+  html+=`<td>${fmtC(totalInc)}</td></tr>`;
+
+  // AUSGABEN
+  html+='<tr class="sec-row"><td>AUSGABEN</td>'+'<td></td>'.repeat(13)+'</tr>';
+  allCatExp.forEach(row=>{
+    if(!row.cats||row.cats.length===0){
+      html+=`<tr class="sec-row" style="background:#1a1414"><td style="color:#f44336;padding-left:8px">${row.label}</td>`+'<td></td>'.repeat(13)+'</tr>';
+      return;
+    }
+    let total=0;
+    html+=`<tr><td style="padding-left:16px">${row.label}</td>`;
+    for(let m=0;m<12;m++){
+      const v=row.rec?getExpRec(row.cats[0],m):getExpEntry(row.cats,m);
+      total+=v;html+=`<td>${fmtC(v)}</td>`;
+    }
+    html+=`<td>${fmtC(total)}</td></tr>`;
+  });
+  // total exp row
+  let totalExpRow=Array(12).fill(0);
+  allCatExp.forEach(row=>{
+    if(!row.cats||!row.cats.length)return;
+    for(let m=0;m<12;m++) totalExpRow[m]+= row.rec?getExpRec(row.cats[0],m):getExpEntry(row.cats,m);
+  });
+  html+='<tr class="total-exp"><td>Gesamte Ausgaben</td>';
+  let totalExp=0;totalExpRow.forEach(v=>{totalExp+=v;html+=`<td>${fmtC(v)}</td>`;});
+  html+=`<td>${fmtC(totalExp)}</td></tr>`;
+
+  // SPAREN
+  html+='<tr class="spar-row"><td>💰 Sparen</td>';
+  let totalSpar=0;
+  for(let m=0;m<12;m++){const v=totalIncRow[m]-totalExpRow[m];totalSpar+=v;html+=`<td>${fmtB(v)}</td>`;}
+  html+=`<td>${fmtB(totalSpar)}</td></tr>`;
+
+  html+='</tbody></table>';
+  document.getElementById('tabelle-wrap').innerHTML=html;
+}
+
+function refreshAll(){refreshDash();refreshKonten();refreshUebersicht();renderTabelle();}
+
+function init(){
+  document.getElementById('xeom-d').value=TODAY.toISOString().split('T')[0];
+  ['otto-gm','otto-km','mb-m','kaz-m','verm-m','fewo-m','zins-m','cb-m','qs-monat'].forEach(id=>fillMs(id));
+  buildRecSection('body-wohnen',CATS.wohnen);
+  buildRecSection('body-sonstiges',CATS.sonstiges);
+  buildRecSection('body-freizeit',CATS.freizeit);
+  buildRecSection('body-versicherungen',CATS.versicherungen);
+  refreshAll();
+}
+document.addEventListener('DOMContentLoaded',init);
+</script>
+</body>
 </html>
