@@ -36,9 +36,10 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 .schnell-full{grid-column:1/-1}
 input,select{background:#252525;border:1px solid #333;border-radius:10px;padding:11px 12px;color:#f0f0f0;font-size:13px;width:100%;-webkit-appearance:none;appearance:none}
 input:focus,select:focus{outline:none;border-color:#d4a844}
-.btn{background:#d4a844;color:#000;border:none;border-radius:10px;padding:12px;font-size:13px;font-weight:700;cursor:pointer;width:100%}
+.btn{background:#d4a844;color:#000;border:none;border-radius:10px;padding:12px;font-size:13px;font-weight:700;cursor:pointer;width:100%;display:flex;align-items:center;justify-content:center;gap:6px;}
 .btn-red{background:#c0392b;color:#fff}
 .btn-sm{background:#2a2a2a;color:#ddd;border:none;border-radius:8px;padding:7px 12px;font-size:11px;font-weight:700;cursor:pointer}
+.btn-outline{background:transparent;color:#d4a844;border:1px solid #d4a844;border-radius:10px;padding:10px;font-size:12px;font-weight:700;cursor:pointer;width:100%;display:flex;align-items:center;justify-content:center;}
 /* ROWS */
 .row-item{display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid #1e1e1e}
 .row-item:last-child{border-bottom:none}
@@ -60,8 +61,9 @@ input:focus,select:focus{outline:none;border-color:#d4a844}
 .rec-label{font-size:12px;color:#bbb;grid-column:1/-1;margin-top:6px;margin-bottom:2px;font-weight:700}
 .chk-row{display:flex;align-items:center;gap:6px;font-size:11px;color:#777;margin-bottom:8px}
 .chk-row input[type=checkbox]{width:16px;height:16px;cursor:pointer;flex-shrink:0;accent-color:#d4a844}
-/* toast */
+/* toast & modal */
 #toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:#d4a844;color:#000;font-weight:700;padding:9px 20px;border-radius:30px;font-size:13px;z-index:9999;opacity:0;transition:opacity .3s;pointer-events:none}
+#rec-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.8);z-index:10000;justify-content:center;align-items:center;padding:20px;}
 .divider{height:1px;background:#222;margin:8px 0}
 .sec-label{font-size:10px;color:#555;text-transform:uppercase;letter-spacing:.5px;margin:10px 0 6px}
 .badge{font-size:10px;padding:2px 7px;border-radius:20px;background:#2a2a2a;color:#888;margin-left:5px}
@@ -74,24 +76,21 @@ input:focus,select:focus{outline:none;border-color:#d4a844}
 .tbl tr:hover td{background:#1c1c1c}
 .tbl .sec-row td{background:#141414;color:#d4a844;font-weight:700;font-size:12px;border-top:2px solid #d4a84455}
 .tbl .total-row td{background:#1a2a1a;font-weight:700;color:#4caf50}
-.tbl .total-exp td{background:#2a1a1a;font-weight:700;color:#f44336}
+.tbl .total-exp td{background:#2a1a1a;font-weight:700;color:#ff6b8a}
 .tbl .spar-row td{background:#0d1a2a;font-weight:700;color:#4da6ff}
-.tbl .pos{color:#4caf50}.tbl .neg{color:#f44336}.tbl-cell-val{cursor:pointer;text-decoration:underline dotted;color:inherit;padding:1px 3px;border-radius:4px}.tbl-cell-val:hover{background:#2a2a2a}
+.tbl .pos{color:#4caf50}.tbl .neg{color:#ff6b8a}.tbl-cell-val{cursor:pointer;text-decoration:underline dotted;color:inherit;padding:1px 3px;border-radius:4px}.tbl-cell-val:hover{background:#2a2a2a}.cell-col{display:flex;flex-direction:column;gap:2px;align-items:flex-end}.grp-hdr:hover td{background:#1e1e1e}
 </style>
 </head>
 <body>
 
-<!-- TOP NAV -->
 <div class="top-nav">
   <div class="top-tab active" onclick="topTab('konten',this)">🏦 Konten</div>
   <div class="top-tab" onclick="topTab('uebersicht',this)">📊 Übersicht</div>
   <div class="top-tab" onclick="topTab('tabelle',this)">📋 Tabelle</div>
 </div>
 
-<!-- PAGES -->
 <div class="pages">
 
-  <!-- PAGE: KONTEN -->
   <div class="page active" id="page-konten">
     <div class="card gold">
       <div class="card-title">Gesamtvermögen</div>
@@ -117,7 +116,6 @@ input:focus,select:focus{outline:none;border-color:#d4a844}
     </div>
   </div>
 
-  <!-- PAGE: ÜBERSICHT -->
   <div class="page" id="page-uebersicht">
     <div class="card">
       <div class="card-title">Einnahmen nach Kategorie (Jahr)</div>
@@ -133,7 +131,6 @@ input:focus,select:focus{outline:none;border-color:#d4a844}
     </div>
   </div>
 
-  <!-- PAGE: DASHBOARD (bottom tab 1) -->
   <div class="page" id="page-dash">
     <div class="dash-grid">
       <div class="dash-kachel full">
@@ -161,109 +158,36 @@ input:focus,select:focus{outline:none;border-color:#d4a844}
         <div class="dk-val red" id="d-ausj">0,00 €</div>
       </div>
     </div>
-    <!-- SCHNELLEINGABE -->
+    
     <div class="card">
       <div class="card-title">⚡ Schnelleingabe Ausgabe</div>
       <div class="schnell">
         <div class="schnell-full">
-          <select id="qs-cat">
-            <option value="Supermarkt">🛒 Supermarkt</option>
-            <option value="Tanken">⛽ Tanken</option>
-            <option value="Restaurant">🍽️ Restaurant</option>
-            <option value="Shopping">🛍️ Shopping</option>
-            <option value="Sonstiges">📦 Sonstiges</option>
-          </select>
+          <select id="qs-cat"></select>
         </div>
         <input id="qs-amt" type="number" step="0.01" placeholder="Betrag (€)" />
         <select id="qs-monat"></select>
       </div>
-      <button class="btn btn-red" onclick="quickSave()">➕ Ausgabe speichern</button>
+      <div style="display:flex; gap:6px;">
+        <button class="btn btn-red" style="flex:3" onclick="quickSave()">➕ Speichern</button>
+        <button class="btn-outline" style="flex:1; padding:0;" onclick="addCustomCategory()">Neu...</button>
+        <button class="btn-outline" style="flex:1; padding:0;" onclick="manageCustomCategories()" title="Kategorie umbenennen/löschen">⚙️</button>
+      </div>
     </div>
   </div>
 
-  <!-- PAGE: EINNAHMEN -->
   <div class="page" id="page-ein">
-    <!-- Otto -->
-    <div class="card">
-      <div class="card-title">💼 Otto</div>
-      <div class="rec-label">Gehalt</div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px">
-        <input id="otto-g" type="number" step="0.01" placeholder="Betrag (€)"/>
-        <select id="otto-gm"></select>
-      </div>
-      <div class="rec-label">Kantine <span class="badge">→ Restaurant</span></div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px">
-        <input id="otto-k" type="number" step="0.01" placeholder="Betrag (€)"/>
-        <select id="otto-km"></select>
-      </div>
-      <button class="btn" onclick="saveOtto()">💾 Speichern</button>
+    
+    <div id="dynamic-inc-cards"></div>
+
+    <button class="btn btn-outline" style="margin-bottom:16px; background:#1a1a1a;" onclick="addIncCat()">➕ Neue Einnahmequelle</button>
+
+    <div style="position:sticky; bottom:12px; z-index:10; padding-bottom:10px;">
+      <button class="btn" onclick="saveAllEinnahmen()" style="box-shadow: 0 4px 12px rgba(0,0,0,0.8);">💾 Alle Einnahmen speichern</button>
     </div>
-    <div class="card">
-      <div class="card-title">🏍️ Xe Om</div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px">
-        <input id="xeom-a" type="number" step="0.01" placeholder="Betrag (€)"/>
-        <input id="xeom-d" type="date"/>
-      </div>
-      <button class="btn" onclick="saveXeOm()">💾 Speichern</button>
-    </div>
-    <div class="card">
-      <div class="card-title">🎰 Matchbetting</div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px">
-        <input id="mb-a" type="number" step="0.01" placeholder="Betrag (€)"/>
-        <select id="mb-m"></select>
-      </div>
-      <button class="btn" onclick="saveSimple('Matchbetting','mb-a','mb-m','inc')">💾 Speichern</button>
-    </div>
-    <div class="card">
-      <div class="card-title">📢 Kleinanzeigen</div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px">
-        <input id="kaz-a" type="number" step="0.01" placeholder="Betrag (€)"/>
-        <select id="kaz-m"></select>
-      </div>
-      <button class="btn" onclick="saveSimple('Kleinanzeigen','kaz-a','kaz-m','inc')">💾 Speichern</button>
-    </div>
-    <div class="card">
-      <div class="card-title">🏠 Vermietung</div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px">
-        <input id="verm-a" type="number" step="0.01" placeholder="Betrag (€)"/>
-        <select id="verm-m"></select>
-      </div>
-      <button class="btn" onclick="saveSimple('Vermietung','verm-a','verm-m','inc')">💾 Speichern</button>
-    </div>
-    <div class="card">
-      <div class="card-title">🏖️ FEWO</div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px">
-        <input id="fewo-a" type="number" step="0.01" placeholder="Betrag (€)"/>
-        <select id="fewo-m"></select>
-      </div>
-      <button class="btn" onclick="saveSimple('FEWO','fewo-a','fewo-m','inc')">💾 Speichern</button>
-    </div>
-    <div class="card">
-      <div class="card-title">💹 Zinsen & Dividenden</div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px">
-        <input id="zins-a" type="number" step="0.01" placeholder="Betrag (€)"/>
-        <select id="zins-m"></select>
-      </div>
-      <select id="zins-konto" style="margin-bottom:8px">
-        <option value="scalable">Scalable Capital</option>
-        <option value="tr">Trade Republic</option>
-        <option value="c24">C24</option>
-        <option value="tagesgeld">Tagesgeld</option>
-      </select>
-      <button class="btn" onclick="saveZinsen()">💾 Speichern</button>
-    </div>
-    <div class="card">
-      <div class="card-title">💳 Cashback</div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px">
-        <input id="cb-a" type="number" step="0.01" placeholder="Betrag (€)"/>
-        <input id="cb-q" placeholder="Quelle"/>
-      </div>
-      <select id="cb-m" style="margin-bottom:8px"></select>
-      <button class="btn" onclick="saveCashback()">💾 Speichern</button>
-    </div>
+
   </div>
 
-  <!-- PAGE: AUSGABEN -->
   <div class="page" id="page-aus">
     <div class="card">
       <div class="card-title">🏠 Wohnen</div>
@@ -284,16 +208,18 @@ input:focus,select:focus{outline:none;border-color:#d4a844}
   </div>
 
 
-  <!-- PAGE: TABELLE -->
   <div class="page" id="page-tabelle">
+    <div style="display:flex;align-items:center;gap:10px;padding:8px 4px 10px;flex-wrap:wrap">
+      <label style="display:flex;align-items:center;gap:6px;font-size:13px;color:#aaa;cursor:pointer">
+        <input type="checkbox" id="tbl-only-current" onchange="renderTabelle()" style="width:16px;height:16px;accent-color:#d4a844">
+        Nur aktueller Monat
+      </label>
+    </div>
     <div style="overflow-x:auto">
       <div id="tabelle-wrap"></div>
     </div>
   </div>
-</div><!-- /pages -->
-
-<!-- BOTTOM NAV -->
-<div class="bot-nav">
+</div><div class="bot-nav">
   <div class="bot-tab active" onclick="botTab('dash',this)"><div class="ico">🏠</div>Start</div>
   <div class="bot-tab" onclick="botTab('ein',this)"><div class="ico">💶</div>Einnahmen</div>
   <div class="bot-tab" onclick="botTab('aus',this)"><div class="ico">💸</div>Ausgaben</div>
@@ -301,27 +227,68 @@ input:focus,select:focus{outline:none;border-color:#d4a844}
 
 <div id="toast"></div>
 
+<div id="rec-modal">
+  <div class="card" style="width:100%; max-width:400px; margin:0;" onclick="event.stopPropagation()">
+    <div class="card-title">Dauerauftrag / Wiederkehrend ändern</div>
+    <div id="rec-modal-desc" style="font-size:13px; margin-bottom:10px; color:#ddd;"></div>
+    <input type="number" id="rec-modal-amt" step="0.01" style="margin-bottom:15px;" placeholder="Neuer Betrag (€)"/>
+    <div style="display:flex; flex-direction:column; gap:8px;">
+      <button class="btn" onclick="saveRecModal('only')" id="btn-rec-only">Nur für diesen Monat</button>
+      <button class="btn" onclick="saveRecModal('future')" id="btn-rec-future">Ab diesem Monat (und alle folgenden)</button>
+      <button class="btn" onclick="saveRecModal('all')">Für alle Monate ändern</button>
+      <button class="btn btn-red" onclick="closeRecModal()" style="margin-top:10px;">Abbrechen</button>
+    </div>
+  </div>
+</div>
+
 
 <script>
-// Prefill data from HB.xlsx (only if not already set)
+// SICHERHEIT: Fallbacks
+function load(k,d){try{let r=JSON.parse(localStorage.getItem(k)); return r!==null?r:d;}catch(e){return d;}}
+function sv(k,v){localStorage.setItem(k,JSON.stringify(v));}
+
+// Prefill & Migration
 (function(){
-  if(!localStorage.getItem('mhb2_entries_prefilled')){
-    localStorage.setItem('mhb2_entries', JSON.stringify([{"cat": "Otto", "type": "inc", "amount": 3077.07, "month": 0, "year": 2026, "note": "", "ts": 1700000000000}, {"cat": "Otto", "type": "inc", "amount": 3124.87, "month": 1, "year": 2026, "note": "", "ts": 1700000000001}, {"cat": "Otto", "type": "inc", "amount": 3133.33, "month": 2, "year": 2026, "note": "", "ts": 1700000000002}, {"cat": "Matchbetting", "type": "inc", "amount": 333.34, "month": 0, "year": 2026, "note": "", "ts": 1700000000003}, {"cat": "Matchbetting", "type": "inc", "amount": 163.98, "month": 1, "year": 2026, "note": "", "ts": 1700000000004}, {"cat": "Matchbetting", "type": "inc", "amount": 261.0, "month": 2, "year": 2026, "note": "", "ts": 1700000000005}, {"cat": "Xe Om", "type": "inc", "amount": 498.5, "month": 0, "year": 2026, "note": "", "ts": 1700000000006}, {"cat": "Xe Om", "type": "inc", "amount": 999.0, "month": 1, "year": 2026, "note": "", "ts": 1700000000007}, {"cat": "Xe Om", "type": "inc", "amount": 1210.0, "month": 2, "year": 2026, "note": "", "ts": 1700000000008}, {"cat": "Xe Om", "type": "inc", "amount": 550.0, "month": 3, "year": 2026, "note": "", "ts": 1700000000009}, {"cat": "Kleinanzeigen", "type": "inc", "amount": 240.2, "month": 0, "year": 2026, "note": "", "ts": 1700000000010}, {"cat": "Kleinanzeigen", "type": "inc", "amount": 180.0, "month": 1, "year": 2026, "note": "", "ts": 1700000000011}, {"cat": "Kleinanzeigen", "type": "inc", "amount": 432.5, "month": 2, "year": 2026, "note": "", "ts": 1700000000012}, {"cat": "Vermietung", "type": "inc", "amount": 165.0, "month": 0, "year": 2026, "note": "", "ts": 1700000000013}, {"cat": "Vermietung", "type": "inc", "amount": 575.0, "month": 1, "year": 2026, "note": "", "ts": 1700000000014}, {"cat": "Zinsen/Dividenden", "type": "inc", "amount": 93.01, "month": 0, "year": 2026, "note": "", "ts": 1700000000015}, {"cat": "Zinsen/Dividenden", "type": "inc", "amount": 32.95, "month": 1, "year": 2026, "note": "", "ts": 1700000000016}, {"cat": "FEWO", "type": "inc", "amount": 393.0, "month": 0, "year": 2026, "note": "", "ts": 1700000000017}, {"cat": "FEWO", "type": "inc", "amount": 190.82, "month": 1, "year": 2026, "note": "", "ts": 1700000000018}, {"cat": "FEWO", "type": "inc", "amount": 914.89, "month": 2, "year": 2026, "note": "", "ts": 1700000000019}, {"cat": "Restaurant", "type": "exp", "amount": 28.9, "month": 1, "year": 2026, "note": "Kantine", "ts": 1700000000020}, {"cat": "Shopping", "type": "exp", "amount": 10.0, "month": 0, "year": 2026, "note": "", "ts": 1700000000021}]));
+  let entries = load('mhb2_entries', null);
+  
+  // Wenn gar keine Daten da sind (erster Start):
+  if(!entries){
+    entries = [{"cat": "Otto", "type": "inc", "amount": 3077.07, "month": 0, "year": 2026, "note": "", "ts": 1700000000000}, {"cat": "Otto", "type": "inc", "amount": 3124.87, "month": 1, "year": 2026, "note": "", "ts": 1700000000001}, {"cat": "Otto", "type": "inc", "amount": 3133.33, "month": 2, "year": 2026, "note": "", "ts": 1700000000002}, {"cat": "Matchbetting", "type": "inc", "amount": 333.34, "month": 0, "year": 2026, "note": "", "ts": 1700000000003}, {"cat": "Matchbetting", "type": "inc", "amount": 163.98, "month": 1, "year": 2026, "note": "", "ts": 1700000000004}, {"cat": "Matchbetting", "type": "inc", "amount": 261.0, "month": 2, "year": 2026, "note": "", "ts": 1700000000005}, {"cat": "Xe Om", "type": "inc", "amount": 498.5, "month": 0, "year": 2026, "note": "", "ts": 1700000000006}, {"cat": "Xe Om", "type": "inc", "amount": 999.0, "month": 1, "year": 2026, "note": "", "ts": 1700000000007}, {"cat": "Xe Om", "type": "inc", "amount": 1210.0, "month": 2, "year": 2026, "note": "", "ts": 1700000000008}, {"cat": "Xe Om", "type": "inc", "amount": 550.0, "month": 3, "year": 2026, "note": "", "ts": 1700000000009}, {"cat": "Kleinanzeigen", "type": "inc", "amount": 240.2, "month": 0, "year": 2026, "note": "", "ts": 1700000000010}, {"cat": "Kleinanzeigen", "type": "inc", "amount": 180.0, "month": 1, "year": 2026, "note": "", "ts": 1700000000011}, {"cat": "Kleinanzeigen", "type": "inc", "amount": 432.5, "month": 2, "year": 2026, "note": "", "ts": 1700000000012}, {"cat": "Vermietung", "type": "inc", "amount": 165.0, "month": 0, "year": 2026, "note": "", "ts": 1700000000013}, {"cat": "Vermietung", "type": "inc", "amount": 575.0, "month": 1, "year": 2026, "note": "", "ts": 1700000000014}, {"cat": "Dividenden", "type": "inc", "amount": 93.01, "month": 0, "year": 2026, "note": "", "ts": 1700000000015}, {"cat": "Dividenden", "type": "inc", "amount": 32.95, "month": 1, "year": 2026, "note": "", "ts": 1700000000016}, {"cat": "FEWO", "type": "inc", "amount": 393.0, "month": 0, "year": 2026, "note": "", "ts": 1700000000017}, {"cat": "FEWO", "type": "inc", "amount": 190.82, "month": 1, "year": 2026, "note": "", "ts": 1700000000018}, {"cat": "FEWO", "type": "inc", "amount": 914.89, "month": 2, "year": 2026, "note": "", "ts": 1700000000019}, {"cat": "Restaurant", "type": "exp", "amount": 28.9, "month": 1, "year": 2026, "note": "Kantine", "ts": 1700000000020}, {"cat": "Shopping", "type": "exp", "amount": 10.0, "month": 0, "year": 2026, "note": "", "ts": 1700000000021}];
     localStorage.setItem('mhb2_accounts', JSON.stringify([{"id": 1, "name": "C24", "balance": 2250.57, "grp": "bank"}, {"id": 2, "name": "BBVA", "balance": 6855.0, "grp": "bank"}, {"id": 3, "name": "Bargeld", "balance": 300.0, "grp": "bank"}, {"id": 4, "name": "Aktien (Scalable)", "balance": 95258.0, "grp": "invest"}, {"id": 5, "name": "Zero", "balance": 122.16, "grp": "invest"}, {"id": 6, "name": "Trade Republic", "balance": 4130.0, "grp": "invest"}, {"id": 7, "name": "Coinbase", "balance": 9683.0, "grp": "invest"}, {"id": 8, "name": "Quirion", "balance": 930.0, "grp": "invest"}, {"id": 9, "name": "Pionex", "balance": 989.0, "grp": "invest"}, {"id": 10, "name": "Paypal", "balance": 150.0, "grp": "other"}, {"id": 11, "name": "Paypal 2", "balance": 312.0, "grp": "other"}, {"id": 12, "name": "black (Karte)", "balance": 1369.0, "grp": "bank"}, {"id": 13, "name": "sharp", "balance": 80.73, "grp": "bank"}, {"id": 14, "name": "Yoroi", "balance": 620.0, "grp": "invest"}, {"id": 15, "name": "Mexc", "balance": 110.0, "grp": "wett"}, {"id": 16, "name": "Jeton", "balance": 338.7, "grp": "wett"}, {"id": 17, "name": "Paysafe", "balance": 1.29, "grp": "wett"}, {"id": 18, "name": "Revolut", "balance": 17.0, "grp": "bank"}, {"id": 19, "name": "Skrill 3", "balance": 2.86, "grp": "wett"}]));
     localStorage.setItem('mhb2_recurring', JSON.stringify({"miete-naumann": {"label": "Miete Naumannplatz", "amount": 285.79, "active": true}, "miete-josephstr": {"label": "Miete Josephstr.", "amount": 664.0, "active": true}, "miete-kornpfort": {"label": "Kornpfortstr. 12a", "amount": 702.0, "active": true}, "gez": {"label": "Rundfunk (GEZ)", "amount": 55.08, "active": false}, "unterhalt": {"label": "Unterhalt", "amount": 500.0, "active": true}, "sparplaene": {"label": "Sparpl\u00e4ne (ETF)", "amount": 1100.0, "active": true}, "gemeinschaftskonto": {"label": "Gemeinschaftskonto", "amount": 350.0, "active": true}, "lotto": {"label": "Lotto", "amount": 0, "active": false}, "mobilfunk": {"label": "Mobilfunk (Freenet)", "amount": 19.99, "active": true}, "smartphone": {"label": "Finanzierung Smartphone", "amount": 84.0, "active": true}, "betriebssport": {"label": "Betriebssport", "amount": 3.5, "active": true}, "zahnzusatz": {"label": "Zahnzusatz (Bavaria)", "amount": 12.87, "active": true}, "hausrat": {"label": "Hausrat (Docura)", "amount": 49.6, "active": false}}));
-    localStorage.setItem('mhb2_entries_prefilled','1');
+  } else {
+    // Migration: Alten Namen umbenennen, damit sie in der neuen Logik auftauchen
+    entries.forEach(e => {
+      if(e.cat === 'Zinsen/Dividenden' || e.cat === 'Tagesgeld & Dividenden') e.cat = 'Dividenden';
+    });
   }
+  sv('mhb2_entries', entries);
 })();
-</script>
-<script>
+
 const MONTHS=['Januar','Februar','März','April','Mai','Juni','Juli','August','September','Oktober','November','Dezember'];
 const TODAY=new Date(), CUR_M=TODAY.getMonth(), CUR_Y=TODAY.getFullYear();
 function fmt(n){return(n||0).toLocaleString('de-DE',{minimumFractionDigits:2,maximumFractionDigits:2})+' €';}
-function load(k,d){try{return JSON.parse(localStorage.getItem(k))||d;}catch{return d;}}
-function sv(k,v){localStorage.setItem(k,JSON.stringify(v));}
-let entries=load('mhb2_entries',[]);
-let accounts=load('mhb2_accounts',[]);
-let recurring=load('mhb2_recurring',{});
+
+// Initiale Daten laden
+let entries = load('mhb2_entries', []);
+let accounts = load('mhb2_accounts', []);
+let recurring = load('mhb2_recurring', {});
+let customQsCats = load('mhb2_custom_qscats', ['🛒 Supermarkt', '⛽ Tanken', '🍽️ Restaurant', '🛍️ Shopping', '🤝 Auslagen Gemeinsam', '📦 Sonstiges']);
+
+// Einnahme Kategorien (Jetzt ist ALLES dynamisch!)
+let customIncCats = load('mhb2_custom_inccats', null);
+if(!customIncCats) {
+  customIncCats = ['Otto', 'Xe Om', 'Dividenden', 'Tagesgeld', 'Matchbetting', 'Kleinanzeigen', 'Vermietung', 'FEWO', 'Cashback'];
+  sv('mhb2_custom_inccats', customIncCats);
+} else {
+  // Sicherheits-Check falls durch das Update jemandem Standard-Einnahmen fehlen
+  if(!customIncCats.includes('Otto')) customIncCats.unshift('Otto');
+  if(!customIncCats.includes('Xe Om')) customIncCats.unshift('Xe Om');
+  if(!customIncCats.includes('Dividenden')) customIncCats.push('Dividenden');
+  if(!customIncCats.includes('Tagesgeld')) customIncCats.push('Tagesgeld');
+  if(!customIncCats.includes('Cashback')) customIncCats.push('Cashback');
+  sv('mhb2_custom_inccats', customIncCats);
+}
 
 const CATS={
   wohnen:[{id:'miete-naumann',label:'Miete Naumannplatz'},{id:'miete-josephstr',label:'Miete Josephstr.'},{id:'miete-kornpfort',label:'Kornpfortstr. 12a'},{id:'gez',label:'Rundfunk (GEZ)'}],
@@ -329,6 +296,13 @@ const CATS={
   freizeit:[{id:'lebensmittel',label:'Lebensmittel'},{id:'shopping',label:'Shopping'},{id:'restaurant',label:'Restaurants'}],
   versicherungen:[{id:'zahnzusatz',label:'Zahnzusatz (Bavaria)'},{id:'hausrat',label:'Hausrat (Docura)'},{id:'haftpflicht',label:'Haftpflicht (GEVK)'},{id:'kfz-peugeot',label:'Autovers. BavariaDirekt (Peugeot)'},{id:'kfz-bmw',label:'Autovers. DEVK (BMW)'}]
 };
+
+const STANDARD_CATS = ['🛒 Supermarkt', '⛽ Tanken', '🍽️ Restaurant', '🛍️ Shopping', '🤝 Auslagen Gemeinsam', '📦 Sonstiges'];
+
+// Modal Hintergrund-Klick zum Schließen
+document.getElementById('rec-modal').addEventListener('click', function() {
+  closeRecModal();
+});
 
 // TAB LOGIC
 function topTab(id,el){
@@ -350,8 +324,129 @@ function fillMs(id,def){
   el.innerHTML=MONTHS.map((m,i)=>`<option value="${i}"${i===(def!=null?def:CUR_M)?' selected':''}>${m}</option>`).join('');
 }
 
+// ----- DYNAMIC AUSGABEN (SCHNELLEINGABE) -----
+function renderQsCategories() {
+  const sel = document.getElementById('qs-cat');
+  if(!sel) return;
+  sel.innerHTML = customQsCats.map(c => `<option value="${c.replace(/[^a-zA-Z0-9 äöüÄÖÜß-]/g, '').trim()}">${c}</option>`).join('');
+}
+
+function addCustomCategory() {
+  const newCat = prompt('Name der neuen Kategorie (z.B. "🎮 Spiele"):');
+  if(newCat && newCat.trim() !== '') {
+    customQsCats.push(newCat.trim());
+    sv('mhb2_custom_qscats', customQsCats);
+    renderQsCategories();
+    document.getElementById('qs-cat').selectedIndex = customQsCats.length - 1; 
+    showToast('✅ Kategorie hinzugefügt');
+    refreshAll();
+  }
+}
+
+function manageCustomCategories() {
+  const selectElement = document.getElementById('qs-cat');
+  if(!selectElement) return;
+  const catVal = selectElement.value;
+  const catFull = customQsCats[selectElement.selectedIndex];
+
+  if(STANDARD_CATS.includes(catFull)) {
+    alert('Die Standard-Kategorien können nicht gelöscht oder umbenannt werden.');
+    return;
+  }
+
+  const action = prompt(`Was möchtest du mit "${catFull}" tun?\n\n1 = Umbenennen\n2 = Löschen`, "1");
+  
+  if (action === "1") {
+    const newName = prompt('Neuer Name:', catFull);
+    if(newName && newName.trim() !== '') {
+      const cleanOld = catFull.replace(/[^a-zA-Z0-9 äöüÄÖÜß-]/g, '').trim();
+      const cleanNew = newName.replace(/[^a-zA-Z0-9 äöüÄÖÜß-]/g, '').trim();
+      
+      customQsCats[selectElement.selectedIndex] = newName.trim();
+      sv('mhb2_custom_qscats', customQsCats);
+      
+      entries.forEach(e => { if(e.cat === cleanOld) e.cat = cleanNew; });
+      sv('mhb2_entries', entries);
+      
+      renderQsCategories();
+      refreshAll();
+      showToast('✅ Kategorie umbenannt');
+    }
+  } else if (action === "2") {
+    if(confirm(`Kategorie "${catFull}" wirklich löschen?\n\n(Bisherige Buchungen dieser Kategorie bleiben erhalten.)`)) {
+      customQsCats.splice(selectElement.selectedIndex, 1);
+      sv('mhb2_custom_qscats', customQsCats);
+      renderQsCategories();
+      refreshAll();
+      showToast('✅ Kategorie gelöscht');
+    }
+  }
+}
+
+// ----- DYNAMIC EINNAHMEN -----
+function renderIncCards() {
+  const container = document.getElementById('dynamic-inc-cards');
+  if(!container) return;
+  let html = '';
+  customIncCats.forEach((cat, i) => {
+    html += `
+    <div class="card">
+      <div class="card-title" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+        <span>📂 ${cat}</span>
+        <button class="btn-sm" style="background:transparent; padding:0; font-size:16px;" onclick="manageIncCat(${i})" title="Kategorie verwalten">⚙️</button>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px">
+        <input id="dyn-inc-${i}-a" type="number" step="0.01" placeholder="Betrag (€)"/>
+        <select id="dyn-inc-${i}-m"></select>
+      </div>
+    </div>`;
+  });
+  container.innerHTML = html;
+  customIncCats.forEach((_, i) => fillMs(`dyn-inc-${i}-m`));
+}
+
+function addIncCat() {
+  const newCat = prompt('Name der neuen Einnahmequelle (z.B. "Ebay"):');
+  if(newCat && newCat.trim() !== '') {
+    customIncCats.push(newCat.trim());
+    sv('mhb2_custom_inccats', customIncCats);
+    renderIncCards();
+    refreshAll();
+    showToast('✅ Einnahmequelle hinzugefügt');
+  }
+}
+
+function manageIncCat(index) {
+  const oldCat = customIncCats[index];
+  const action = prompt(`Was möchtest du mit "${oldCat}" tun?\n\n1 = Umbenennen\n2 = Löschen`, "1");
+  
+  if (action === "1") {
+    const newName = prompt('Neuer Name:', oldCat);
+    if(newName && newName.trim() !== '') {
+      customIncCats[index] = newName.trim();
+      sv('mhb2_custom_inccats', customIncCats);
+      entries.forEach(e => {
+        if(e.cat === oldCat && e.type === 'inc') e.cat = newName.trim();
+      });
+      sv('mhb2_entries', entries);
+      renderIncCards();
+      refreshAll();
+      showToast('✅ Umbenannt');
+    }
+  } else if (action === "2") {
+    if(confirm(`Einnahmequelle "${oldCat}" wirklich löschen?\n\n(Bisherige Buchungen bleiben im Hintergrund erhalten.)`)) {
+      customIncCats.splice(index, 1);
+      sv('mhb2_custom_inccats', customIncCats);
+      renderIncCards();
+      refreshAll();
+      showToast('✅ Gelöscht');
+    }
+  }
+}
+
 function buildRecSection(bodyId, cats){
   const body=document.getElementById(bodyId);
+  if(!body) return;
   body.innerHTML=cats.map(c=>{
     const r=recurring[c.id]||{};
     return `<div class="rec-label">${c.label}</div>
@@ -381,52 +476,37 @@ function togRec(id){
   sv('mhb2_recurring',recurring);refreshDash();
 }
 
-// SAVE HELPERS
-function saveSimple(cat,aid,mid,type){
-  const a=parseFloat(document.getElementById(aid).value);
-  if(!a||a<=0){showToast('❌ Betrag eingeben');return;}
-  const m=parseInt(document.getElementById(mid).value);
-  entries.unshift({cat,type,amount:a,month:m,year:CUR_Y,ts:Date.now()});
-  sv('mhb2_entries',entries);
-  document.getElementById(aid).value='';
-  refreshAll();showToast('✅ '+cat+' gespeichert');
+// SAVE ALL EINNAHMEN
+function saveAllEinnahmen() {
+  let count = 0;
+
+  try {
+    // Alle Einnahmen laufen jetzt über das dynamische System!
+    customIncCats.forEach((cat, i) => {
+      const el = document.getElementById(`dyn-inc-${i}-a`);
+      if(el && el.value) {
+        const val = parseFloat(el.value);
+        if(val > 0) {
+          const m = parseInt(document.getElementById(`dyn-inc-${i}-m`).value);
+          entries.unshift({cat: cat, type:'inc', amount:val, month:m, year:CUR_Y, ts:Date.now()});
+          el.value = '';
+          count++;
+        }
+      }
+    });
+
+    if(count > 0) {
+      sv('mhb2_entries',entries);
+      refreshAll();
+      showToast('✅ ' + count + ' Buchung(en) gespeichert');
+    } else {
+      showToast('❌ Keine Beträge eingegeben');
+    }
+  } catch(e) {
+    alert("Ein Fehler ist aufgetreten: " + e.message);
+  }
 }
-function saveOtto(){
-  const g=parseFloat(document.getElementById('otto-g').value)||0;
-  const k=parseFloat(document.getElementById('otto-k').value)||0;
-  const gm=parseInt(document.getElementById('otto-gm').value);
-  const km=parseInt(document.getElementById('otto-km').value);
-  if(g>0) entries.unshift({cat:'Otto',type:'inc',amount:g,month:gm,year:CUR_Y,ts:Date.now()});
-  if(k>0) entries.unshift({cat:'Restaurant',type:'exp',amount:k,month:km,year:CUR_Y,note:'Kantine',ts:Date.now()});
-  sv('mhb2_entries',entries);
-  document.getElementById('otto-g').value='';document.getElementById('otto-k').value='';
-  refreshAll();showToast('✅ Otto gespeichert');
-}
-function saveXeOm(){
-  const a=parseFloat(document.getElementById('xeom-a').value)||0;
-  if(!a){showToast('❌ Betrag eingeben');return;}
-  const d=new Date(document.getElementById('xeom-d').value||TODAY);
-  entries.unshift({cat:'Xe Om',type:'inc',amount:a,month:d.getMonth(),year:d.getFullYear(),note:document.getElementById('xeom-d').value,ts:Date.now()});
-  sv('mhb2_entries',entries);document.getElementById('xeom-a').value='';
-  refreshAll();showToast('✅ Xe Om gespeichert');
-}
-function saveZinsen(){
-  const a=parseFloat(document.getElementById('zins-a').value)||0;
-  if(!a){showToast('❌ Betrag eingeben');return;}
-  const m=parseInt(document.getElementById('zins-m').value);
-  const konto=document.getElementById('zins-konto').options[document.getElementById('zins-konto').selectedIndex]?.text||'';
-  entries.unshift({cat:'Zinsen/Dividenden',type:'inc',amount:a,month:m,year:CUR_Y,note:konto,ts:Date.now()});
-  sv('mhb2_entries',entries);document.getElementById('zins-a').value='';
-  refreshAll();showToast('✅ Zinsen gespeichert');
-}
-function saveCashback(){
-  const a=parseFloat(document.getElementById('cb-a').value)||0;
-  if(!a){showToast('❌ Betrag eingeben');return;}
-  const m=parseInt(document.getElementById('cb-m').value);
-  entries.unshift({cat:'Cashback',type:'inc',amount:a,month:m,year:CUR_Y,note:document.getElementById('cb-q').value,ts:Date.now()});
-  sv('mhb2_entries',entries);document.getElementById('cb-a').value='';document.getElementById('cb-q').value='';
-  refreshAll();showToast('✅ Cashback gespeichert');
-}
+
 function quickSave(){
   const a=parseFloat(document.getElementById('qs-amt').value);
   if(!a||a<=0){showToast('❌ Betrag eingeben');return;}
@@ -463,18 +543,33 @@ function delEntry(idx){
   entries.splice(idx,1);sv('mhb2_entries',entries);refreshAll();
 }
 
-// TOTALS
-function recTotal(type){
-  return Object.values(recurring).filter(r=>r.active&&r.type==='exp'||(!r.type&&type==='exp')).reduce((s,r)=>s+(r.amount||0),0);
+// RECURRING GETTER (MIT OVERRIDES)
+function getRecVal(id, m) {
+  const r = recurring[id];
+  if (!r || !r.active) return 0;
+  if (r.overrides && r.overrides[m] !== undefined) return r.overrides[m];
+  return r.amount || 0;
 }
+
+// TOTALS
 function yearTot(type){
   const e=entries.filter(x=>x.year===CUR_Y&&x.type===type).reduce((s,x)=>s+(x.amount||0),0);
-  if(type==='exp'){const rm=Object.values(recurring).filter(r=>r.active).reduce((s,r)=>s+(r.amount||0),0);return e+rm*(CUR_M+1);}
+  if(type==='exp'){
+    let rm = 0;
+    Object.keys(recurring).forEach(id => {
+      for(let m=0; m<=CUR_M; m++) { rm += getRecVal(id, m); }
+    });
+    return e+rm;
+  }
   return e;
 }
 function monthTot(type,m){
   const e=entries.filter(x=>x.year===CUR_Y&&x.month===m&&x.type===type).reduce((s,x)=>s+(x.amount||0),0);
-  if(type==='exp'){const rm=Object.values(recurring).filter(r=>r.active).reduce((s,r)=>s+(r.amount||0),0);return e+rm;}
+  if(type==='exp'){
+    let rm = 0;
+    Object.keys(recurring).forEach(id => { rm += getRecVal(id, m); });
+    return e+rm;
+  }
   return e;
 }
 function setCol(id,v){const el=document.getElementById(id);if(el){el.className='dk-val '+(v>=0?'green':'red');el.textContent=fmt(v);}}
@@ -506,8 +601,6 @@ function refreshKonten(){
     });
   });
   document.getElementById('konten-list').innerHTML=html||'<div style="color:#555;font-size:13px">Noch keine Konten.</div>';
-  // fill konto select for zinsen
-  // zins-konto is statically defined
 }
 
 function refreshUebersicht(){
@@ -517,144 +610,255 @@ function refreshUebersicht(){
   document.getElementById('ueb-einnahmen').innerHTML=Object.keys(incCats).length
     ?Object.keys(incCats).map(c=>`<div class="row-item"><span class="row-label">${c}</span><span class="row-val green">${fmt(incCats[c])}</span></div>`).join('')
     :'<div style="color:#555;font-size:13px">Noch keine Einnahmen.</div>';
-  // Ausgaben grouped
+  
+  // Ausgaben grouped (inkl. Overrides)
   const expCats={};
   entries.filter(e=>e.year===CUR_Y&&e.type==='exp').forEach(e=>{expCats[e.cat]=(expCats[e.cat]||0)+e.amount;});
-  Object.values(recurring).filter(r=>r.active).forEach(r=>{expCats[r.id]=(expCats[r.id]||0)+r.amount*(CUR_M+1);});
+  Object.keys(recurring).forEach(id => {
+    const r = recurring[id];
+    if(r && r.active) {
+      let sum = 0;
+      for(let m=0; m<=CUR_M; m++) sum += getRecVal(id, m);
+      if(sum > 0) expCats[r.label || id] = (expCats[r.label || id]||0) + sum;
+    }
+  });
   document.getElementById('ueb-ausgaben').innerHTML=Object.keys(expCats).length
     ?Object.keys(expCats).map(c=>`<div class="row-item"><span class="row-label">${c}</span><span class="row-val red">${fmt(expCats[c])}</span></div>`).join('')
     :'<div style="color:#555;font-size:13px">Noch keine Ausgaben.</div>';
+  
   // Buchungen
   const sorted=[...entries].sort((a,b)=>b.ts-a.ts);
-  document.getElementById('ueb-buchungen').innerHTML=sorted.slice(0,40).map((e,i)=>`<div class="row-item"><div><div class="row-label">${e.cat}${e.note?' · '+e.note:''}</div><div class="row-sub">${MONTHS[e.month]} ${e.year}</div></div><div style="display:flex;align-items:center;gap:8px"><span class="row-val ${e.type==='inc'?'green':'red'}">${e.type==='inc'?'+':'-'}${fmt(e.amount)}</span><button class="btn-sm" style="color:#f44336" onclick="delEntry(${entries.indexOf(e)})">✕</button></div></div>`).join('')||'<div style="color:#555;font-size:13px">Noch keine Buchungen.</div>';
+  document.getElementById('ueb-buchungen').innerHTML=sorted.slice(0,40).map((e,i)=>`
+    <div class="row-item">
+      <div><div class="row-label">${e.cat}${e.note?' · '+e.note:''}</div><div class="row-sub">${MONTHS[e.month]} ${e.year}</div></div>
+      <div style="display:flex;align-items:center;gap:6px">
+        <span class="row-val ${e.type==='inc'?'green':'red'}" style="margin-right:6px;">${e.type==='inc'?'+':'-'}${fmt(e.amount)}</span>
+        <button class="btn-sm" onclick="editEntry(${entries.indexOf(e)})" title="Bearbeiten">✏️</button>
+        <button class="btn-sm" style="color:#f44336" onclick="delEntry(${entries.indexOf(e)})" title="Löschen">✕</button>
+      </div>
+    </div>`).join('')||'<div style="color:#555;font-size:13px">Noch keine Buchungen.</div>';
 }
 
 function showToast(msg){
   const t=document.getElementById('toast');
+  if(!t) return;
   t.textContent=msg;t.style.opacity='1';
   clearTimeout(t._t);t._t=setTimeout(()=>t.style.opacity='0',2200);
 }
 
 
-
 function renderTabelle(){
   const MONTHS_SHORT=['Jan','Feb','Mär','Apr','Mai','Jun','Jul','Aug','Sep','Okt','Nov','Dez'];
-  const allCatInc=['Otto','Matchbetting','Xe Om','Kleinanzeigen','Cashback','Vermietung','Zinsen/Dividenden','FEWO'];
-  const recExpMap={
-    'Miete Naumannplatz':'miete-naumann','Miete Josephstr.':'miete-josephstr',
-    'Kornpfortstr. 12a':'miete-kornpfort','Rundfunk (GEZ)':'gez',
-    'Unterhalt':'unterhalt','Gemeinschaftskonto':'gemeinschaftskonto',
-    'Zahnzusatz (Bavaria)':'zahnzusatz','Hausrat (Docura)':'hausrat',
-    'Sparpläne (ETF)':'sparplaene','Mobilfunk (Freenet)':'mobilfunk',
-    'Deutschlandticket':'deutschlandticket','Finanzierung Smartphone':'smartphone',
-    'Betriebssport':'betriebssport'
-  };
-  const allCatExp=[
-    {label:'Miete Naumannplatz',type:'rec',id:'miete-naumann'},
-    {label:'Miete Josephstr.',type:'rec',id:'miete-josephstr'},
-    {label:'Kornpfortstr. 12a',type:'rec',id:'miete-kornpfort'},
-    {label:'Rundfunk (GEZ)',type:'rec',id:'gez'},
-    {label:'Unterhalt',type:'rec',id:'unterhalt'},
-    {label:'Lebensmittel',type:'entry',cats:['Lebensmittel']},
-    {label:'Shopping',type:'entry',cats:['Shopping']},
-    {label:'Restaurant',type:'entry',cats:['Restaurant']},
-    {label:'Gemeinschaftskonto',type:'rec',id:'gemeinschaftskonto'},
-    {label:'Zahnzusatz (Bavaria)',type:'rec',id:'zahnzusatz'},
-    {label:'Hausrat (Docura)',type:'rec',id:'hausrat'},
-    {label:'Sparpläne (ETF)',type:'rec',id:'sparplaene'},
-    {label:'Mobilfunk (Freenet)',type:'rec',id:'mobilfunk'},
-    {label:'Deutschlandticket',type:'rec',id:'deutschlandticket'},
-    {label:'Finanzierung Smartphone',type:'rec',id:'smartphone'},
-    {label:'Betriebssport',type:'rec',id:'betriebssport'},
+  const showOnlyCurrentMonth = document.getElementById('tbl-only-current')?.checked;
+  const visMonths = showOnlyCurrentMonth ? [CUR_M] : [...Array(12).keys()];
+
+  // Dynamische Ausgaben Kategorien in die Sonstiges Gruppe laden
+  const customEntries = customQsCats
+    .map(c => c.replace(/[^a-zA-Z0-9 äöüÄÖÜß-]/g, '').trim())
+    .filter(c => !['Supermarkt', 'Tanken', 'Restaurant', 'Shopping', 'Auslagen Gemeinsam', 'Sonstiges'].includes(c));
+
+  const EXP_GROUPS=[
+    {id:'wohnen', label:'🏠 Wohnen', open:true, rows:[
+      {label:'Miete Naumannplatz',type:'rec',id:'miete-naumann'},
+      {label:'Miete Josephstr.',type:'rec',id:'miete-josephstr'},
+      {label:'Kornpfortstr. 12a',type:'rec',id:'miete-kornpfort'},
+      {label:'Rundfunk (GEZ)',type:'rec',id:'gez'},
+    ]},
+    {id:'sonstiges', label:'📦 Sonstiges', open:true, rows:[
+      {label:'Unterhalt',type:'rec',id:'unterhalt'},
+      {label:'Lebensmittel',type:'entry',cats:['Lebensmittel', 'Supermarkt']},
+      {label:'Shopping',type:'entry',cats:['Shopping']},
+      {label:'Restaurant',type:'entry',cats:['Restaurant']},
+      {label:'Gemeinschaftskonto',type:'rec',id:'gemeinschaftskonto'},
+      {label:'Auslagen Gemeinsam',type:'entry',cats:['Auslagen Gemeinsam']},
+      {label:'Finanzierung Smartphone',type:'rec',id:'smartphone'},
+      {label:'Betriebssport',type:'rec',id:'betriebssport'},
+      {label:'Sparpläne (ETF)',type:'rec',id:'sparplaene'},
+      {label:'Glückspiel',type:'entry',cats:['Matchbetting','Lotto']},
+      ...customEntries.map(c => ({label: c, type:'entry', cats:[c]}))
+    ]},
+    {id:'versicherungen', label:'🛡️ Versicherungen', open:true, rows:[
+      {label:'Zahnzusatz (Bavaria)',type:'rec',id:'zahnzusatz'},
+      {label:'Hausrat (Docura)',type:'rec',id:'hausrat'},
+      {label:'KFZ Steuer',type:'rec',id:'kfz-steuer'},
+      {label:'KFZ Versicherung (BMW)',type:'rec',id:'kfz-bmw'},
+      {label:'KFZ Versicherung (Peugeot)',type:'rec',id:'kfz-peugeot'},
+    ]},
+    {id:'mobilitaet', label:'🚗 Mobilität', open:true, rows:[
+      {label:'Deutschlandticket',type:'rec',id:'deutschlandticket'},
+      {label:'Tanken',type:'entry',cats:['Tanken']},
+      {label:'Mobilfunk (Freenet)',type:'rec',id:'mobilfunk'},
+    ]},
   ];
+
+  if(!window.tblGroupState) window.tblGroupState={};
+  EXP_GROUPS.forEach(g=>{ if(window.tblGroupState[g.id]===undefined) window.tblGroupState[g.id]=true; g.open=window.tblGroupState[g.id]; });
+
+  const ALL_INC_CATS = [...customIncCats];
 
   function getInc(cat,m){return entries.filter(e=>e.year===CUR_Y&&e.month===m&&e.type==='inc'&&e.cat===cat);}
   function getExpEntry(cats,m){return entries.filter(e=>e.year===CUR_Y&&e.month===m&&e.type==='exp'&&cats.includes(e.cat));}
-  function getRecVal(id,m){const r=recurring[id];return(r&&r.active)?(r.amount||0):0;}
   function sumArr(arr){return arr.reduce((s,e)=>s+(e.amount||0),0);}
-  function fmtV(v){if(!v||v===0)return'<span style="color:#333">–</span>';return`<span class="${v>=0?'pos':'neg'}">${v.toLocaleString('de-DE',{minimumFractionDigits:2,maximumFractionDigits:2})}</span>`;}
-  function fmtT(v){return`<span class="${v>=0?'pos':'neg'}" style="font-weight:700">${v.toLocaleString('de-DE',{minimumFractionDigits:2,maximumFractionDigits:2})} €</span>`;}
+  function fmtT(v, colorClass){
+    const cls = colorClass || (v>=0?'pos':'neg');
+    return `<span class="${cls}" style="font-weight:700">${v.toLocaleString('de-DE',{minimumFractionDigits:2,maximumFractionDigits:2})} €</span>`;
+  }
 
-  let tbl='<table class="tbl"><thead><tr><th style="min-width:160px">Kategorie</th>';
-  MONTHS_SHORT.forEach(m=>tbl+=`<th style="min-width:70px">${m}</th>`);
-  tbl+='<th style="min-width:90px">Gesamt</th><th></th></tr></thead><tbody>';
+  let tbl='<table class="tbl"><thead><tr><th style="min-width:180px">Kategorie</th>';
+  visMonths.forEach(m=>tbl+=`<th style="min-width:72px">${MONTHS_SHORT[m]}</th>`);
+  tbl+='<th style="min-width:90px">Gesamt</th><th style="min-width:60px"></th></tr></thead><tbody>';
 
-  // EINNAHMEN HEADER
-  tbl+='<tr class="sec-row"><td>📥 EINNAHMEN</td>'+'<td></td>'.repeat(13)+'<td></td></tr>';
+  // EINNAHMEN
+  tbl+='<tr class="sec-row"><td>📥 EINNAHMEN</td>'+'<td></td>'.repeat(visMonths.length+1)+'<td></td></tr>';
   let totalIncRow=Array(12).fill(0);
-  allCatInc.forEach(cat=>{
+  ALL_INC_CATS.forEach(cat=>{
     let rowTotal=0;
     tbl+=`<tr><td>${cat}</td>`;
-    for(let m=0;m<12;m++){
+    visMonths.forEach(m=>{
       const arr=getInc(cat,m); const v=sumArr(arr); totalIncRow[m]+=v; rowTotal+=v;
-      const eIds=arr.map(e=>entries.indexOf(e));
-      const cellHtml=arr.map(e=>{const idx=entries.indexOf(e);return`<span class="tbl-cell-val" onclick="editEntry(${idx})">${e.amount.toLocaleString('de-DE',{minimumFractionDigits:2})}</span>`;}).join(' ');
-      tbl+=`<td><div style="display:flex;flex-direction:column;gap:2px;align-items:flex-end">${cellHtml||'<span style="color:#333">–</span>'}</div></td>`;
-    }
-    tbl+=`<td>${fmtT(rowTotal)}</td><td><button class="btn-sm" onclick="addEntryModal('${cat}','inc')" title="Eintrag hinzufügen">+</button></td></tr>`;
+      const cells=arr.map(e=>{const idx=entries.indexOf(e);return`<span class="tbl-cell-val pos" onclick="editEntry(${idx})">${e.amount.toLocaleString('de-DE',{minimumFractionDigits:2})}</span>`;}).join(' ');
+      tbl+=`<td><div class="cell-col">${cells||'<span style="color:#333">–</span>'}</div></td>`;
+    });
+    const visTotal=visMonths.reduce((s,m)=>s+sumArr(getInc(cat,m)),0);
+    tbl+=`<td>${fmtT(visTotal, 'pos')}</td><td><button class="btn-sm" onclick="addEntryModal('${cat}','inc')">+</button></td></tr>`;
   });
-  // Inc total
   tbl+='<tr class="total-row"><td>Gesamte Einnahmen</td>';
-  let totalInc=0; totalIncRow.forEach(v=>{totalInc+=v;tbl+=`<td>${fmtT(v)}</td>`;});
-  tbl+=`<td>${fmtT(totalInc)}</td><td></td></tr>`;
+  visMonths.forEach(m=>tbl+=`<td>${fmtT(totalIncRow[m], 'pos')}</td>`);
+  tbl+=`<td>${fmtT(visMonths.reduce((s,m)=>s+totalIncRow[m],0), 'pos')}</td><td></td></tr>`;
 
-  // AUSGABEN HEADER
-  tbl+='<tr class="sec-row"><td>📤 AUSGABEN</td>'+'<td></td>'.repeat(13)+'<td></td></tr>';
+  // AUSGABEN
+  tbl+='<tr class="sec-row"><td>📤 AUSGABEN</td>'+'<td></td>'.repeat(visMonths.length+1)+'<td></td></tr>';
   let totalExpRow=Array(12).fill(0);
-  allCatExp.forEach(row=>{
-    let rowTotal=0;
-    tbl+=`<tr><td style="padding-left:14px">${row.label}</td>`;
-    for(let m=0;m<12;m++){
-      let cellHtml='';
-      if(row.type==='rec'){
-        const v=getRecVal(row.id,m); totalExpRow[m]+=v; rowTotal+=v;
-        if(v>0) cellHtml=`<span class="tbl-cell-val neg" onclick="editRec('${row.id}')">${v.toLocaleString('de-DE',{minimumFractionDigits:2})}</span>`;
-        else cellHtml='<span style="color:#333">–</span>';
-      } else {
-        const arr=getExpEntry(row.cats,m); const v=sumArr(arr); totalExpRow[m]+=v; rowTotal+=v;
-        cellHtml=arr.map(e=>{const idx=entries.indexOf(e);return`<span class="tbl-cell-val neg" onclick="editEntry(${idx})">${e.amount.toLocaleString('de-DE',{minimumFractionDigits:2})}</span>`;}).join(' ')||'<span style="color:#333">–</span>';
+
+  EXP_GROUPS.forEach(grp=>{
+    let grpMonthTotals=Array(12).fill(0);
+    grp.rows.forEach(row=>{
+      for(let m=0;m<12;m++){
+        const v=row.type==='rec'?getRecVal(row.id,m):sumArr(getExpEntry(row.cats,m));
+        grpMonthTotals[m]+=v; totalExpRow[m]+=v;
       }
-      tbl+=`<td><div style="display:flex;flex-direction:column;gap:2px;align-items:flex-end">${cellHtml}</div></td>`;
+    });
+    const grpVisTotal=visMonths.reduce((s,m)=>s+grpMonthTotals[m],0);
+
+    tbl+=`<tr class="grp-hdr" onclick="toggleTblGroup('${grp.id}')" style="cursor:pointer">`;
+    tbl+=`<td style="color:#d4a844;font-weight:700;padding-left:6px">${grp.open?'▾':'▸'} ${grp.label}</td>`;
+    if(!grp.open){
+      visMonths.forEach(m=>tbl+=`<td>${fmtT(grpMonthTotals[m], 'neg')}</td>`);
+      tbl+=`<td>${fmtT(grpVisTotal, 'neg')}</td><td></td></tr>`;
+    } else {
+      visMonths.forEach(()=>tbl+='<td></td>');
+      tbl+=`<td>${fmtT(grpVisTotal, 'neg')}</td><td></td></tr>`;
+
+      grp.rows.forEach(row=>{
+        let rowTotal=0;
+        tbl+=`<tr><td style="padding-left:20px">${row.label}</td>`;
+        visMonths.forEach(m=>{
+          let cellHtml='', v=0;
+          if(row.type==='rec'){
+            v=getRecVal(row.id,m);
+            cellHtml=v>0?`<span class="tbl-cell-val neg" onclick="editRec('${row.id}', ${m})">${v.toLocaleString('de-DE',{minimumFractionDigits:2})}</span>`:'<span style="color:#333">–</span>';
+          } else {
+            const arr=getExpEntry(row.cats,m); v=sumArr(arr);
+            cellHtml=arr.map(e=>{const idx=entries.indexOf(e);return`<span class="tbl-cell-val neg" onclick="editEntry(${idx})">${e.amount.toLocaleString('de-DE',{minimumFractionDigits:2})}</span>`;}).join(' ')||'<span style="color:#333">–</span>';
+          }
+          rowTotal+=v;
+          tbl+=`<td><div class="cell-col">${cellHtml}</div></td>`;
+        });
+        const addBtn=row.type==='rec'
+          ?`<button class="btn-sm" onclick="editRec('${row.id}', null)" title="Betrag ändern">✏️</button>`
+          :`<button class="btn-sm" onclick="addEntryModal('${row.cats[0]}','exp')">+</button>`;
+        tbl+=`<td>${fmtT(visMonths.reduce((s,m)=>s+(row.type==='rec'?getRecVal(row.id,m):sumArr(getExpEntry(row.cats,m))),0), 'neg')}</td><td>${addBtn}</td></tr>`;
+      });
     }
-    const addBtn = row.type==='rec'
-      ? `<button class="btn-sm" onclick="editRec('${row.id}')" title="Betrag ändern">✏️</button>`
-      : `<button class="btn-sm" onclick="addEntryModal('${row.cats[0]}','exp')" title="Eintrag hinzufügen">+</button>`;
-    tbl+=`<td>${fmtT(rowTotal)}</td><td>${addBtn}</td></tr>`;
   });
-  // Exp total
+
   tbl+='<tr class="total-exp"><td>Gesamte Ausgaben</td>';
-  let totalExp=0; totalExpRow.forEach(v=>{totalExp+=v;tbl+=`<td>${fmtT(v)}</td>`;});
-  tbl+=`<td>${fmtT(totalExp)}</td><td></td></tr>`;
+  visMonths.forEach(m=>tbl+=`<td>${fmtT(totalExpRow[m], 'neg')}</td>`);
+  tbl+=`<td>${fmtT(visMonths.reduce((s,m)=>s+totalExpRow[m],0), 'neg')}</td><td></td></tr>`;
 
   // SPAREN
   tbl+='<tr class="spar-row"><td>💰 Sparen</td>';
-  let totalSpar=0;
-  for(let m=0;m<12;m++){const v=totalIncRow[m]-totalExpRow[m];totalSpar+=v;tbl+=`<td>${fmtT(v)}</td>`;}
-  tbl+=`<td>${fmtT(totalSpar)}</td><td></td></tr>`;
+  visMonths.forEach(m=>tbl+=`<td>${fmtT(totalIncRow[m]-totalExpRow[m])}</td>`);
+  tbl+=`<td>${fmtT(visMonths.reduce((s,m)=>s+(totalIncRow[m]-totalExpRow[m]),0))}</td><td></td></tr>`;
   tbl+='</tbody></table>';
   document.getElementById('tabelle-wrap').innerHTML=tbl;
+}
 
-  // attach tbl-cell-val styles via hover if not set
+function toggleTblGroup(id){
+  if(!window.tblGroupState) window.tblGroupState={};
+  window.tblGroupState[id]=!window.tblGroupState[id];
+  renderTabelle();
 }
 
 function editEntry(idx){
   const e=entries[idx];
   if(!e)return;
-  const newAmt=prompt(`Betrag für ${e.cat} (${MONTHS[e.month]}):`, String(e.amount));
+  const newAmt=prompt(`Neuer Betrag für ${e.cat} (${MONTHS[e.month]}):\n(0 oder leer lassen zum Löschen)`, String(e.amount));
   if(newAmt===null)return;
-  if(newAmt===''||newAmt==='0'){if(confirm('Eintrag löschen?')){entries.splice(idx,1);sv('mhb2_entries',entries);refreshAll();return;}}
+  if(newAmt===''||newAmt==='0'){
+    if(confirm('Eintrag wirklich löschen?')){
+      entries.splice(idx,1);sv('mhb2_entries',entries);refreshAll();
+    }
+    return;
+  }
   e.amount=parseFloat(newAmt)||e.amount;
   sv('mhb2_entries',entries);refreshAll();showToast('✅ Gespeichert');
 }
 
-function editRec(id){
-  const r=recurring[id]||{};
-  const newAmt=prompt(`Monatlicher Betrag für "${id}":`, String(r.amount||0));
-  if(newAmt===null)return;
-  recurring[id]=recurring[id]||{};
-  recurring[id].amount=parseFloat(newAmt)||0;
-  recurring[id].active=true;
-  sv('mhb2_recurring',recurring);refreshAll();showToast('✅ Wiederkehrend aktualisiert');
+// --- RECURRING MODAL LOGIC ---
+let activeRecEdit = null;
+
+function editRec(id, month) {
+  const r = recurring[id] || {};
+  activeRecEdit = { id, month };
+
+  let currentVal = r.amount || 0;
+  if (month != null && r.overrides && r.overrides[month] !== undefined) {
+    currentVal = r.overrides[month];
+  }
+
+  document.getElementById('rec-modal-amt').value = currentVal;
+  document.getElementById('rec-modal-desc').textContent = `Wert ändern für: ${r.label || id}` + (month != null ? ` (${MONTHS[month]})` : '');
+  
+  if (month == null) {
+    document.getElementById('btn-rec-only').style.display = 'none';
+    document.getElementById('btn-rec-future').style.display = 'none';
+  } else {
+    document.getElementById('btn-rec-only').style.display = 'block';
+    document.getElementById('btn-rec-future').style.display = 'block';
+  }
+
+  document.getElementById('rec-modal').style.display = 'flex';
+}
+
+function closeRecModal() {
+  document.getElementById('rec-modal').style.display = 'none';
+  activeRecEdit = null;
+}
+
+function saveRecModal(mode) {
+  if (!activeRecEdit) return;
+  const { id, month } = activeRecEdit;
+  const newAmt = parseFloat(document.getElementById('rec-modal-amt').value) || 0; 
+
+  if (!recurring[id]) recurring[id] = {};
+  if (!recurring[id].overrides) recurring[id].overrides = {};
+
+  if (mode === 'all' || month == null) {
+    recurring[id].amount = newAmt;
+    recurring[id].overrides = {}; 
+  } else if (mode === 'only') {
+    recurring[id].overrides[month] = newAmt;
+  } else if (mode === 'future') {
+    for (let m = month; m < 12; m++) {
+      recurring[id].overrides[m] = newAmt;
+    }
+  }
+
+  sv('mhb2_recurring', recurring);
+  closeRecModal();
+  refreshAll();
+  showToast('✅ Dauerauftrag aktualisiert');
 }
 
 function addEntryModal(cat,type){
@@ -673,13 +877,18 @@ function addEntryModal(cat,type){
 function refreshAll(){refreshDash();refreshKonten();refreshUebersicht();renderTabelle();}
 
 function init(){
-  document.getElementById('xeom-d').value=TODAY.toISOString().split('T')[0];
-  ['otto-gm','otto-km','mb-m','kaz-m','verm-m','fewo-m','zins-m','cb-m','qs-monat'].forEach(id=>fillMs(id));
-  buildRecSection('body-wohnen',CATS.wohnen);
-  buildRecSection('body-sonstiges',CATS.sonstiges);
-  buildRecSection('body-freizeit',CATS.freizeit);
-  buildRecSection('body-versicherungen',CATS.versicherungen);
-  refreshAll();
+  try {
+    renderQsCategories();
+    renderIncCards();
+    ['qs-monat'].forEach(id=>fillMs(id));
+    buildRecSection('body-wohnen',CATS.wohnen);
+    buildRecSection('body-sonstiges',CATS.sonstiges);
+    buildRecSection('body-freizeit',CATS.freizeit);
+    buildRecSection('body-versicherungen',CATS.versicherungen);
+    refreshAll();
+  } catch(e) {
+    alert("Fehler beim Starten der App: " + e.message);
+  }
 }
 document.addEventListener('DOMContentLoaded',init);
 </script>
