@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Haushaltsbuch</title>
+<title>Haushaltsbuch PRO</title>
 <style>
 /* FARB-VARIABLEN (THEMING) */
 :root {
@@ -52,14 +52,15 @@ input[type="number"] { -moz-appearance: textfield; }
 input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(0.8); cursor: pointer; }
 body.light-mode input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(0); }
 
-/* TOP NAV */
-.top-nav { display:flex; background:var(--nav-bg); border-bottom:1px solid var(--border); align-items:center; width:100%; flex-shrink:0; overflow:hidden; height:48px; }
-.year-wrapper { padding:0 12px; height:100%; display:flex; align-items:center; justify-content:center; border-right:1px solid var(--border); flex-shrink:0; background:var(--nav-bg); z-index:10; box-shadow:4px 0 6px rgba(0,0,0,0.1); }
+/* TOP NAV - ZWEIZEILIG */
+.top-nav-container { display:flex; flex-direction:column; flex-shrink:0; background:var(--nav-bg); border-bottom:1px solid var(--border); }
+.top-nav-row1 { display:flex; align-items:center; height:48px; border-bottom:1px solid var(--border); }
+.top-nav-row2 { display:flex; align-items:center; height:44px; overflow-x:auto; scrollbar-width:none; -webkit-overflow-scrolling:touch; padding:0 8px; gap:4px; }
+.year-wrapper { padding:0 12px; height:100%; display:flex; align-items:center; justify-content:center; border-right:1px solid var(--border); background:var(--nav-bg); z-index:10; }
 .year-selector { background:var(--input-bg); color:var(--gold); border:1px solid var(--gold); border-radius:6px; padding:4px 8px; font-size:13px; font-weight:bold; outline:none; cursor:pointer; }
-.top-tab-group { display:flex; flex:1; height:100%; overflow-x:auto; scrollbar-width:none; -webkit-overflow-scrolling:touch; align-items:center; }
-.top-tab { padding:0 14px; height:100%; display:flex; align-items:center; color:var(--text-dim); font-size:13px; font-weight:700; cursor:pointer; border-bottom:3px solid transparent; white-space:nowrap; transition:color 0.2s; flex-shrink:0; }
+.top-tab { padding:6px 10px; display:flex; align-items:center; color:var(--text-dim); font-size:12px; font-weight:700; cursor:pointer; border-bottom:2px solid transparent; white-space:nowrap; transition:color 0.2s; flex-shrink:0; }
 .top-tab.active { color:var(--gold); border-bottom-color:var(--gold); }
-.theme-switch { padding: 0 12px; cursor: pointer; font-size: 18px; border-left: 1px solid var(--border); height: 100%; display: flex; align-items: center; background: var(--nav-bg); flex-shrink:0; }
+.theme-switch { padding: 0 12px; cursor: pointer; font-size: 18px; border-left: 1px solid var(--border); height:100%; display: flex; align-items: center; background: var(--nav-bg); flex-shrink:0; }
 
 /* PAGES */
 .pages{flex:1;overflow:hidden;position:relative}
@@ -120,12 +121,18 @@ input:focus,select:focus{outline:none; border-color:var(--gold)}
 .total-wealth-card { background: linear-gradient(135deg, rgba(212,168,68,0.1) 0%, var(--card-bg) 100%); border: 2px solid rgba(212,168,68,0.4); border-radius: 16px; padding: 24px; margin-bottom: 24px; text-align: center; box-shadow: 0 8px 16px rgba(0,0,0,0.15); }
 .total-wealth-title { font-size: 14px; font-weight: 800; color: var(--gold); text-transform: uppercase; letter-spacing: 2px; margin-bottom: 8px; }
 .total-wealth-val { font-size: 38px; font-weight: 900; color: var(--gold); text-shadow: 0 2px 8px rgba(0,0,0,0.2); }
-.grp-banner { background: linear-gradient(to right, var(--nav-bg), var(--card-bg), var(--nav-bg)); border: 1px solid var(--border); border-left: 4px solid var(--gold); border-right: 4px solid var(--gold); border-radius: 12px; padding: 12px 16px; margin: 24px 0 12px 0; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
-.grp-banner-title { font-size: 14px; color: var(--text-dim); font-weight: 800; text-transform: uppercase; letter-spacing: 1.5px; }
-.grp-banner-sum { font-size: 20px; color: var(--gold); font-weight: 900; }
+
+.grp-banner { background: linear-gradient(to right, var(--nav-bg), var(--card-bg), var(--nav-bg)); border: 1px solid var(--border); border-left: 4px solid var(--gold); border-right: 4px solid var(--gold); border-radius: 12px; padding: 16px; margin: 32px 0 16px 0; text-align: center; box-shadow: 0 4px 12px rgba(0,0,0,0.1); cursor:pointer;}
+.grp-banner-title { font-size: 14px; color: var(--text-dim); font-weight: 800; text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 6px; }
+.grp-banner-sum { font-size: 26px; color: var(--gold); font-weight: 900; }
 .konto-chip{background:var(--input-bg); border:1px solid var(--border); border-radius:10px; padding:16px; margin-bottom:12px; display:flex; flex-direction:column; gap:14px;}
 .konto-name{font-size:15px;font-weight:700;color:var(--text);}
 .konto-bal{font-size:24px;font-weight:900;color:var(--gold)}
+
+/* PERSÖNLICHE DATEN / VERTRÄGE */
+.contract-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: 10px; padding: 14px; margin-bottom: 10px; transition: 0.3s; }
+.contract-card.is-canceled { opacity: 0.5; }
+.contract-card.is-canceled .c-main-text { text-decoration: line-through; }
 
 /* MODALS */
 #toast{position:fixed;bottom:90px;left:50%;transform:translateX(-50%);background:var(--gold);color:#000;font-weight:700;padding:10px 20px;border-radius:30px;font-size:13px;z-index:9999;opacity:0;transition:opacity .3s;pointer-events:none;box-shadow:0 4px 12px rgba(0,0,0,0.5);}
@@ -135,9 +142,12 @@ input:focus,select:focus{outline:none; border-color:var(--gold)}
 /* TABELLE */
 .tbl{border-collapse:collapse;font-size:11px;min-width:1000px;width:100%}
 .tbl th{background:var(--table-header); color:var(--gold); padding:8px; text-align:right; border:1px solid var(--border); white-space:nowrap; position:sticky; top:0; z-index:2}
-.tbl th:first-child{text-align:left;position:sticky;left:0;z-index:3;background:var(--table-header); width:230px; min-width:230px; max-width:230px;}
+
+/* MASSIVE VERSCHLÜSSELUNG DER ERSTEN SPALTE UM TRANSPARENZ ZU VERHINDERN */
+.tbl th:first-child{text-align:left;position:sticky;left:0;z-index:3;background:var(--table-header) !important; width:250px; min-width:250px; max-width:250px;}
+.tbl td:first-child{text-align:left; background:var(--table-sticky-col) !important; position:sticky; left:0; z-index:1; font-weight:600; border-right:1px solid var(--border); width:250px; min-width:250px; max-width:250px;}
+
 .tbl td{padding:5px 8px; border:1px solid var(--border); text-align:right; white-space:nowrap; vertical-align:middle; color:var(--text);}
-.tbl td:first-child{text-align:left; background:var(--table-sticky-col); position:sticky; left:0; z-index:1; font-weight:600; border-right:1px solid var(--border); width:230px; min-width:230px; max-width:230px;}
 .tbl tr:hover td{background:rgba(212, 168, 68, 0.05)}
 
 /* Tabelle - Farbliche Abhebung Hauptgruppen */
@@ -145,8 +155,8 @@ input:focus,select:focus{outline:none; border-color:var(--gold)}
 .tbl .sec-row.exp td { background: linear-gradient(90deg, rgba(244, 67, 54, 0.15), var(--table-header)); color: var(--red); font-weight: 800; font-size: 12px; border-top: 2px solid rgba(244, 67, 54, 0.5); }
 
 /* Untergruppen nur noch farbig & mit Linie */
-.tbl .grp-hdr.inc td { background: transparent; border-bottom: 1px solid rgba(76, 175, 80, 0.3); color:var(--green); font-weight:700; }
-.tbl .grp-hdr.exp td { background: transparent; border-bottom: 1px solid rgba(244, 67, 54, 0.3); color:var(--red); font-weight:700; }
+.tbl .grp-hdr.inc td { background: transparent; border-bottom: 1px solid rgba(76, 175, 80, 0.4); color:var(--green); font-weight:700; }
+.tbl .grp-hdr.exp td { background: transparent; border-bottom: 1px solid rgba(244, 67, 54, 0.4); color:var(--red); font-weight:700; }
 
 .tbl .sparrate-row td{background:rgba(77, 166, 255, 0.15); font-weight:900; color:var(--blue); font-size:13px; border-top:2px solid var(--blue);}
 
@@ -155,7 +165,7 @@ input:focus,select:focus{outline:none; border-color:var(--gold)}
 .sum-bubble-neg { color:var(--red); padding:2px 6px; font-weight:700; }
 .sum-bubble-pos { color:var(--green); padding:2px 6px; font-weight:700; }
 
-/* Kategorienamen-Abschneidung */
+/* Kategorienamen */
 .tbl-cell-flex { display:flex; justify-content:space-between; align-items:center; width:100%; gap:4px; }
 .cat-name-wrapper { display:flex; align-items:center; overflow:hidden; flex:1; margin-right:4px; }
 .cat-name-text { white-space:nowrap; overflow:hidden; text-overflow:ellipsis; flex:1; }
@@ -165,17 +175,19 @@ input:focus,select:focus{outline:none; border-color:var(--gold)}
 </head>
 <body>
 
-<div class="top-nav">
-  <div class="year-wrapper">
-    <select id="year-select" class="year-selector" onchange="changeYear()"></select>
+<div class="top-nav-container">
+  <div class="top-nav-row1">
+    <div class="year-wrapper"><select id="year-select" class="year-selector" onchange="changeYear()"></select></div>
+    <div style="flex:1;"></div>
+    <div class="top-tab" style="border-left:1px solid var(--border);" onclick="navTo('sync',this)">⚙️ Sync & Backup</div>
+    <div class="theme-switch" onclick="toggleTheme()" id="theme-btn">🌙</div>
   </div>
-  <div class="top-tab-group">
+  <div class="top-nav-row2">
     <div class="top-tab" onclick="navTo('konten',this)">🏦 Konten</div>
     <div class="top-tab" onclick="navTo('historie',this)">📊 Historie</div>
+    <div class="top-tab" onclick="navTo('contracts',this)">📄 Persönlich</div>
     <div class="top-tab" onclick="navTo('kpis',this)">📈 KPIs</div>
-    <div class="top-tab" onclick="navTo('sync',this)">⚙️ Sync</div>
   </div>
-  <div class="theme-switch" onclick="toggleTheme()" id="theme-btn">🌙</div>
 </div>
 
 <div class="pages">
@@ -187,7 +199,7 @@ input:focus,select:focus{outline:none; border-color:var(--gold)}
     </div>
 
     <div style="display:flex; justify-content:flex-start; margin-bottom:12px;">
-       <button type="button" class="btn-sm" style="padding:6px 10px; font-size:12px;" onclick="window.toggleExpandCollapseAllKonten()" id="btn-expand-collapse-konten">🔽 Alle ausklappen</button>
+       <button type="button" class="btn-sm" style="padding:6px 10px; font-size:12px;" onclick="toggleExpandCollapseAllKonten()" id="btn-expand-collapse-konten">🔽 Alle ausklappen</button>
     </div>
     
     <div id="konten-list"></div>
@@ -200,7 +212,7 @@ input:focus,select:focus{outline:none; border-color:var(--gold)}
       </div>
       <div style="display:flex; gap:6px; margin-bottom:8px;">
         <select id="nk-grp" style="flex:1;"></select>
-        <button type="button" class="btn-outline" style="padding:0 12px; font-size:12px; white-space:nowrap;" onclick="window.addKontoGroup()">➕ Neue Gruppe</button>
+        <button type="button" class="btn-outline" style="padding:0 12px; font-size:12px; white-space:nowrap;" onclick="addKontoGroup()">➕ Neue Gruppe</button>
       </div>
       <button type="button" class="btn" onclick="addKonto()">Speichern</button>
     </div>
@@ -209,9 +221,26 @@ input:focus,select:focus{outline:none; border-color:var(--gold)}
   <div class="page" id="page-historie">
     <div class="card">
       <div class="card-title">Buchungshistorie</div>
-      <div style="font-size:11px; color:var(--text-dim); margin-bottom:12px;">Hier siehst du alle Einzelbuchungen chronologisch nach Monaten gruppiert. Änderungen nimmst du am besten direkt in der Gesamtübersicht vor.</div>
+      <div style="font-size:11px; color:var(--text-dim); margin-bottom:12px;">Gruppiert nach Kategorien im jeweiligen Monat. Klicken zum Ausklappen der Einzelbuchungen.</div>
       <div id="ueb-buchungen"></div>
     </div>
+  </div>
+  
+  <div class="page" id="page-contracts">
+    <div class="card">
+        <div class="card-title">Persönliche Daten hinzufügen</div>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:8px;">
+            <input id="ct-group" placeholder="Gruppe (z.B. Abos)" style="grid-column: 1 / -1;"/>
+            <input id="ct-type" placeholder="Art (z.B. Internet)"/>
+            <input id="ct-provider" placeholder="Anbieter"/>
+            <input id="ct-account" placeholder="Kontonummer"/>
+            <input id="ct-id" placeholder="Kundennummer"/>
+            <input id="ct-end" type="date" placeholder="Vertragsende" style="grid-column: 1 / -1;"/>
+            <input id="ct-note" placeholder="Kommentar..." style="grid-column: 1 / -1;"/>
+        </div>
+        <button type="button" class="btn" onclick="addContract()">Daten Speichern</button>
+    </div>
+    <div id="contract-list"></div>
   </div>
 
   <div class="page" id="page-kpis">
@@ -229,9 +258,7 @@ input:focus,select:focus{outline:none; border-color:var(--gold)}
       <div id="kpi-max-exp" class="row-item"><span class="row-label">Ausgabe</span><span class="row-val red">-</span></div>
     </div>
 
-    <div class="card" style="padding:14px; overflow-x:auto;"><div class="card-title" style="color:#4caf50;">Verlauf Einnahmen</div><div id="chart-table-inc"></div></div>
-    <div class="card" style="padding:14px; overflow-x:auto;"><div class="card-title" style="color:#f44336;">Verlauf Ausgaben</div><div id="chart-table-exp"></div></div>
-    
+    <div id="kpi-main-charts"></div>
     <div id="kpi-accounts-charts"></div>
   </div>
 
@@ -262,7 +289,7 @@ input:focus,select:focus{outline:none; border-color:var(--gold)}
         <select id="qs-cat" style="flex:1; min-width:60px;"></select>
         <input id="qs-note" type="text" placeholder="Notiz" style="flex:1.2; min-width:60px;" />
         <input id="qs-date" type="date" style="width:40px; flex-shrink:0; color:transparent;" onchange="this.style.color='var(--input-text)'; this.style.width='115px';" />
-        <button type="button" class="btn" id="qs-save-btn" style="width:40px; height:38px; padding:0; transition: background 0.3s;" onclick="window.quickSaveUnified()">💾</button>
+        <button type="button" class="btn" id="qs-save-btn" style="width:40px; height:38px; padding:0; transition: background 0.3s;" onclick="quickSaveUnified()">💾</button>
       </div>
       <div style="font-size:10px; color:var(--text-dim); margin-top:10px; text-align:center;">Dropdown zeigt Favoriten (★). Verwalten über "✏️ Bearbeiten" in der Gesamtübersicht.</div>
     </div>
@@ -278,10 +305,10 @@ input:focus,select:focus{outline:none; border-color:var(--gold)}
   <div class="page" id="page-tabelle">
     <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;padding:0 4px 12px;flex-wrap:wrap; width:100%;">
       <div style="display:flex; gap:8px;">
-         <button type="button" class="btn-sm" style="padding:8px 12px; font-size:12px;" onclick="window.toggleExpandCollapseAll()" id="btn-expand-collapse">🔽 Alle ausklappen</button>
-         <button type="button" class="btn-sm" style="padding:8px 12px; font-size:12px;" onclick="window.toggleEditMode()" id="btn-edit-mode">✏️ Bearbeiten</button>
+         <button type="button" class="btn-sm" style="padding:8px 12px; font-size:12px;" onclick="toggleExpandCollapseAll()" id="btn-expand-collapse">🔽 Alle ausklappen</button>
+         <button type="button" class="btn-sm" style="padding:8px 12px; font-size:12px;" onclick="toggleEditMode()" id="btn-edit-mode">✏️ Bearbeiten</button>
       </div>
-      <label style="display:flex;align-items:center;gap:6px;font-size:13px;color:var(--text-dim);cursor:pointer">
+      <label style="display:flex;align-items:center;gap:6px;font-size:13px;color:var(--text-dim);cursor:pointer;">
         <input type="checkbox" id="tbl-only-current" onchange="renderTabelle()" style="width:18px;height:18px;accent-color:var(--gold)"> Nur aktueller Monat
       </label>
     </div>
@@ -294,8 +321,8 @@ input:focus,select:focus{outline:none; border-color:var(--gold)}
       <input type="password" id="cloud-api-key" placeholder="Master Key" style="margin-bottom:8px;"/>
       <input type="text" id="cloud-bin-id" placeholder="Bin ID" style="margin-bottom:12px;"/>
       <div style="display:flex; gap:8px;">
-        <button type="button" class="btn btn-blue" style="flex:1" onclick="window.syncToCloud()">⬆️ Sichern</button>
-        <button type="button" class="btn btn-outline" style="flex:1" onclick="window.loadFromCloud()">⬇️ Laden</button>
+        <button type="button" class="btn btn-blue" style="flex:1" onclick="syncToCloud()">⬆️ Sichern</button>
+        <button type="button" class="btn btn-outline" style="flex:1" onclick="loadFromCloud()">⬇️ Laden</button>
       </div>
     </div>
     <div class="card"><div class="card-title">💾 Backup</div>
@@ -316,10 +343,10 @@ input:focus,select:focus{outline:none; border-color:var(--gold)}
 <div id="toast"></div>
 
 <div id="add-modal" class="modal-overlay">
-  <div class="card" style="width:100%; max-width:400px; margin:0;" onclick="event.stopPropagation()">
+  <div class="card" style="width:90%; max-width:400px; margin:0;" onclick="event.stopPropagation()">
     <div class="card-title" id="add-modal-title">Eintrag hinzufügen</div>
     <div id="add-modal-desc" style="font-size:13px; margin-bottom:10px; color:var(--text-dim);"></div>
-    <input type="number" id="add-modal-amt" step="0.01" style="margin-bottom:15px;" placeholder="Betrag (€)"/>
+    <input type="number" id="add-modal-amt" step="0.01" style="margin-bottom:15px; font-size:24px; text-align:center;" placeholder="Betrag (€)"/>
     <div style="font-size:12px; color:var(--text-dim); margin-bottom:8px; text-align:center;">Wie oft fällt das an?</div>
     <div class="freq-group">
        <label class="freq-lbl"><input type="radio" name="add-freq" value="once" checked><span>Einmalig</span></label>
@@ -328,8 +355,8 @@ input:focus,select:focus{outline:none; border-color:var(--gold)}
        <label class="freq-lbl"><input type="radio" name="add-freq" value="yearly"><span>Jährlich</span></label>
     </div>
     <div style="display:flex; gap:8px;">
-      <button type="button" class="btn btn-green" style="flex:1" onclick="window.saveAddModal()">Speichern</button>
-      <button type="button" class="btn btn-red" style="flex:1" onclick="window.closeAddModal()">Abbruch</button>
+      <button type="button" class="btn btn-green" style="flex:1" onclick="saveAddModal()">Speichern</button>
+      <button type="button" class="btn btn-red" style="flex:1" onclick="closeAddModal()">Abbruch</button>
     </div>
   </div>
 </div>
@@ -340,8 +367,8 @@ input:focus,select:focus{outline:none; border-color:var(--gold)}
     <div id="edit-modal-desc" style="font-size:13px; margin-bottom:10px; color:var(--text-dim);"></div>
     <input type="number" id="edit-modal-amt" step="0.01" style="margin-bottom:15px;"/>
     <input type="hidden" id="edit-modal-idx" />
-    <div style="display:flex; gap:8px; margin-bottom:8px;"><button type="button" class="btn btn-green" style="flex:2" onclick="window.saveEditModal()">OK</button><button type="button" class="btn btn-red" style="flex:1" onclick="window.deleteEditModal()">Löschen</button></div>
-    <button type="button" class="btn btn-outline" onclick="window.closeEditModal()">Abbrechen</button>
+    <div style="display:flex; gap:8px; margin-bottom:8px;"><button type="button" class="btn btn-green" style="flex:2" onclick="saveEditModal()">OK</button><button type="button" class="btn btn-red" style="flex:1" onclick="deleteEditModal()">Löschen</button></div>
+    <button type="button" class="btn btn-outline" onclick="closeEditModal()">Abbrechen</button>
   </div>
 </div>
 
@@ -351,11 +378,11 @@ input:focus,select:focus{outline:none; border-color:var(--gold)}
     <div id="rec-modal-desc" style="font-size:13px; margin-bottom:10px; color:var(--text-dim);"></div>
     <input type="number" id="rec-modal-amt" step="0.01" style="margin-bottom:15px;"/>
     <div style="display:flex; flex-direction:column; gap:8px;">
-      <button type="button" class="btn" onclick="window.saveRecModal('only')" id="btn-rec-only">Nur diesen Monat</button>
-      <button type="button" class="btn" onclick="window.saveRecModal('future')" id="btn-rec-future">Ab jetzt ändern</button>
-      <button type="button" class="btn" onclick="window.saveRecModal('all')">Überall ändern</button>
-      <button type="button" class="btn btn-outline" style="border-color:var(--red); color:var(--red); margin-top:8px;" onclick="window.deleteRecModal()">Löschen</button>
-      <button type="button" class="btn btn-red" onclick="window.closeRecModal()">Abbrechen</button>
+      <button type="button" class="btn" onclick="saveRecModal('only')" id="btn-rec-only">Nur diesen Monat</button>
+      <button type="button" class="btn" onclick="saveRecModal('future')" id="btn-rec-future">Ab jetzt ändern</button>
+      <button type="button" class="btn" onclick="saveRecModal('all')">Überall ändern</button>
+      <button type="button" class="btn btn-outline" style="border-color:var(--red); color:var(--red); margin-top:8px;" onclick="deleteRecModal()">Löschen</button>
+      <button type="button" class="btn btn-red" onclick="closeRecModal()">Abbrechen</button>
     </div>
   </div>
 </div>
@@ -364,7 +391,7 @@ input:focus,select:focus{outline:none; border-color:var(--gold)}
   <div class="card" style="width:100%; max-width:400px; margin:0;" onclick="event.stopPropagation()">
     <div class="card-title" style="color:var(--gold);">Kontoverlauf</div>
     <div id="history-modal-content" style="max-height:300px; overflow-y:auto; margin-bottom:15px; padding-right:5px;"></div>
-    <button type="button" class="btn btn-outline" style="width:100%;" onclick="window.closeHistoryModal()">Schließen</button>
+    <button type="button" class="btn btn-outline" style="width:100%;" onclick="closeHistoryModal()">Schließen</button>
   </div>
 </div>
 
@@ -397,11 +424,10 @@ if(typeof recurring !== 'object' || recurring === null) recurring = {};
 let favCats = load('mhb_app_favs', []);
 if(!Array.isArray(favCats)) favCats = [];
 
-let kontoGroups = load('mhb_app_konto_groups', [
-    {id:'grp1', label:'Gruppe 1', open:true},
-    {id:'grp2', label:'Gruppe 2', open:true},
-    {id:'grp3', label:'Gruppe 3', open:true}
-]);
+let contracts = load('mhb_app_contracts', []);
+if(!Array.isArray(contracts)) contracts = [];
+
+let kontoGroups = load('mhb_app_konto_groups', [{id:'grp1', label:'Girokonto', open:true},{id:'grp2', label:'Krypto', open:true},{id:'grp3', label:'Depot', open:true}]);
 if(!Array.isArray(kontoGroups)) kontoGroups = [];
 kontoGroups.forEach(g => { if(g.open === undefined) g.open = true; });
 
@@ -422,9 +448,10 @@ let expGroups = load('mhb_app_exp_groups', [
 if(!Array.isArray(expGroups)) expGroups = [];
 
 window.isEditMode = false;
+window.contractGroupState = window.contractGroupState || {};
 
 // ----- THEME SWITCH -----
-window.toggleTheme = function() {
+function toggleTheme() {
     const isLight = document.body.classList.toggle('light-mode');
     const btn = document.getElementById('theme-btn');
     if(btn) btn.textContent = isLight ? '☀️' : '🌙';
@@ -432,37 +459,32 @@ window.toggleTheme = function() {
 }
 
 // ----- UI LOGIC -----
-window.navTo = function(id, el) {
+function navTo(id, el) {
     document.querySelectorAll('.top-tab, .bot-tab').forEach(t => t.classList.remove('active'));
     if(el) el.classList.add('active');
     document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
     const target = document.getElementById('page-' + id);
     if(target) target.classList.add('active');
     
-    // Focus Trigger
-    if(id === 'dash') {
-        setTimeout(() => { 
-            const a = document.getElementById('qs-amt'); 
-            if(a) a.focus(); 
-        }, 50);
-    }
-    if(id === 'kpis') window.refreshKPIs();
+    if(id === 'dash') { setTimeout(() => { const a = document.getElementById('qs-amt'); if(a) a.focus(); }, 50); }
+    if(id === 'contracts') refreshContracts();
+    if(id === 'kpis') refreshKPIs();
 }
 
-window.changeYear = function() {
+function changeYear() {
     const sel = document.getElementById('year-select');
-    if(sel) { activeYear = parseInt(sel.value) || CUR_Y; window.refreshAll(); }
+    if(sel) { activeYear = parseInt(sel.value) || CUR_Y; refreshAll(); }
 }
 
-window.toggleFav = function(cat, event) {
+function toggleFav(cat, event) {
     if(event) event.stopPropagation();
     if(favCats.includes(cat)) favCats = favCats.filter(c => c !== cat);
     else favCats.push(cat);
     sv('mhb_app_favs', favCats);
-    window.refreshAll();
+    refreshAll();
 }
 
-window.renderYearSelect = function() {
+function renderYearSelect() {
     const sel = document.getElementById('year-select');
     if(!sel) return;
     let years = new Set();
@@ -540,9 +562,7 @@ function getGroupAvg(g, type) {
 }
 
 // ----- REFRESHERS -----
-function setCol(id,v){const el=document.getElementById(id);if(el){el.className='dk-val '+(v>=0?'green':'red');el.textContent=fmt(v);}}
-
-window.refreshDash = function() {
+function refreshDash() {
     const kg = accounts.reduce((s,a) => s + (parseFloat(a.balance)||0), 0);
     setTxt('d-gesamt', fmt(kg));
     setTxt('d-gesamt-dash', fmt(kg));
@@ -566,59 +586,61 @@ window.refreshDash = function() {
     const elLm = document.getElementById('d-lm'); if(elLm) { elLm.textContent = fmt(lmBal); elLm.className = 'dk-val ' + (lmBal >= 0 ? 'green' : 'red'); }
 }
 
-function getCategoryHistory(grpId) {
-    let catAccounts = accounts.filter(a => a.grp === grpId);
-    if(catAccounts.length === 0) return [];
-    let timestamps = new Set();
-    catAccounts.forEach(a => { if(a.history) a.history.forEach(h => timestamps.add(h.ts)); });
-    let sortedTs = Array.from(timestamps).sort((a,b) => a-b);
-    let dataPoints = [];
-    sortedTs.forEach(ts => {
-        let sum = 0;
-        catAccounts.forEach(a => {
-            let validHist = (a.history||[]).filter(h => h.ts <= ts);
-            if(validHist.length > 0) sum += validHist[validHist.length - 1].bal;
-        });
-        dataPoints.push({ ts: ts, val: sum });
-    });
-    return dataPoints.slice(-20); 
+
+// ----- KPI CHARTS -----
+function getMonthlyTrend(type) {
+    let data = [];
+    const limit = (activeYear === CUR_Y) ? CUR_M : 11;
+    for(let m=0; m<=limit; m++) {
+        data.push(getTotalCellVal(type, m, activeYear));
+    }
+    return data;
 }
 
-function createHistoryChart(dataPoints, color) {
-    if(!dataPoints || dataPoints.length === 0) return '';
-    if(dataPoints.length === 1) dataPoints = [dataPoints[0], {ts: Date.now(), val: dataPoints[0].val}];
-    const max = Math.max(...dataPoints.map(d=>d.val), 1) * 1.1;
-    const min = Math.min(...dataPoints.map(d=>d.val), 0);
-    const range = max - min || 1;
-    const w = 600, h = 120;
-    let points = dataPoints.map((d, i) => `${(i / (dataPoints.length - 1)) * w},${h - (((d.val - min) / range) * (h - 20))}`).join(' ');
-    let elements = dataPoints.map((d, i) => {
-        const x = (i / (dataPoints.length - 1)) * w, y = h - (((d.val - min) / range) * (h - 20));
-        return `<circle cx="${x}" cy="${y}" r="4" fill="${color}" />
-                <text x="${x}" y="${y-10}" fill="var(--text)" font-size="10" text-anchor="middle">${fmt(d.val).split(',')[0]}</text>
-                <text x="${x}" y="${h+12}" fill="var(--text-dim)" font-size="9" text-anchor="middle">${new Date(d.ts).toLocaleDateString('de-DE', {day:'2-digit', month:'2-digit'})}</text>`;
-    }).join('');
-    return `<svg viewBox="-20 -20 640 160" style="width:100%; height:auto; overflow:visible;"><polyline fill="none" stroke="${color}" stroke-width="2" points="${points}" />${elements}</svg>`;
+function getMonthlyAccountHistoryLatest(grpLabel) {
+    const grp = kontoGroups.find(g => g.label.toLowerCase() === grpLabel.toLowerCase());
+    if(!grp) return [];
+    let data = [];
+    const limit = (activeYear === CUR_Y) ? CUR_M : 11;
+    const accs = accounts.filter(a => a.grp === grp.id);
+    
+    for(let m=0; m<=limit; m++) {
+        let mEndTs = new Date(activeYear, m + 1, 0, 23, 59, 59).getTime();
+        let mSum = 0;
+
+        accs.forEach(a => {
+            // Finde den LETZTEN Kontostand, der vor oder im entsprechenden Monat eingetragen wurde
+            let validHist = (a.history || []).filter(h => h.ts <= mEndTs).sort((x,y) => y.ts - x.ts);
+            if(validHist.length > 0) {
+                mSum += validHist[0].bal; // Der 0. Eintrag ist nach Sortierung der Neueste
+            }
+        });
+        data.push(mSum);
+    }
+    return data;
 }
 
 function createSvgChart(dataArr, color) {
-    if(!dataArr || dataArr.length === 0) return '';
-    const max = Math.max(...dataArr, 1) * 1.1; const min = Math.min(...dataArr, 0); const range = max - min || 1;
+    if(!dataArr || dataArr.length === 0) return '<div style="color:var(--text-dim); padding:20px; text-align:center;">Keine Daten</div>';
+    const max = Math.max(...dataArr, 1) * 1.2;
+    const min = Math.min(...dataArr, 0);
+    const range = max - min || 1;
     const w = 600, h = 150;
-    let points = dataArr.map((v, i) => `${dataArr.length===1 ? w/2 : (i/(dataArr.length-1))*w},${h - (((v-min)/range)*(h-20))}`).join(' ');
+    
+    let points = dataArr.map((v, i) => `${(i / 11) * w},${h - (((v - min) / range) * (h - 20))}`).join(' ');
     let elements = dataArr.map((v, i) => {
-        const x = dataArr.length===1 ? w/2 : (i/(dataArr.length-1))*w, y = h - (((v-min)/range)*(h-20));
+        const x = (i / 11) * w, y = h - (((v - min) / range) * (h - 20));
         return `<circle cx="${x}" cy="${y}" r="4" fill="${color}" />
                 <text x="${x}" y="${y-10}" fill="var(--text)" font-size="10" text-anchor="middle">${fmt(v).split(',')[0]}</text>
-                <text x="${x}" y="${h+12}" fill="var(--text-dim)" font-size="10" text-anchor="middle">${MONTHS_SHORT[i]}</text>`;
+                <text x="${x}" y="${h+15}" fill="var(--text-dim)" font-size="10" text-anchor="middle">${MONTHS_SHORT[i]}</text>`;
     }).join('');
-    return `<svg viewBox="-20 -20 640 190" style="width:100%; height:auto; overflow:visible;"><polyline fill="none" stroke="${color}" stroke-width="3" points="${points}" />${elements}</svg>`;
+    
+    return `<svg viewBox="-20 -10 640 180" style="width:100%; height:auto; overflow:visible;"><polyline fill="none" stroke="${color}" stroke-width="3" points="${points}" />${elements}</svg>`;
 }
 
-window.refreshKPIs = function() {
+function refreshKPIs() {
     const incAvg = getTotalAvg('inc'), expAvg = getTotalAvg('exp');
     
-    // HART CODIERTE FARBEN FÜR KPIs (Einnahmen = immer grün, Ausgaben = immer rot)
     const elInc = document.getElementById('kpi-avg-inc'); if(elInc) { elInc.textContent = fmt(incAvg); elInc.className = 'dk-val green'; }
     const elExp = document.getElementById('kpi-avg-exp'); if(elExp) { elExp.textContent = fmt(expAvg); elExp.className = 'dk-val red'; }
     
@@ -634,71 +656,148 @@ window.refreshKPIs = function() {
     setHtml('kpi-max-inc', `<span class="row-label">${safeStr(maxI.c)}</span><span class="row-val green">${fmt(maxI.a)}</span>`);
     setHtml('kpi-max-exp', `<span class="row-label">${safeStr(maxE.c)}</span><span class="row-val red">${fmt(maxE.a)}</span>`);
 
-    let limit = activeYear === CUR_Y ? CUR_M : (activeYear < CUR_Y ? 11 : -1);
-    if(limit >= 0) {
-        let incD = [], expD = [];
-        for(let m=0; m<=limit; m++) { incD.push(getTotalCellVal('inc', m, activeYear)); expD.push(getTotalCellVal('exp', m, activeYear)); }
-        setHtml('chart-table-inc', createSvgChart(incD, '#4caf50'));
-        setHtml('chart-table-exp', createSvgChart(expD, '#f44336'));
-    }
+    setHtml('kpi-main-charts', `
+        <div class="card" style="padding:14px; overflow-x:auto;"><div class="card-title" style="color:var(--green);">Verlauf Einnahmen</div>${createSvgChart(getMonthlyTrend('inc'), '#4caf50')}</div>
+        <div class="card" style="padding:14px; overflow-x:auto;"><div class="card-title" style="color:var(--red);">Verlauf Ausgaben</div>${createSvgChart(getMonthlyTrend('exp'), '#f44336')}</div>
+    `);
 
-    let kpiHtml = '';
-    kontoGroups.forEach(g => {
-        const catHist = getCategoryHistory(g.id);
-        if(catHist.length > 0) { 
-            kpiHtml += `<div class="card" style="padding:14px; overflow-x:auto;">
-                          <div class="card-title" style="color:var(--gold);">Verlauf: ${safeStr(g.label)}</div>
-                          ${createHistoryChart(catHist, '#4da6ff')}
+    let accHtml = '';
+    ['Girokonto', 'Krypto', 'Depot'].forEach(l => {
+        let hist = getMonthlyAccountHistoryLatest(l); // Nutzen die neue Logik!
+        if(hist.length > 0) {
+            accHtml += `<div class="card" style="padding:14px; overflow-x:auto;">
+                          <div class="card-title" style="color:var(--blue);">Verlauf ${safeStr(l)}</div>
+                          ${createSvgChart(hist, '#4da6ff')}
                         </div>`;
         }
     });
-    setHtml('kpi-accounts-charts', kpiHtml);
+    setHtml('kpi-accounts-charts', accHtml);
 }
+
+// ----- VERTRÄGE VERWALTUNG -----
+function addContract() {
+    const group = document.getElementById('ct-group').value.trim() || 'Sonstiges';
+    const type = document.getElementById('ct-type').value.trim();
+    const provider = document.getElementById('ct-provider').value.trim();
+    const account = document.getElementById('ct-account').value.trim();
+    const id = document.getElementById('ct-id').value.trim();
+    const end = document.getElementById('ct-end').value;
+    const note = document.getElementById('ct-note').value.trim();
+    
+    if(!type || !provider) { showToast('❌ Art und Anbieter eingeben'); return; }
+    
+    contracts.push({ group, type, provider, account, id, end, note, canceled: false });
+    sv('mhb_app_contracts', contracts);
+    refreshContracts();
+    
+    ['ct-group','ct-type','ct-provider','ct-account','ct-id','ct-end','ct-note'].forEach(i => document.getElementById(i).value = '');
+    showToast('✅ Gespeichert');
+}
+
+function toggleContractGroup(grpStr) {
+    window.contractGroupState[grpStr] = !(window.contractGroupState[grpStr] !== false);
+    refreshContracts();
+}
+
+function toggleContractCanceled(idx) {
+    contracts[idx].canceled = !contracts[idx].canceled;
+    sv('mhb_app_contracts', contracts);
+    refreshContracts();
+}
+
+function deleteContract(idx) {
+    if(confirm('Eintrag löschen?')) { contracts.splice(idx,1); sv('mhb_app_contracts', contracts); refreshContracts(); }
+}
+
+function refreshContracts() {
+    let grouped = {};
+    contracts.forEach((c, idx) => {
+        let g = c.group || 'Sonstiges';
+        if(!grouped[g]) grouped[g] = [];
+        grouped[g].push({...c, _originalIndex: idx});
+    });
+
+    let h = '';
+    Object.keys(grouped).sort().forEach(grp => {
+        let isOpen = window.contractGroupState[grp] !== false; // standardmäßig offen
+        h += `<div class="grp-banner" onclick="toggleContractGroup('${safeStr(grp)}')">
+                <div style="display:flex; align-items:center; gap:8px;">
+                    <span style="color:var(--gold); font-size:18px;">${isOpen ? '▾' : '▸'}</span>
+                    <div class="grp-banner-title" style="margin:0;">${safeStr(grp)}</div>
+                </div>
+              </div>`;
+        
+        if(isOpen) {
+            grouped[grp].forEach(c => {
+                let statusClass = c.canceled ? 'is-canceled' : '';
+                h += `<div class="contract-card ${statusClass}">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+                        <div class="c-main-text" style="font-weight:800; color:var(--gold); font-size:14px;">${safeStr(c.type)}</div>
+                        <div style="display:flex; gap:12px; align-items:center;">
+                            <label style="font-size:11px; display:flex; align-items:center; gap:4px; cursor:pointer; color:var(--text-dim);">
+                                <input type="checkbox" ${c.canceled ? 'checked' : ''} onchange="toggleContractCanceled(${c._originalIndex})"> Gekündigt
+                            </label>
+                            <button type="button" class="btn-sm" style="color:var(--red); border:none; padding:4px; background:transparent; font-size:14px;" onclick="deleteContract(${c._originalIndex})">🗑️</button>
+                        </div>
+                    </div>
+                    <div class="c-main-text" style="font-size:15px; margin-bottom:6px;"><b>${safeStr(c.provider)}</b></div>
+                    <div class="c-main-text" style="font-size:12px; color:var(--text-dim); line-height:1.5;">
+                        ${c.account ? `Konto-Nr: <span style="color:var(--text);">${safeStr(c.account)}</span><br>` : ''}
+                        ${c.id ? `Kunden-Nr: <span style="color:var(--text);">${safeStr(c.id)}</span><br>` : ''}
+                        Ende: <span style="color:var(--text);">${c.end ? new Date(c.end).toLocaleDateString('de-DE') : '-'}</span>
+                        ${c.note ? `<br><div style="margin-top:4px; padding:6px; background:rgba(255,255,255,0.05); border-radius:4px;">${safeStr(c.note)}</div>` : ''}
+                    </div>
+                </div>`;
+            });
+        }
+    });
+    setHtml('contract-list', h || '<div style="text-align:center; padding:20px; color:var(--text-dim);">Keine persönlichen Daten hinterlegt.</div>');
+}
+
 
 // ----- KONTEN VERWALTUNG -----
-window.toggleKontoGroup = function(idx) {
+function toggleKontoGroup(idx) {
     kontoGroups[idx].open = !kontoGroups[idx].open;
     sv('mhb_app_konto_groups', kontoGroups);
-    window.refreshKonten();
+    refreshKonten();
 }
 
-window.toggleExpandCollapseAllKonten = function() {
+function toggleExpandCollapseAllKonten() {
     const btn = document.getElementById('btn-expand-collapse-konten');
     const someClosed = kontoGroups.some(g => !g.open);
     kontoGroups.forEach(g => g.open = someClosed);
     sv('mhb_app_konto_groups', kontoGroups);
     if(btn) btn.innerHTML = someClosed ? '🔽 Alle ausklappen' : '▶️ Alle einklappen';
-    window.refreshKonten();
+    refreshKonten();
 }
 
-window.addKontoGroup = function() {
+function addKontoGroup() {
     setTimeout(() => {
         const n = prompt("Name der neuen Gruppe:");
         if(n && n.trim() !== '') {
             kontoGroups.push({id: 'grp_' + Date.now(), label: n.trim(), open: true});
-            sv('mhb_app_konto_groups', kontoGroups); window.refreshAll(); showToast('✅ Gruppe hinzugefügt');
+            sv('mhb_app_konto_groups', kontoGroups); refreshAll(); showToast('✅ Gruppe hinzugefügt');
         }
     }, 10);
 }
 
-window.manageSingleKontoGroup = function(idx) {
+function manageSingleKontoGroup(idx) {
     setTimeout(() => {
         const grp = kontoGroups[idx];
         const action = prompt(`Aktion für Gruppe "${grp.label}":\n\n1 = Umbenennen\n2 = Löschen`, "1");
         if(action === "1") {
             const newName = prompt('Neuer Name:', grp.label);
-            if(newName && newName.trim() !== '') { kontoGroups[idx].label = newName.trim(); sv('mhb_app_konto_groups', kontoGroups); window.refreshAll(); }
+            if(newName && newName.trim() !== '') { kontoGroups[idx].label = newName.trim(); sv('mhb_app_konto_groups', kontoGroups); refreshAll(); }
         } else if (action === "2") {
             if(confirm(`GANZE GRUPPE "${grp.label}" löschen? (Achtung: Konten darin verlieren ihre Zuweisung!)`)) { 
-                kontoGroups.splice(idx, 1); sv('mhb_app_konto_groups', kontoGroups); window.refreshAll(); 
+                kontoGroups.splice(idx, 1); sv('mhb_app_konto_groups', kontoGroups); refreshAll(); 
             }
         }
     }, 10);
 }
 
-window.refreshKonten = function() {
+function refreshKonten() {
     let html = '';
-    
     const kg = accounts.reduce((s,a) => s + (parseFloat(a.balance)||0), 0);
     setTxt('k-gesamt', fmt(kg));
 
@@ -710,14 +809,14 @@ window.refreshKonten = function() {
         const accs = accounts.filter(a => a.grp === g.id);
         const gSum = accs.reduce((s,a) => s + (parseFloat(a.balance)||0), 0);
         
-        html += `<div class="grp-banner" style="cursor:pointer; display:flex; justify-content:space-between; align-items:center;" onclick="window.toggleKontoGroup(${gIdx})">
+        html += `<div class="grp-banner" onclick="toggleKontoGroup(${gIdx})">
                    <div style="display:flex; align-items:center; gap:8px;">
                        <span style="color:var(--gold); font-size:18px; line-height:1;">${g.open ? '▾' : '▸'}</span>
                        <div class="grp-banner-title" style="margin:0;">${safeStr(g.label)}</div>
                    </div>
                    <div style="display:flex; align-items:center; gap:12px;">
                        <div class="grp-banner-sum" style="margin:0; font-size:18px;">${fmt(gSum)}</div>
-                       <button type="button" class="btn-sm" style="background:transparent;color:var(--text-dim);font-size:16px;padding:4px;border:none;" onclick="window.manageSingleKontoGroup(${gIdx}); event.stopPropagation();">⚙️</button>
+                       <button type="button" class="btn-sm" style="background:transparent;color:var(--text-dim);font-size:16px;padding:4px;border:none;" onclick="manageSingleKontoGroup(${gIdx}); event.stopPropagation();">⚙️</button>
                    </div>
                  </div>`;
         
@@ -726,15 +825,15 @@ window.refreshKonten = function() {
                 accs.forEach(a => {
                     let oldBal = null;
                     if(a.history && a.history.length > 1) { oldBal = a.history[a.history.length - 2].bal; }
-                    const histBtn = (a.history && a.history.length > 1) ? `<button type="button" class="btn-sm" style="background:transparent; border:1px solid var(--blue); color:var(--blue);" onclick="window.openHistoryModal(${a.id})" title="Kontoverlauf ansehen">🕒 Verlauf</button>` : '';
+                    const histBtn = (a.history && a.history.length > 1) ? `<button type="button" class="btn-sm" style="background:transparent; border:1px solid var(--blue); color:var(--blue);" onclick="openHistoryModal(${a.id})" title="Kontoverlauf ansehen">🕒 Verlauf</button>` : '';
 
                     html += `<div class="konto-chip">
                         <div style="display:flex; justify-content:space-between; align-items:center; width:100%;">
                             <div class="konto-name">${safeStr(a.name)}</div>
                             <div style="display:flex; gap:6px;">
                                 ${histBtn}
-                                <button type="button" class="btn-sm" onclick="window.renameKonto(${a.id})">✏️</button>
-                                <button type="button" class="btn-sm" style="color:var(--red);" onclick="window.delKonto(${a.id})">🗑️</button>
+                                <button type="button" class="btn-sm" onclick="renameKonto(${a.id})">✏️</button>
+                                <button type="button" class="btn-sm" style="color:var(--red);" onclick="delKonto(${a.id})">🗑️</button>
                             </div>
                         </div>
                         <div style="display:flex; flex-direction:column; align-items:center; background:var(--nav-bg); padding:16px; border-radius:10px; border:1px solid var(--border);">
@@ -744,7 +843,7 @@ window.refreshKonten = function() {
                             </div>
                             <div style="display:flex; align-items:center; justify-content:center; gap:8px; margin-top:12px; width:100%; max-width:280px;">
                                 <input type="number" id="upd-bal-${a.id}" placeholder="Neuer Kontostand" style="flex:1; text-align:center; font-size:14px; padding:12px; border-radius:8px;" />
-                                <button type="button" class="btn-sm" style="background:var(--green); color:#fff; padding:12px 16px; font-size:16px; border-radius:8px;" onclick="window.updateKontoBal(${a.id})">💾</button>
+                                <button type="button" class="btn-sm" style="background:var(--green); color:#fff; padding:12px 16px; font-size:16px; border-radius:8px;" onclick="updateKontoBal(${a.id})">💾</button>
                             </div>
                         </div>
                     </div>`;
@@ -759,7 +858,7 @@ window.refreshKonten = function() {
     if(nkGrpSel) nkGrpSel.innerHTML = kontoGroups.map(g => `<option value="${safeStr(g.id)}">${safeStr(g.label)}</option>`).join('');
 }
 
-window.addKonto = function(){
+function addKonto(){
   const name=document.getElementById('nk-name').value.trim();
   if(!name){showToast('❌ Name eingeben');return;}
   const bal=parseFloat(document.getElementById('nk-bal').value.replace(',','.'))||0;
@@ -767,10 +866,10 @@ window.addKonto = function(){
   accounts.push({id:Date.now(), name, balance:bal, grp, history:[{ts:Date.now(), bal:bal}]});
   sv('mhb_app_accounts',accounts);
   document.getElementById('nk-name').value=''; document.getElementById('nk-bal').value='';
-  window.refreshAll(); showToast('✅ Konto gespeichert');
+  refreshAll(); showToast('✅ Konto gespeichert');
 }
 
-window.updateKontoBal = function(id) {
+function updateKontoBal(id) {
     const a = accounts.find(x => x.id === id);
     const inputEl = document.getElementById('upd-bal-' + id);
     if(!a || !inputEl) return;
@@ -782,23 +881,23 @@ window.updateKontoBal = function(id) {
             a.history.push({ts: Date.now(), bal: val});
         }
         inputEl.value = '';
-        sv('mhb_app_accounts', accounts); window.refreshAll(); showToast('✅ Stand aktualisiert');
+        sv('mhb_app_accounts', accounts); refreshAll(); showToast('✅ Stand aktualisiert');
     }
 }
 
-window.delKonto = function(id) {
-    if(confirm('Konto löschen?')) { accounts = accounts.filter(x => x.id !== id); sv('mhb_app_accounts', accounts); window.refreshAll(); }
+function delKonto(id) {
+    if(confirm('Konto löschen?')) { accounts = accounts.filter(x => x.id !== id); sv('mhb_app_accounts', accounts); refreshAll(); }
 }
 
-window.renameKonto = function(id) {
+function renameKonto(id) {
   setTimeout(() => {
       const a=accounts.find(x=>x.id===id); if(!a)return;
       const n=prompt('Neuer Kontoname:', a.name);
-      if(n && n.trim() !== '') { a.name=n.trim(); sv('mhb_app_accounts',accounts); window.refreshAll(); }
+      if(n && n.trim() !== '') { a.name=n.trim(); sv('mhb_app_accounts',accounts); refreshAll(); }
   }, 10);
 }
 
-window.openHistoryModal = function(id) {
+function openHistoryModal(id) {
     const a = accounts.find(x=>x.id===id); if(!a || !a.history) return;
     const content = document.getElementById('history-modal-content');
     let html = '';
@@ -814,27 +913,64 @@ window.openHistoryModal = function(id) {
     content.innerHTML = html;
     document.getElementById('history-modal').style.display = 'flex';
 }
-window.closeHistoryModal = function() { document.getElementById('history-modal').style.display = 'none'; }
+function closeHistoryModal() { document.getElementById('history-modal').style.display = 'none'; }
 
 
-window.refreshUebersicht = function() {
+function refreshUebersicht() {
     let html = '';
     const filtered = entries.filter(e => e.year == activeYear);
+    
     for(let m=11; m>=0; m--) {
         const mEntries = filtered.filter(e => e.month == m).sort((a,b)=>b.ts - a.ts);
         if(mEntries.length > 0) {
             html += `<div class="sec-label" style="color:var(--gold); border-bottom:1px solid var(--border); padding-bottom:4px;">${MONTHS[m]} ${activeYear}</div>`;
+            
+            // Gruppieren nach Kategorie & Typ
+            let grouped = {};
             mEntries.forEach(e => {
-                const dStr = e.ts ? new Date(e.ts).toLocaleDateString('de-DE') : 'Unbekannt';
-                html += `<div class="row-item">
-                    <div style="flex:1;"><div class="row-label">${safeStr(e.cat)}</div><div class="row-sub">${e.note ? safeStr(e.note) + ' | ' : ''}${dStr}</div></div>
-                    <div style="display:flex; align-items:center; gap:8px;"><span class="row-val ${e.type==='inc'?'green':'red'}">${e.type==='inc'?'+':'-'}${fmt(e.amount)}</span><button type="button" class="btn-sm" style="background:transparent;border:1px solid var(--border);" onclick="window.openEditModal(${entries.indexOf(e)})">✏️</button></div>
-                </div>`;
+                const k = e.cat + '|' + e.type;
+                if(!grouped[k]) grouped[k] = [];
+                grouped[k].push(e);
+            });
+            
+            Object.keys(grouped).forEach(k => {
+                const gEntries = grouped[k];
+                if(gEntries.length === 1) {
+                    // Einzelner Eintrag
+                    const e = gEntries[0];
+                    const dStr = e.ts ? new Date(e.ts).toLocaleDateString('de-DE') : 'Unbekannt';
+                    html += `<div class="row-item">
+                        <div style="flex:1;"><div class="row-label">${safeStr(e.cat)}</div><div class="row-sub">${e.note ? safeStr(e.note) + ' | ' : ''}${dStr}</div></div>
+                        <div style="display:flex; align-items:center; gap:8px;"><span class="row-val ${e.type==='inc'?'green':'red'}">${e.type==='inc'?'+':'-'}${fmt(e.amount)}</span><button type="button" class="btn-sm" style="background:transparent;border:1px solid var(--border);" onclick="openEditModal(${entries.indexOf(e)})">✏️</button></div>
+                    </div>`;
+                } else {
+                    // Mehrere Einträge -> Zuklappbare Gruppe
+                    const totalAmt = gEntries.reduce((sum, e) => sum + parseFloat(e.amount), 0);
+                    const type = gEntries[0].type;
+                    const cat = gEntries[0].cat;
+                    const groupHeaderId = 'hist_grp_' + m + '_' + k.replace(/[^a-zA-Z0-9]/g, '');
+
+                    html += `<div class="row-item" style="cursor:pointer; background:rgba(255,255,255,0.02); border-radius:6px; padding:8px;" onclick="document.getElementById('${groupHeaderId}').style.display = document.getElementById('${groupHeaderId}').style.display === 'none' ? 'block' : 'none';">
+                        <div style="flex:1;"><div class="row-label" style="font-weight:bold; color:var(--gold);">▾ ${safeStr(cat)} <span style="font-size:10px; color:var(--text-dim);">(${gEntries.length} Einträge)</span></div></div>
+                        <div style="display:flex; align-items:center; gap:8px;"><span class="row-val ${type==='inc'?'green':'red'}">${type==='inc'?'+':'-'}${fmt(totalAmt)}</span></div>
+                    </div>`;
+
+                    html += `<div id="${groupHeaderId}" style="display:none; padding-left:15px; border-left:2px solid var(--border); margin-left:5px; margin-bottom:8px;">`;
+                    gEntries.forEach(e => {
+                        const dStr = e.ts ? new Date(e.ts).toLocaleDateString('de-DE') : 'Unbekannt';
+                        html += `<div class="row-item" style="border-bottom:none; padding:4px 0;">
+                            <div style="flex:1;"><div class="row-sub">${e.note ? safeStr(e.note) + ' | ' : ''}${dStr}</div></div>
+                            <div style="display:flex; align-items:center; gap:8px;"><span class="row-val ${e.type==='inc'?'green':'red'}" style="font-size:11px;">${e.type==='inc'?'+':'-'}${fmt(e.amount)}</span><button type="button" class="btn-sm" style="background:transparent;border:1px solid var(--border); padding:2px 4px; font-size:10px;" onclick="openEditModal(${entries.indexOf(e)})">✏️</button></div>
+                        </div>`;
+                    });
+                    html += `</div>`;
+                }
             });
         }
     }
     setHtml('ueb-buchungen', html || '<div style="color:var(--text-dim);font-size:13px;padding:10px 0;">Keine Buchungen.</div>');
 }
+
 
 // ----- TABLE ENGINE -----
 function fmtT(v, color, bbl=false) {
@@ -849,21 +985,20 @@ function generateCell(cat, m, type) {
     const color = type === 'inc' ? 'pos' : 'neg';
     const sCat = safeStr(cat);
     
-    // Wenn ein Wert da ist, rufen wir openAddModal auf UND übergeben den Wert, damit er im Input-Feld geladen wird.
     if (val === 0) {
-        return `<td><div class="cell-col"><span class="tbl-cell-empty" onclick="window.openAddModal('${sCat}','${type}',${m ?? CUR_M})">–</span></div></td>`;
+        return `<td><div class="cell-col"><span class="tbl-cell-empty" onclick="openAddModal('${sCat}','${type}',${m ?? CUR_M})">–</span></div></td>`;
     }
     
-    let content = `<span class="tbl-cell-val ${color}" onclick="window.openAddModal('${sCat}','${type}',${m ?? CUR_M}, ${val})">${val.toLocaleString('de-DE',{minimumFractionDigits:2})}</span>`;
+    let content = `<span class="tbl-cell-val ${color}" onclick="openAddModal('${sCat}','${type}',${m ?? CUR_M}, ${val})">${val.toLocaleString('de-DE',{minimumFractionDigits:2})}</span>`;
     
     if (hasRec && !hasEntries) {
-        content = `<span class="tbl-cell-val ${color}" style="opacity:0.6;" onclick="window.editRec('${sCat}',${m ?? CUR_M})">🔄 ${val.toLocaleString('de-DE',{minimumFractionDigits:2})}</span>`;
+        content = `<span class="tbl-cell-val ${color}" style="opacity:0.6;" onclick="editRec('${sCat}',${m ?? CUR_M})">🔄 ${val.toLocaleString('de-DE',{minimumFractionDigits:2})}</span>`;
     }
     
     return `<td><div class="cell-col">${content}</div></td>`;
 }
 
-window.buildTable = function() {
+function buildTable() {
     const chk = document.getElementById('tbl-only-current');
     const showOnlyCurrent = chk ? chk.checked : false;
     const visMonths = showOnlyCurrent ? [CUR_M] : [...Array(12).keys()];
@@ -893,17 +1028,17 @@ window.buildTable = function() {
     visMonths.forEach(m => tbl += `<th>${MONTHS_SHORT[m]}</th>`);
     tbl += `<th>Gesamt</th><th>Ø / Monat</th></tr></thead><tbody>`;
 
-    // EINNAHMEN
-    const addIncGrpBtn = editMode ? `<button type="button" class="btn-action" style="color:var(--green);" onclick="window.addIncGroup()">➕</button>` : '';
+    // EINNAHMEN TOP LEVEL
+    const addIncGrpBtn = editMode ? `<button type="button" class="btn-action" style="color:var(--green);" onclick="addIncGroup()">➕</button>` : '';
     tbl += `<tr class="sec-row inc"><td><div class="tbl-cell-flex"><span>📥 EINNAHMEN</span>${addIncGrpBtn}</div></td>`;
     visMonths.forEach(m => tbl += `<td>${fmtT(getTotalCellVal('inc', m, activeYear), 'pos', true)}</td>`);
     tbl += `<td>${fmtT(getTotalYtdSum('inc'), 'pos', true)}</td><td>${fmtT(getTotalAvg('inc'), 'pos', true)}</td></tr>`;
     
     incGroups.forEach((g, gIdx) => {
         const sGrpId = safeStr(g.id);
-        const grpIncActions = editMode ? `<div style="display:flex;gap:2px;"><button type="button" class="btn-action" style="color:var(--green);" onclick="window.addIncItem(${gIdx}); event.stopPropagation();">➕</button><button type="button" class="btn-action" style="color:var(--gold);" onclick="window.renameIncGroup(${gIdx}); event.stopPropagation();">✏️</button><button type="button" class="btn-action" style="color:var(--red);" onclick="window.deleteIncGroup(${gIdx}); event.stopPropagation();">🗑️</button></div>` : '';
+        const grpIncActions = editMode ? `<div style="display:flex;gap:2px;"><button type="button" class="btn-action" style="color:var(--green);" onclick="addIncItem(${gIdx}); event.stopPropagation();">➕</button><button type="button" class="btn-action" style="color:var(--gold);" onclick="renameIncGroup(${gIdx}); event.stopPropagation();">✏️</button><button type="button" class="btn-action" style="color:var(--red);" onclick="deleteIncGroup(${gIdx}); event.stopPropagation();">🗑️</button></div>` : '';
         
-        tbl += `<tr class="grp-hdr inc" style="cursor:pointer;" onclick="window.toggleTblGroup('inc', ${gIdx})">
+        tbl += `<tr class="grp-hdr inc" style="cursor:pointer;" onclick="toggleTblGroup('inc', ${gIdx})">
             <td><div class="tbl-cell-flex"><div class="cat-name-wrapper"><span style="margin-right:4px;">${g.open?'▾':'▸'}</span><span class="cat-name-text">${safeStr(g.label)}</span></div>${grpIncActions}</div></td>`;
         
         visMonths.forEach(m => tbl += `<td>${fmtT(getGroupCellVal(g, m, 'inc'), 'pos', false)}</td>`);
@@ -914,9 +1049,9 @@ window.buildTable = function() {
             (g.items||[]).forEach((cat, iIdx) => {
                 const isFav = favCats.includes(cat);
                 const sCat = safeStr(cat);
-                const itemIncActions = editMode ? `<div style="display:flex;gap:2px;"><button type="button" class="btn-action" style="color:var(--gold);" onclick="window.renameIncItem(${gIdx}, ${iIdx})">✏️</button><button type="button" class="btn-action" style="color:var(--red);" onclick="window.deleteIncItem(${gIdx}, ${iIdx})">🗑️</button></div>` : '';
+                const itemIncActions = editMode ? `<div style="display:flex;gap:2px;"><button type="button" class="btn-action" style="color:var(--gold);" onclick="renameIncItem(${gIdx}, ${iIdx})">✏️</button><button type="button" class="btn-action" style="color:var(--red);" onclick="deleteIncItem(${gIdx}, ${iIdx})">🗑️</button></div>` : '';
 
-                tbl += `<tr><td style="padding-left:20px;"><div class="tbl-cell-flex"><div class="cat-name-wrapper"><span class="fav-star ${isFav?'active':''}" onclick="window.toggleFav('${sCat}', event); event.stopPropagation();">${isFav?'★':'☆'}</span><span class="cat-name-text" title="${sCat}">${sCat}</span></div>${itemIncActions}</div></td>`;
+                tbl += `<tr><td style="padding-left:20px;"><div class="tbl-cell-flex"><div class="cat-name-wrapper"><span class="fav-star ${isFav?'active':''}" onclick="toggleFav('${sCat}', event); event.stopPropagation();">${isFav?'★':'☆'}</span><span class="cat-name-text" title="${sCat}">${sCat}</span></div>${itemIncActions}</div></td>`;
                 visMonths.forEach(m => tbl += generateCell(cat, m, 'inc'));
                 let sumC = 0; for(let m=0;m<12;m++) sumC+=getCellVal(cat,m,'inc', activeYear);
                 tbl += `<td>${fmtT(sumC, 'pos')}</td><td>${fmtT(getCatAvg(cat, 'inc'), 'pos')}</td></tr>`;
@@ -924,17 +1059,17 @@ window.buildTable = function() {
         }
     });
 
-    // AUSGABEN
-    const addExpGrpBtn = editMode ? `<button type="button" class="btn-action" style="color:var(--red);" onclick="window.addExpGroup()">➕</button>` : '';
+    // AUSGABEN TOP LEVEL
+    const addExpGrpBtn = editMode ? `<button type="button" class="btn-action" style="color:var(--red);" onclick="addExpGroup()">➕</button>` : '';
     tbl += `<tr class="sec-row exp"><td><div class="tbl-cell-flex"><span>📤 AUSGABEN</span>${addExpGrpBtn}</div></td>`;
     visMonths.forEach(m => tbl += `<td>${fmtT(getTotalCellVal('exp', m, activeYear), 'neg', true)}</td>`);
     tbl += `<td>${fmtT(getTotalYtdSum('exp'), 'neg', true)}</td><td>${fmtT(getTotalAvg('exp'), 'neg', true)}</td></tr>`;
 
     expGroups.forEach((g, gIdx) => {
         const sGrpId = safeStr(g.id);
-        const grpExpActions = editMode ? `<div style="display:flex;gap:2px;"><button type="button" class="btn-action" style="color:var(--red);" onclick="window.addExpItem(${gIdx}); event.stopPropagation();">➕</button><button type="button" class="btn-action" style="color:var(--gold);" onclick="window.renameExpGroup(${gIdx}); event.stopPropagation();">✏️</button><button type="button" class="btn-action" style="color:var(--red);" onclick="window.deleteExpGroup(${gIdx}); event.stopPropagation();">🗑️</button></div>` : '';
+        const grpExpActions = editMode ? `<div style="display:flex;gap:2px;"><button type="button" class="btn-action" style="color:var(--red);" onclick="addExpItem(${gIdx}); event.stopPropagation();">➕</button><button type="button" class="btn-action" style="color:var(--gold);" onclick="renameExpGroup(${gIdx}); event.stopPropagation();">✏️</button><button type="button" class="btn-action" style="color:var(--red);" onclick="deleteExpGroup(${gIdx}); event.stopPropagation();">🗑️</button></div>` : '';
 
-        tbl += `<tr class="grp-hdr exp" style="cursor:pointer;" onclick="window.toggleTblGroup('exp', ${gIdx})">
+        tbl += `<tr class="grp-hdr exp" style="cursor:pointer;" onclick="toggleTblGroup('exp', ${gIdx})">
             <td><div class="tbl-cell-flex"><div class="cat-name-wrapper"><span style="margin-right:4px;">${g.open?'▾':'▸'}</span><span class="cat-name-text">${safeStr(g.label)}</span></div>${grpExpActions}</div></td>`;
         
         visMonths.forEach(m => tbl += `<td>${fmtT(getGroupCellVal(g, m, 'exp'), 'neg', false)}</td>`);
@@ -945,9 +1080,9 @@ window.buildTable = function() {
             (g.items||[]).forEach((cat, iIdx) => {
                 const isFav = favCats.includes(cat);
                 const sCat = safeStr(cat);
-                const itemExpActions = editMode ? `<div style="display:flex;gap:2px;"><button type="button" class="btn-action" style="color:var(--gold);" onclick="window.renameExpItem(${gIdx}, ${iIdx})">✏️</button><button type="button" class="btn-action" style="color:var(--red);" onclick="window.deleteExpItem(${gIdx}, ${iIdx})">🗑️</button></div>` : '';
+                const itemExpActions = editMode ? `<div style="display:flex;gap:2px;"><button type="button" class="btn-action" style="color:var(--gold);" onclick="renameExpItem(${gIdx}, ${iIdx})">✏️</button><button type="button" class="btn-action" style="color:var(--red);" onclick="deleteExpItem(${gIdx}, ${iIdx})">🗑️</button></div>` : '';
 
-                tbl += `<tr><td style="padding-left:20px;"><div class="tbl-cell-flex"><div class="cat-name-wrapper"><span class="fav-star ${isFav?'active':''}" onclick="window.toggleFav('${sCat}', event); event.stopPropagation();">${isFav?'★':'☆'}</span><span class="cat-name-text" title="${sCat}">${sCat}</span></div>${itemExpActions}</div></td>`;
+                tbl += `<tr><td style="padding-left:20px;"><div class="tbl-cell-flex"><div class="cat-name-wrapper"><span class="fav-star ${isFav?'active':''}" onclick="toggleFav('${sCat}', event); event.stopPropagation();">${isFav?'★':'☆'}</span><span class="cat-name-text" title="${sCat}">${sCat}</span></div>${itemExpActions}</div></td>`;
                 visMonths.forEach(m => tbl += generateCell(cat, m, 'exp'));
                 let sumC = 0; for(let m=0;m<12;m++) sumC+=getCellVal(cat,m,'exp', activeYear);
                 tbl += `<td>${fmtT(sumC, 'neg')}</td><td>${fmtT(getCatAvg(cat, 'exp'), 'neg')}</td></tr>`;
@@ -962,7 +1097,7 @@ window.buildTable = function() {
     setHtml('tabelle-wrap', tbl);
 }
 
-window.renderMiniOverview = function() {
+function renderMiniOverview() {
   let html = `<table class="tbl"><thead><tr><th>Kategorie</th><th>${MONTHS_SHORT[CUR_M]}</th></tr></thead><tbody>`;
   html += `<tr class="sec-row inc"><td>📥 EINNAHMEN</td><td></td></tr>`;
   incGroups.forEach(g => (g.items||[]).forEach(cat => { const val = getCellVal(cat, CUR_M, 'inc', activeYear); if(val > 0) html += `<tr><td>${safeStr(cat)}</td><td>${generateCell(cat, CUR_M, 'inc').replace('<td>','').replace('</td>','')}</td></tr>`; }));
@@ -972,47 +1107,47 @@ window.renderMiniOverview = function() {
   setHtml('mini-overview', html);
 }
 
-window.renderTabelle = function() { try{ buildTable(); }catch(e){console.error(e)} }
+function renderTabelle() { try{ buildTable(); }catch(e){console.error(e)} }
 
-window.toggleTblGroup = function(type, idx) { 
-    if(window.isEditMode) return; // Prevent toggling while editing
+function toggleTblGroup(type, idx) { 
+    if(window.isEditMode) return; 
     if(type === 'inc') { incGroups[idx].open = !incGroups[idx].open; sv('mhb_app_inc_groups', incGroups); }
     else { expGroups[idx].open = !expGroups[idx].open; sv('mhb_app_exp_groups', expGroups); }
-    window.renderTabelle(); 
+    renderTabelle(); 
 }
 
-window.expandAllGroups = function() {
+function expandAllGroups() {
     incGroups.forEach(g => g.open = true);
     expGroups.forEach(g => g.open = true);
     sv('mhb_app_inc_groups', incGroups);
     sv('mhb_app_exp_groups', expGroups);
-    window.renderTabelle();
+    renderTabelle();
 }
 
-window.collapseAllGroups = function() {
+function collapseAllGroups() {
     incGroups.forEach(g => g.open = false);
     expGroups.forEach(g => g.open = false);
     sv('mhb_app_inc_groups', incGroups);
     sv('mhb_app_exp_groups', expGroups);
-    window.renderTabelle();
+    renderTabelle();
 }
 
-window.toggleExpandCollapseAll = function() {
+function toggleExpandCollapseAll() {
     const someClosed = incGroups.some(g => !g.open) || expGroups.some(g => !g.open);
     incGroups.forEach(g => g.open = someClosed);
     expGroups.forEach(g => g.open = someClosed);
     sv('mhb_app_inc_groups', incGroups);
     sv('mhb_app_exp_groups', expGroups);
-    window.renderTabelle();
+    renderTabelle();
 }
 
-window.toggleEditMode = function() {
+function toggleEditMode() {
     window.isEditMode = !window.isEditMode;
-    window.renderTabelle();
+    renderTabelle();
 }
 
 // ----- SCHNELLEINGABE & TOGGLES -----
-window.toggleQsType = function() {
+function toggleQsType() {
     const typeInputs = document.querySelectorAll('input[name="qs-type"]');
     if(!typeInputs.length) return;
     let type = 'exp'; typeInputs.forEach(r => { if(r.checked) type = r.value; });
@@ -1038,7 +1173,7 @@ window.toggleQsType = function() {
     }
 }
 
-window.quickSaveUnified = function(){
+function quickSaveUnified(){
   const amtInput = document.getElementById('qs-amt');
   if(!amtInput) return;
   const a = parseFloat(amtInput.value.replace(',','.'));
@@ -1063,68 +1198,59 @@ window.quickSaveUnified = function(){
   const btn = document.getElementById('qs-save-btn');
   if(btn) { btn.style.background = 'var(--green)'; setTimeout(() => btn.style.background = '', 1000); }
   
-  window.refreshAll(); showToast('✅ Gespeichert');
+  refreshAll(); showToast('✅ Gespeichert');
 }
 
-// Event-Listener für ENTER-Taste (Schnellerfassung & Modals)
+// Event-Listener für ENTER-Taste
 document.addEventListener('keydown', function(event) {
     if (event.key === 'Enter') {
         const activeElement = document.activeElement;
-        
-        // Schnellerfassung
         if (activeElement && (activeElement.id === 'qs-amt' || activeElement.id === 'qs-note')) {
-            window.quickSaveUnified();
+            quickSaveUnified();
             setTimeout(() => { const amtInput = document.getElementById('qs-amt'); if(amtInput) amtInput.focus(); }, 50);
         }
-        // Neu-Hinzufügen Modal
-        else if (activeElement && activeElement.id === 'add-modal-amt') {
-            window.saveAddModal();
-        }
-        // Dauerauftrag Modal
-        else if (activeElement && activeElement.id === 'rec-modal-amt') {
-            // Standardmäßig 'only' (nur diesen Monat) beim Drücken von Enter ausführen
-            window.saveRecModal('only'); 
-        }
+        else if (activeElement && activeElement.id === 'add-modal-amt') saveAddModal();
+        else if (activeElement && activeElement.id === 'rec-modal-amt') saveRecModal('only'); 
     }
 });
 
 
 // ----- EINNAHMEN GRUPPEN/ITEMS MGMT -----
-window.addIncGroup = function() {
+function addIncGroup() {
     setTimeout(() => {
         const name = prompt('Name der neuen Einnahmegruppe:');
         if(name && name.trim() !== '') {
             const id = name.toLowerCase().replace(/[^a-z0-9]/g, '');
             incGroups.push({ id: id, label: name.trim(), open: true, items: [] });
-            sv('mhb_app_inc_groups', incGroups); window.refreshAll(); showToast('✅ Gruppe hinzugefügt');
+            sv('mhb_app_inc_groups', incGroups); refreshAll(); showToast('✅ Gruppe hinzugefügt');
         }
     }, 10);
 }
 
-window.renameIncGroup = function(gIdx) {
+function renameIncGroup(gIdx) {
     setTimeout(() => {
         const grp = incGroups[gIdx];
         const newName = prompt('Neuer Name:', grp.label);
-        if(newName && newName.trim() !== '') { incGroups[gIdx].label = newName.trim(); sv('mhb_app_inc_groups', incGroups); window.refreshAll(); }
+        if(newName && newName.trim() !== '') { incGroups[gIdx].label = newName.trim(); sv('mhb_app_inc_groups', incGroups); refreshAll(); }
     }, 10);
 }
 
-window.deleteIncGroup = function(gIdx) {
+function deleteIncGroup(gIdx) {
     setTimeout(() => {
         const grp = incGroups[gIdx];
-        if(confirm(`GANZE GRUPPE "${grp.label}" löschen?`)) { incGroups.splice(gIdx, 1); sv('mhb_app_inc_groups', incGroups); window.refreshAll(); }
+        if(confirm(`GANZE GRUPPE "${grp.label}" löschen?`)) { incGroups.splice(gIdx, 1); sv('mhb_app_inc_groups', incGroups); refreshAll(); }
     }, 10);
 }
 
-window.addIncItem = function(gIdx) {
+function addIncItem(gIdx) {
     setTimeout(() => {
         const grp = incGroups[gIdx];
         const name = prompt(`Neue Kategorie für "${grp.label}":`);
-        if(name && name.trim() !== '') { incGroups[gIdx].items.push(name.trim()); sv('mhb_app_inc_groups', incGroups); window.refreshAll(); showToast('✅ Hinzugefügt'); }
+        if(name && name.trim() !== '') { incGroups[gIdx].items.push(name.trim()); sv('mhb_app_inc_groups', incGroups); refreshAll(); showToast('✅ Hinzugefügt'); }
     }, 10);
 }
 
-window.renameIncItem = function(gIdx, iIdx) {
+function renameIncItem(gIdx, iIdx) {
     setTimeout(() => {
         const oldCat = incGroups[gIdx].items[iIdx];
         const newName = prompt('Neuer Name:', oldCat);
@@ -1133,58 +1259,58 @@ window.renameIncItem = function(gIdx, iIdx) {
             entries.forEach(e => { if(e.cat === oldCat && e.type === 'inc') e.cat = newName.trim(); }); sv('mhb_app_entries', entries);
             if(recurring[oldCat]) { recurring[newName.trim()] = recurring[oldCat]; delete recurring[oldCat]; sv('mhb_app_recurring', recurring); }
             if(favCats.includes(oldCat)) { favCats = favCats.filter(c => c !== oldCat); favCats.push(newName.trim()); sv('mhb_app_favs', favCats); }
-            window.refreshAll(); showToast('✅ Umbenannt');
+            refreshAll(); showToast('✅ Umbenannt');
         }
     }, 10);
 }
 
-window.deleteIncItem = function(gIdx, iIdx) {
+function deleteIncItem(gIdx, iIdx) {
     setTimeout(() => {
         const oldCat = incGroups[gIdx].items[iIdx];
         if(confirm(`Kategorie "${oldCat}" wirklich löschen?`)) {
             incGroups[gIdx].items.splice(iIdx, 1); sv('mhb_app_inc_groups', incGroups);
             if(favCats.includes(oldCat)) { favCats = favCats.filter(c => c !== oldCat); sv('mhb_app_favs', favCats); }
-            window.refreshAll();
+            refreshAll();
         }
     }, 10);
 }
 
 // ----- AUSGABEN GRUPPEN/ITEMS MGMT -----
-window.addExpGroup = function() {
+function addExpGroup() {
     setTimeout(() => {
         const name = prompt('Name der neuen Ausgabengruppe:');
         if(name && name.trim() !== '') {
             const id = name.toLowerCase().replace(/[^a-z0-9]/g, '');
             expGroups.push({ id: id, label: name.trim(), open: true, items: [] });
-            sv('mhb_app_exp_groups', expGroups); window.refreshAll(); showToast('✅ Gruppe hinzugefügt');
+            sv('mhb_app_exp_groups', expGroups); refreshAll(); showToast('✅ Gruppe hinzugefügt');
         }
     }, 10);
 }
 
-window.renameExpGroup = function(gIdx) {
+function renameExpGroup(gIdx) {
     setTimeout(() => {
         const grp = expGroups[gIdx];
         const newName = prompt('Neuer Name:', grp.label);
-        if(newName && newName.trim() !== '') { expGroups[gIdx].label = newName.trim(); sv('mhb_app_exp_groups', expGroups); window.refreshAll(); }
+        if(newName && newName.trim() !== '') { expGroups[gIdx].label = newName.trim(); sv('mhb_app_exp_groups', expGroups); refreshAll(); }
     }, 10);
 }
 
-window.deleteExpGroup = function(gIdx) {
+function deleteExpGroup(gIdx) {
     setTimeout(() => {
         const grp = expGroups[gIdx];
-        if(confirm(`GANZE GRUPPE "${grp.label}" löschen?`)) { expGroups.splice(gIdx, 1); sv('mhb_app_exp_groups', expGroups); window.refreshAll(); }
+        if(confirm(`GANZE GRUPPE "${grp.label}" löschen?`)) { expGroups.splice(gIdx, 1); sv('mhb_app_exp_groups', expGroups); refreshAll(); }
     }, 10);
 }
 
-window.addExpItem = function(gIdx) {
+function addExpItem(gIdx) {
     setTimeout(() => {
         const grp = expGroups[gIdx];
         const name = prompt(`Neue Kategorie für "${grp.label}":`);
-        if(name && name.trim() !== '') { expGroups[gIdx].items.push(name.trim()); sv('mhb_app_exp_groups', expGroups); window.refreshAll(); showToast('✅ Hinzugefügt'); }
+        if(name && name.trim() !== '') { expGroups[gIdx].items.push(name.trim()); sv('mhb_app_exp_groups', expGroups); refreshAll(); showToast('✅ Hinzugefügt'); }
     }, 10);
 }
 
-window.renameExpItem = function(gIdx, iIdx) {
+function renameExpItem(gIdx, iIdx) {
     setTimeout(() => {
         const oldCat = expGroups[gIdx].items[iIdx];
         const newName = prompt('Neuer Name:', oldCat);
@@ -1193,64 +1319,48 @@ window.renameExpItem = function(gIdx, iIdx) {
             entries.forEach(e => { if(e.cat === oldCat && e.type === 'exp') e.cat = newName.trim(); }); sv('mhb_app_entries', entries);
             if(recurring[oldCat]) { recurring[newName.trim()] = recurring[oldCat]; delete recurring[oldCat]; sv('mhb_app_recurring', recurring); }
             if(favCats.includes(oldCat)) { favCats = favCats.filter(c => c !== oldCat); favCats.push(newName.trim()); sv('mhb_app_favs', favCats); }
-            window.refreshAll(); showToast('✅ Umbenannt');
+            refreshAll(); showToast('✅ Umbenannt');
         }
     }, 10);
 }
 
-window.deleteExpItem = function(gIdx, iIdx) {
+function deleteExpItem(gIdx, iIdx) {
     setTimeout(() => {
         const oldCat = expGroups[gIdx].items[iIdx];
         if(confirm(`Kategorie "${oldCat}" wirklich löschen?`)) {
             expGroups[gIdx].items.splice(iIdx, 1); sv('mhb_app_exp_groups', expGroups);
             if(favCats.includes(oldCat)) { favCats = favCats.filter(c => c !== oldCat); sv('mhb_app_favs', favCats); }
-            window.refreshAll();
+            refreshAll();
         }
     }, 10);
 }
 
 // ----- MODALS & LOGIC -----
-window.openAddModal = function(cat, type, m, existingVal) {
+function openAddModal(cat, type, m, existingVal) {
     addModalState = { cat, type, month: m ?? CUR_M };
     setTxt('add-modal-title', cat);
-    setTxt('add-modal-desc', MONTHS[addModalState.month] + ' ' + activeYear);
     
     const amtInput = document.getElementById('add-modal-amt');
-    
-    // Falls ein Wert übergeben wurde (weil schon was drin steht), lade ihn direkt rein!
-    if(existingVal !== undefined && existingVal > 0) {
-        amtInput.value = existingVal;
-    } else {
-        amtInput.value = '';
-    }
+    if(existingVal !== undefined && existingVal > 0) amtInput.value = existingVal;
+    else amtInput.value = '';
     
     document.getElementById('add-modal').style.display = 'flex';
-    
-    // Auto-Focus
-    setTimeout(() => {
-        if(amtInput) {
-            amtInput.focus();
-            // Optional: Den bestehenden Text direkt markieren, damit man sofort lostippen kann
-            if(amtInput.value) amtInput.select();
-        }
-    }, 50);
+    setTimeout(() => { if(amtInput) { amtInput.focus(); if(amtInput.value) amtInput.select(); } }, 50);
 }
-window.closeAddModal = function() { document.getElementById('add-modal').style.display = 'none'; }
 
-window.saveAddModal = function() {
+function closeAddModal() { document.getElementById('add-modal').style.display = 'none'; }
+
+function saveAddModal() {
     const amtEl = document.getElementById('add-modal-amt');
     if(!amtEl) return;
     const a = parseFloat(amtEl.value.replace(',','.'));
     const freqEl = document.querySelector('input[name="add-freq"]:checked');
     const freq = freqEl ? freqEl.value : 'once';
     
-    if(isNaN(a) || a < 0) return; // a < 0 erlaubt auch 0 als Eingabe (um etwas quasi zu löschen)
+    if(isNaN(a) || a < 0) return; 
     
-    // WENN man einen neuen Wert eingibt, löschen wir vorher alle Einträge für diesen Monat/diese Kategorie, 
-    // damit der alte Wert komplett ÜBERSCHRIEBEN wird und sich nicht addiert.
     entries = entries.filter(e => !(e.year === activeYear && e.month === addModalState.month && e.cat === addModalState.cat && e.type === addModalState.type));
 
-    // Nur neu hinzufügen, wenn der Betrag > 0 ist. (Tippt man 0 ein, wird es quasi nur gelöscht)
     if(a > 0) {
         if(freq === 'once') {
             entries.unshift({cat:addModalState.cat, type:addModalState.type, amount:a, month:addModalState.month, year:activeYear, ts:Date.now()});
@@ -1261,47 +1371,39 @@ window.saveAddModal = function() {
     
     sv('mhb_app_entries', entries); sv('mhb_app_recurring', recurring); 
     amtEl.value = ''; 
-    window.closeAddModal(); window.refreshAll();
+    closeAddModal(); refreshAll();
 }
 
-window.openEditModal = function(idx) {
+function openEditModal(idx) {
     const e = entries[idx];
     if(!e) return;
     setTxt('edit-modal-title', e.cat);
     const amtEl = document.getElementById('edit-modal-amt'); if(amtEl) amtEl.value = e.amount;
     const idxEl = document.getElementById('edit-modal-idx'); if(idxEl) idxEl.value = idx;
     document.getElementById('edit-modal').style.display = 'flex';
-    
-    // Auto-Focus
-    setTimeout(() => {
-        if(amtEl) { amtEl.focus(); amtEl.select(); }
-    }, 50);
+    setTimeout(() => { if(amtEl) { amtEl.focus(); amtEl.select(); } }, 50);
 }
-window.closeEditModal = function() { document.getElementById('edit-modal').style.display = 'none'; }
-window.saveEditModal = function() {
+function closeEditModal() { document.getElementById('edit-modal').style.display = 'none'; }
+function saveEditModal() {
     const idx = document.getElementById('edit-modal-idx').value;
     const amtEl = document.getElementById('edit-modal-amt');
     const a = parseFloat(amtEl.value.replace(',','.'));
-    if(!isNaN(a)) { entries[idx].amount = a; sv('mhb_app_entries', entries); amtEl.value = ''; window.closeEditModal(); window.refreshAll(); }
+    if(!isNaN(a)) { entries[idx].amount = a; sv('mhb_app_entries', entries); amtEl.value = ''; closeEditModal(); refreshAll(); }
 }
-window.deleteEditModal = function() {
+function deleteEditModal() {
     entries.splice(document.getElementById('edit-modal-idx').value, 1);
-    sv('mhb_app_entries', entries); window.closeEditModal(); window.refreshAll();
+    sv('mhb_app_entries', entries); closeEditModal(); refreshAll();
 }
 
-window.editRec = function(cat, m) {
+function editRec(cat, m) {
     activeRecEdit = {id:cat, month:m};
     const amtEl = document.getElementById('rec-modal-amt');
     if(amtEl) amtEl.value = getRecVal(cat, m, recurring[cat]?.type||'exp', activeYear);
     document.getElementById('rec-modal').style.display = 'flex';
-    
-    // Auto-Focus
-    setTimeout(() => {
-        if(amtEl) { amtEl.focus(); amtEl.select(); }
-    }, 50);
+    setTimeout(() => { if(amtEl) { amtEl.focus(); amtEl.select(); } }, 50);
 }
-window.closeRecModal = function() { document.getElementById('rec-modal').style.display='none'; }
-window.saveRecModal = function(mode) {
+function closeRecModal() { document.getElementById('rec-modal').style.display='none'; }
+function saveRecModal(mode) {
     const amtEl = document.getElementById('rec-modal-amt');
     const a = parseFloat(amtEl.value.replace(',','.'));
     if(isNaN(a)) return;
@@ -1311,25 +1413,25 @@ window.saveRecModal = function(mode) {
     if(mode === 'all') { recurring[id].amount = a; recurring[id].overrides = {}; }
     else if(mode === 'only') { recurring[id].overrides[activeYear+'-'+month] = a; }
     else { for(let i=month; i<12; i++) recurring[id].overrides[activeYear+'-'+i] = a; }
-    sv('mhb_app_recurring', recurring); amtEl.value = ''; window.closeRecModal(); window.refreshAll();
+    sv('mhb_app_recurring', recurring); amtEl.value = ''; closeRecModal(); refreshAll();
 }
-window.deleteRecModal = function() {
+function deleteRecModal() {
     if(activeRecEdit && activeRecEdit.id) {
         recurring[activeRecEdit.id].active = false;
-        sv('mhb_app_recurring', recurring); window.closeRecModal(); window.refreshAll();
+        sv('mhb_app_recurring', recurring); closeRecModal(); refreshAll();
     }
 }
 
 // ----- CLOUD SYNC & BACKUP -----
 const API_URL = 'https://api.jsonbin.io/v3/b';
 
-window.syncToCloud = async function() {
+async function syncToCloud() {
   const apiKey = document.getElementById('cloud-api-key').value.trim();
   let binId = document.getElementById('cloud-bin-id').value.trim();
   if(!apiKey) { showToast('❌ Bitte API Key eintragen!'); return; }
 
   showToast('⏳ Speichere...');
-  const dataToSync = { entries, accounts, recurring, expGroups, incGroups, kontoGroups, favCats };
+  const dataToSync = { entries, accounts, recurring, expGroups, incGroups, kontoGroups, favCats, contracts };
 
   try {
     if(!binId) {
@@ -1347,7 +1449,7 @@ window.syncToCloud = async function() {
   } catch(e) { showToast('❌ Fehler: ' + e.message); }
 }
 
-window.loadFromCloud = async function() {
+async function loadFromCloud() {
   const apiKey = document.getElementById('cloud-api-key').value.trim();
   const binId = document.getElementById('cloud-bin-id').value.trim();
   if(!apiKey || !binId) { showToast('❌ Key und Bin ID eintragen!'); return; }
@@ -1365,19 +1467,21 @@ window.loadFromCloud = async function() {
       else if(d.customIncCats) { incGroups = [{id:'haupteinkommen', label:'💰 Haupteinkommen', open:true, items: d.customIncCats}]; }
 
       kontoGroups = d.kontoGroups || kontoGroups; favCats = d.favCats || [];
+      contracts = d.contracts || [];
       
       sv('mhb_app_entries', entries); sv('mhb_app_accounts', accounts); sv('mhb_app_recurring', recurring);
       sv('mhb_app_exp_groups', expGroups); sv('mhb_app_inc_groups', incGroups);
       sv('mhb_app_konto_groups', kontoGroups); sv('mhb_app_favs', favCats);
+      sv('mhb_app_contracts', contracts);
       sv('mhb_app_cloud_key', apiKey); sv('mhb_app_cloud_bin', binId);
       
-      window.refreshAll(); showToast('✅ Daten geladen!');
+      refreshAll(); showToast('✅ Daten geladen!');
     } else throw new Error('Keine gültigen Daten.');
   } catch(e) { showToast('❌ Fehler: ' + e.message); }
 }
 
-window.exportData = function() {
-  const data = { entries, accounts, recurring, expGroups, incGroups, kontoGroups, favCats };
+function exportData() {
+  const data = { entries, accounts, recurring, expGroups, incGroups, kontoGroups, favCats, contracts };
   const blob = new Blob([JSON.stringify(data)], { type: "application/json" });
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a'); a.href = url;
@@ -1386,7 +1490,7 @@ window.exportData = function() {
   showToast('✅ Backup geladen');
 }
 
-window.importData = function(event) {
+function importData(event) {
   const file = event.target.files[0];
   if (!file) return;
   const reader = new FileReader();
@@ -1401,12 +1505,14 @@ window.importData = function(event) {
         else if(data.customIncCats) { incGroups = [{id:'haupteinkommen', label:'💰 Haupteinkommen', open:true, items: data.customIncCats}]; }
 
         kontoGroups = data.kontoGroups || kontoGroups; favCats = data.favCats || [];
+        contracts = data.contracts || [];
         
         sv('mhb_app_entries', entries); sv('mhb_app_accounts', accounts); sv('mhb_app_recurring', recurring);
         sv('mhb_app_exp_groups', expGroups); sv('mhb_app_inc_groups', incGroups);
         sv('mhb_app_konto_groups', kontoGroups); sv('mhb_app_favs', favCats);
+        sv('mhb_app_contracts', contracts);
         
-        window.refreshAll(); showToast('✅ Importiert');
+        refreshAll(); showToast('✅ Importiert');
       } else alert('Ungültige Datei.');
     } catch(err) { alert('Fehler.'); }
     event.target.value = '';
@@ -1422,20 +1528,21 @@ function showToast(msg){
 }
 
 // BULLETPROOF REFRESH
-window.refreshAll = function(){
-    try { window.renderYearSelect(); } catch(e){console.error("renderYearSelect", e)}
-    try { window.refreshDash(); } catch(e){console.error("refreshDash", e)}
-    try { window.refreshKonten(); } catch(e){console.error("refreshKonten", e)}
-    try { window.refreshUebersicht(); } catch(e){console.error("refreshUebersicht", e)}
-    try { const k=document.getElementById('page-kpis'); if(k && k.classList.contains('active')) window.refreshKPIs(); } catch(e){console.error("refreshKPIs", e)}
-    try { window.toggleQsType(); } catch(e){console.error("toggleQsType", e)}
-    try { window.renderMiniOverview(); } catch(e){console.error("renderMiniOverview", e)}
-    try { window.renderTabelle(); } catch(e){console.error("renderTabelle", e)}
+function refreshAll(){
+    try { renderYearSelect(); } catch(e){}
+    try { refreshDash(); } catch(e){}
+    try { refreshKonten(); } catch(e){}
+    try { refreshUebersicht(); } catch(e){}
+    try { const k=document.getElementById('page-kpis'); if(k && k.classList.contains('active')) refreshKPIs(); } catch(e){}
+    try { toggleQsType(); } catch(e){}
+    try { renderMiniOverview(); } catch(e){}
+    try { renderTabelle(); } catch(e){}
+    try { refreshContracts(); } catch(e){}
 }
 
 function init(){
     const savedTheme = localStorage.getItem('mhb_app_theme');
-    if(savedTheme === 'light') window.toggleTheme();
+    if(savedTheme === 'light') toggleTheme();
     
     const todayStr = new Date().toISOString().split('T')[0];
     const qsDateEl = document.getElementById('qs-date');
@@ -1446,8 +1553,8 @@ function init(){
     const binId = load('mhb_app_cloud_bin', '');
     if(binId) { const el = document.getElementById('cloud-bin-id'); if(el) el.value = binId; }
     
-    window.refreshAll();
-    setTimeout(() => window.navTo('dash', document.querySelector('.bot-tab')), 100);
+    refreshAll();
+    setTimeout(() => navTo('dash', document.querySelector('.bot-tab')), 100);
 }
 document.addEventListener('DOMContentLoaded',init);
 </script>
