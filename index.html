@@ -134,13 +134,7 @@ textarea { resize: vertical; min-height: 80px; font-weight:normal; }
 .chip-del-btn { margin-left: 8px; font-size: 12px; opacity: 0.5; color: var(--text); padding: 0 4px; border-radius: 50%; }
 .chip-del-btn:hover { color: var(--red); opacity: 1; }
 
-/* ROWS & KONTEN */
-.row-item{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--border)}
-.row-item:last-child{border-bottom:none}
-.row-label{font-size:14px; color:var(--text); font-weight: 600;}
-.row-val{font-size:14px;font-weight:700}
-.row-sub{font-size:12px;color:var(--text-dim); margin-top:4px}
-
+/* KONTEN SPEZIAL-STYLING */
 .total-wealth-card { background: linear-gradient(135deg, rgba(212,168,68,0.1) 0%, var(--card-bg) 100%); border: 2px solid rgba(212,168,68,0.4); border-radius: 16px; padding: 24px; margin-bottom: 24px; text-align: center; box-shadow: 0 8px 16px rgba(0,0,0,0.15); }
 .total-wealth-title { font-size: 14px; font-weight: 800; color: var(--gold); text-transform: uppercase; letter-spacing: 2px; margin-bottom: 8px; }
 .total-wealth-val { font-size: 38px; font-weight: 900; color: var(--gold); text-shadow: 0 2px 8px rgba(0,0,0,0.2); }
@@ -161,7 +155,7 @@ textarea { resize: vertical; min-height: 80px; font-weight:normal; }
 .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:10000;justify-content:center;align-items:center;padding:20px;}
 .sec-label{font-size:11px;color:var(--text-dim);text-transform:uppercase;letter-spacing:.5px;margin:12px 0 6px}
 
-/* TABELLE - SAUBERES DESKTOP LAYOUT (Edge optimiert) */
+/* TABELLE - SAUBERES DESKTOP LAYOUT */
 .table-header-tools { padding: 16px; display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap; width:100%; flex-shrink:0; background:var(--bg); border-bottom: 1px solid var(--border); }
 .table-scroll-container { flex: 1; overflow: auto; width: 100%; position: relative; -webkit-overflow-scrolling: touch; padding-bottom: 80px;}
 
@@ -182,12 +176,17 @@ textarea { resize: vertical; min-height: 80px; font-weight:normal; }
 .tbl .grp-hdr.exp td { padding: 8px 12px; background: transparent; border-bottom: 1px solid rgba(244, 67, 54, 0.4); color:var(--red); font-weight:700; cursor: pointer; }
 .tbl .sparrate-row td{ padding: 8px 12px; background:rgba(77, 166, 255, 0.15); font-weight:900; color:var(--blue); font-size:14px; border-top:2px solid var(--blue); cursor: default;}
 
-/* KLICKBARE ZELLEN FIX FÜR CSP/WEBVIEWS */
-.data-cell { cursor: pointer; transition: background 0.2s; }
-.data-cell:hover { background: rgba(212,168,68,0.2) !important; }
-.cell-click-area { display: block; width: 100%; height: 100%; padding: 8px 12px; pointer-events: none; }
+/* NEU: AUFKLAPPBARE ZELLEN IN DER TABELLE */
+.cell-main { display: flex; justify-content: space-between; align-items: center; padding: 8px 12px; cursor: pointer; transition: background 0.2s; min-height: 35px; }
+.cell-main:hover { background: rgba(212,168,68,0.15); }
+.expand-arrow { font-size: 16px; color: var(--gold); transition: transform 0.2s; line-height: 1; margin-right: 8px; }
+.cell-details-wrap { display: none; background: rgba(0,0,0,0.25); border-top: 1px solid var(--border); box-shadow: inset 0 2px 4px rgba(0,0,0,0.2); }
+.cell-detail-item { display: flex; justify-content: space-between; align-items: center; padding: 8px 12px; border-bottom: 1px dashed var(--border); cursor: pointer; transition: background 0.2s; }
+.cell-detail-item:hover { background: rgba(255,255,255,0.05); }
+.cell-detail-add { text-align: center; padding: 8px; color: var(--gold); font-size: 12px; cursor: pointer; font-weight: bold; transition: background 0.2s; }
+.cell-detail-add:hover { background: rgba(212,168,68,0.15); }
+
 .tbl-cell-empty { color: var(--text-dim); font-weight: bold; font-size: 15px; }
-.tbl-cell-val { text-decoration: underline dotted; }
 
 .sum-bubble-neutral { font-weight: 700; color: var(--text); }
 .sum-bubble-neg { color:var(--red); font-weight:700; display:inline-block; padding: 8px 12px;}
@@ -407,9 +406,10 @@ textarea { resize: vertical; min-height: 80px; font-weight:normal; }
       <input type="password" id="cloud-api-key" placeholder="Master Key" style="margin-bottom:12px;"/>
       <input type="text" id="cloud-bin-id" placeholder="Bin ID" style="margin-bottom:16px;"/>
       <div style="display:flex; gap:10px;">
-        <button type="button" class="btn btn-blue" style="flex:1" onclick="window.syncToCloud()">⬆️ Sichern</button>
-        <button type="button" class="btn btn-outline" style="flex:1" onclick="window.loadFromCloud()">⬇️ Laden</button>
+        <button type="button" class="btn btn-blue" style="flex:1" onclick="window.syncToCloud(false, true)">⬆️ Manuell Sichern</button>
+        <button type="button" class="btn btn-outline" style="flex:1" onclick="window.loadFromCloud(false)">⬇️ Manuell Laden</button>
       </div>
+      <div style="font-size:11px; text-align:center; color:var(--text-dim); margin-top:10px;">Die App speichert und lädt automatisch, wenn Master Key und Bin ID hinterlegt sind.</div>
     </div>
     <div class="card"><div class="card-title">💾 Backup (Lokal)</div>
       <div style="font-size:12px; color:var(--text-dim); margin-bottom:12px;">Kopiere den Backup-Code und speichere ihn sicher ab, oder füge Code ein, um ihn wiederherzustellen.</div>
@@ -439,10 +439,10 @@ textarea { resize: vertical; min-height: 80px; font-weight:normal; }
        <label class="freq-lbl"><input type="radio" name="add-freq" value="yearly"><span>Jährlich</span></label>
     </div>
     <div style="display:flex; gap:10px;">
-      <button type="button" class="btn btn-green" style="flex:1" onclick="window.saveAddModal()">Speichern / Löschen</button>
-      <button type="button" class="btn btn-red" style="flex:1" onclick="window.closeAddModal()">Abbruch</button>
+      <button type="button" class="btn btn-green" style="flex:1" onclick="window.saveAddModal()">Eintragen</button>
+      <button type="button" class="btn btn-outline" style="flex:1" onclick="window.closeAddModal()">Abbruch</button>
     </div>
-    <div style="font-size:11px; text-align:center; margin-top:10px; color:var(--text-dim);">Tipp: Um einen Wert zu löschen, lass das Feld leer und speichere.</div>
+    <div style="font-size:11px; text-align:center; margin-top:10px; color:var(--text-dim);">Dieser Betrag wird als neuer Eintrag im gewählten Monat hinzugefügt.</div>
   </div>
 </div>
 
@@ -458,13 +458,13 @@ textarea { resize: vertical; min-height: 80px; font-weight:normal; }
 
 <div id="rec-modal" class="modal-overlay" onclick="window.closeRecModal()">
   <div class="card" style="width:100%; max-width:400px; margin:0;" onclick="event.stopPropagation()">
-    <div class="card-title">Dauerauftrag buchen</div>
+    <div class="card-title">Dauerauftrag anpassen</div>
     <input type="number" id="rec-modal-amt" step="0.01" style="margin-bottom:16px; font-size:24px; text-align:center;"/>
     <div style="display:flex; flex-direction:column; gap:10px;">
-      <button type="button" class="btn" onclick="window.saveRecModal('only')">Nur diesen Monat eintragen</button>
-      <button type="button" class="btn" onclick="window.saveRecModal('future')">Diesen & kommende Monate eintragen</button>
-      <button type="button" class="btn" onclick="window.saveRecModal('all')">Überall eintragen</button>
-      <button type="button" class="btn btn-outline" style="border-color:var(--red); color:var(--red); margin-top:10px;" onclick="window.deleteRecModal()">Dauerauftrag stoppen</button>
+      <button type="button" class="btn" onclick="window.saveRecModal('only')">Nur diesen Monat ändern</button>
+      <button type="button" class="btn" onclick="window.saveRecModal('future')">Diesen & kommende Monate ändern</button>
+      <button type="button" class="btn" onclick="window.saveRecModal('all')">Überall ändern</button>
+      <button type="button" class="btn btn-outline" style="border-color:var(--red); color:var(--red); margin-top:10px;" onclick="window.deleteRecModal()">Dauerauftrag löschen</button>
       <button type="button" class="btn btn-red" onclick="window.closeRecModal()">Abbrechen</button>
     </div>
   </div>
@@ -586,7 +586,6 @@ window.expGroups = window.loadData('mhb_app_exp_groups', [
 ]);
 if(!Array.isArray(window.expGroups)) window.expGroups = [];
 
-// Cashback Seite-Auswahl persistieren
 window.cbSiteList = window.loadData('mhb_app_cbsitelist', ['Shoop', 'Corporate Benefits', 'Benefitsbuddy', 'TopCashback', 'Payback', 'iGraal', 'Check24', 'mycashbacks', 'Shopmate', 'Euroclix']);
 
 // ----- HILFSFUNKTIONEN -----
@@ -796,61 +795,12 @@ window.refreshKPIs = function() {
     window.setHtml('kpi-accounts-charts', accHtml);
 }
 
-// --- BILD UPLOAD LOGIK ---
-window.processImage = function(file, callback) {
-    if(!file) return;
-    let reader = new FileReader();
-    reader.onload = function(e) {
-        let img = new Image();
-        img.onload = function() {
-            let canvas = document.createElement('canvas');
-            let max = 800; 
-            let w = img.width, h = img.height;
-            if(w > max || h > max) {
-                if(w > h) { h = Math.round(h * max / w); w = max; }
-                else { w = Math.round(w * max / h); h = max; }
-            }
-            canvas.width = w; canvas.height = h;
-            let ctx = canvas.getContext('2d');
-            ctx.drawImage(img, 0, 0, w, h);
-            callback(canvas.toDataURL('image/jpeg', 0.6)); 
-        };
-        img.src = e.target.result;
-    };
-    reader.readAsDataURL(file);
-};
-
-window.handleContractImage = function(event, mode) {
-    let file = event.target.files[0];
-    if(!file) return;
-    window.processImage(file, function(b64) {
-        if(mode === 'new') {
-            window.newContractImg = b64;
-            let prev = document.getElementById('ct-img-preview');
-            prev.src = b64; prev.style.display = 'block';
-        } else if (mode === 'edit') {
-            window.editContractImg = b64;
-            let prev = document.getElementById('edit-ct-img-preview');
-            prev.src = b64; prev.style.display = 'block';
-            document.getElementById('edit-ct-img-remove').style.display = 'block';
-        }
-    });
-};
-
-window.openImageModal = function(src) {
-    document.getElementById('img-modal-content').src = src;
-    document.getElementById('img-modal').style.display = 'flex';
-};
-
-// --- CASHBACK LOGIK (CHIP SELECTION) ---
+// --- CASHBACK LOGIK ---
 window.renderCbSiteChips = function() {
     let container = document.getElementById('cb-site-chips');
     if(!container) return;
     let html = '';
-    
-    let sortedSites = window.cbSiteList.slice().sort(function(a, b) { 
-        return a.toLowerCase().localeCompare(b.toLowerCase()); 
-    });
+    let sortedSites = window.cbSiteList.slice().sort(function(a, b) { return a.toLowerCase().localeCompare(b.toLowerCase()); });
     
     sortedSites.forEach(function(site) {
         let isSelected = document.getElementById('cb-site-hidden').value === site;
@@ -860,7 +810,6 @@ window.renderCbSiteChips = function() {
                     <span class="chip-del-btn" onclick="window.deleteCbSite('${window.safeStr(site)}', event)" title="Seite löschen">✖</span>
                  </div>`;
     });
-    
     html += `<div class="cb-chip cb-chip-add" onclick="window.addNewCbSite()">➕ Neu</div>`;
     container.innerHTML = html;
 }
@@ -921,15 +870,12 @@ window.addCashback = function() {
 
 window.refreshCashback = function() {
     window.renderCbSiteChips();
-    
     let searchEl = document.getElementById('cb-search');
     let search = searchEl ? searchEl.value.toLowerCase() : '';
     let html = '';
     
     let dlShops = new Set();
-    window.cashbackEntries.forEach(function(e) {
-        if(e.shop) dlShops.add(e.shop);
-    });
+    window.cashbackEntries.forEach(function(e) { if(e.shop) dlShops.add(e.shop); });
     let shopList = document.getElementById('cb-shop-list');
     if(shopList) shopList.innerHTML = Array.from(dlShops).sort().map(function(s) { return `<option value="${window.safeStr(s)}">`; }).join('');
 
@@ -988,6 +934,52 @@ window.deleteCashback = function(idx) {
         window.refreshCashback();
     }
 }
+
+// --- BILD UPLOAD LOGIK ---
+window.processImage = function(file, callback) {
+    if(!file) return;
+    let reader = new FileReader();
+    reader.onload = function(e) {
+        let img = new Image();
+        img.onload = function() {
+            let canvas = document.createElement('canvas');
+            let max = 800; 
+            let w = img.width, h = img.height;
+            if(w > max || h > max) {
+                if(w > h) { h = Math.round(h * max / w); w = max; }
+                else { w = Math.round(w * max / h); h = max; }
+            }
+            canvas.width = w; canvas.height = h;
+            let ctx = canvas.getContext('2d');
+            ctx.drawImage(img, 0, 0, w, h);
+            callback(canvas.toDataURL('image/jpeg', 0.6)); 
+        };
+        img.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+};
+
+window.handleContractImage = function(event, mode) {
+    let file = event.target.files[0];
+    if(!file) return;
+    window.processImage(file, function(b64) {
+        if(mode === 'new') {
+            window.newContractImg = b64;
+            let prev = document.getElementById('ct-img-preview');
+            prev.src = b64; prev.style.display = 'block';
+        } else if (mode === 'edit') {
+            window.editContractImg = b64;
+            let prev = document.getElementById('edit-ct-img-preview');
+            prev.src = b64; prev.style.display = 'block';
+            document.getElementById('edit-ct-img-remove').style.display = 'block';
+        }
+    });
+};
+
+window.openImageModal = function(src) {
+    document.getElementById('img-modal-content').src = src;
+    document.getElementById('img-modal').style.display = 'flex';
+};
 
 // --- PERSÖNLICH ---
 window.addContract = function() {
@@ -1366,7 +1358,7 @@ window.refreshUebersicht = function() {
     window.setHtml('ueb-buchungen', html || '<div style="color:var(--text-dim);font-size:13px;padding:10px 0;">Keine Buchungen.</div>');
 }
 
-// --- TABLE ENGINE (EVENT DELEGATION FIX) ---
+// --- TABELLEN-LOGIK & EVENT DELEGATION ---
 window.fmtT = function(v, color, bbl) {
     if (color === 'neutral') {
         return `<span class="sum-bubble-neutral">${(isNaN(v)?0:v).toLocaleString('de-DE',{minimumFractionDigits:2})} €</span>`;
@@ -1392,22 +1384,61 @@ window.toggleCurrentMonth = function() {
     window.renderTabelle();
 };
 
+window.toggleCellDetails = function(id, el) {
+    let detailBox = document.getElementById(id);
+    if(detailBox) {
+        let isHidden = detailBox.style.display === 'none' || detailBox.style.display === '';
+        detailBox.style.display = isHidden ? 'block' : 'none';
+        let arrow = el.querySelector('.expand-arrow');
+        if(arrow) arrow.style.transform = isHidden ? 'rotate(180deg)' : 'rotate(0deg)';
+    }
+};
+
 window.generateCell = function(cat, m, type) {
-    const val = window.getCellVal(cat, m, type, window.activeYear);
-    const hasEntries = window.entries.some(function(e) { return e.cat === cat && e.month == m && e.year == window.activeYear && e.type === type; });
-    const hasRec = window.getRecVal(cat, m, type, window.activeYear) > 0;
+    const arr = window.entries.filter(function(e) { return e.year == window.activeYear && e.month == m && e.type === type && e.cat === cat; });
+    const rec = window.getRecVal(cat, m, type, window.activeYear);
+    const total = arr.reduce(function(s,e) { return s+parseFloat(e.amount); }, 0) + rec;
     const sCat = window.safeStr(cat);
     const safeM = m ?? window.CUR_M;
-    
-    if (val === 0) {
-        return `<td class="data-cell" data-cat="${sCat}" data-type="${type}" data-m="${safeM}" data-val=""><span class="tbl-cell-empty">–</span></td>`;
+    const cellId = `cell_${type}_${safeM}_${sCat.replace(/[^a-zA-Z0-9]/g, '')}`;
+
+    if (total === 0) {
+        return `<td style="padding:0; vertical-align:top;">
+            <div class="cell-main" onclick="window.openAddModal('${sCat}', '${type}', ${safeM}, '', true)">
+                <span style="visibility:hidden; width:16px;"></span>
+                <span class="tbl-cell-empty">–</span>
+            </div>
+        </td>`;
     }
     
-    if (hasRec && !hasEntries) {
-        return `<td class="data-cell rec-cell" data-cat="${sCat}" data-m="${safeM}"><span class="tbl-cell-val" style="opacity:0.6; color:var(--text);">🔄 ${val.toLocaleString('de-DE',{minimumFractionDigits:2})}</span></td>`;
+    let detailsHtml = `<div id="${cellId}" class="cell-details-wrap">`;
+    if (rec > 0) {
+        detailsHtml += `<div class="cell-detail-item" onclick="window.editRec('${sCat}', ${safeM}); event.stopPropagation();">
+            <span style="font-size:10px; color:var(--text-dim);">🔄 Dauerauftrag</span>
+            <span style="font-size:12px; color:var(--text);">${window.fmt(rec)}</span>
+        </div>`;
     }
-    
-    return `<td class="data-cell" data-cat="${sCat}" data-type="${type}" data-m="${safeM}" data-val="${val}"><span class="tbl-cell-val" style="color:var(--text);">${val.toLocaleString('de-DE',{minimumFractionDigits:2})}</span></td>`;
+    arr.forEach(function(e) {
+        let eIdx = window.entries.indexOf(e);
+        let noteStr = e.note ? `<span style="font-size:10px; color:var(--text-dim); display:block;">${window.safeStr(e.note)}</span>` : '';
+        detailsHtml += `<div class="cell-detail-item" onclick="window.openEditModal(${eIdx}); event.stopPropagation();">
+            <div style="text-align:left;">${noteStr}</div>
+            <div style="font-size:12px; color:var(--text);">✏️ ${window.fmt(e.amount)}</div>
+        </div>`;
+    });
+    detailsHtml += `<div class="cell-detail-add" onclick="window.openAddModal('${sCat}', '${type}', ${safeM}, '', true); event.stopPropagation();">➕ Neuer Eintrag</div>`;
+    detailsHtml += `</div>`;
+
+    let hasMulti = (arr.length + (rec > 0 ? 1 : 0)) > 1;
+    let arrowOpacity = hasMulti ? '1' : '0.3';
+
+    return `<td style="padding:0; vertical-align:top;">
+        <div class="cell-main" onclick="window.toggleCellDetails('${cellId}', this)">
+            <span class="expand-arrow" style="opacity:${arrowOpacity}">▾</span>
+            <span class="tbl-cell-val" style="color:var(--text);">${window.fmt(total).replace(' €','')}</span>
+        </div>
+        ${detailsHtml}
+    </td>`;
 }
 
 window.buildTable = function() {
@@ -1505,27 +1536,6 @@ window.buildTable = function() {
     tbl += `<td>${window.fmtT(tInc - tExp)}</td><td>${window.fmtT(window.getTotalAvg('inc') - window.getTotalAvg('exp'))}</td></tr></tbody></table>`;
     
     window.setHtml('tabelle-wrap', tbl);
-    
-    // ZENTRALER KLICK-LISTENER
-    let tblEl = document.getElementById('main-data-table');
-    if (tblEl) {
-        tblEl.addEventListener('click', function(e) {
-            let cell = e.target.closest('.data-cell');
-            if (!cell) return;
-            
-            let cat = cell.getAttribute('data-cat');
-            let m = parseInt(cell.getAttribute('data-m'));
-            
-            if (cell.classList.contains('rec-cell')) {
-                window.editRec(cat, m);
-            } else {
-                let type = cell.getAttribute('data-type');
-                let rawVal = parseFloat(cell.getAttribute('data-val'));
-                let passVal = (rawVal > 0) ? rawVal : '';
-                window.openAddModal(cat, type, m, passVal);
-            }
-        });
-    }
 }
 
 window.renderMiniOverview = function() {
@@ -1734,14 +1744,16 @@ window.deleteExpItem = function(gIdx, iIdx) {
 }
 
 // --- MODALS ---
-window.openAddModal = function(cat, type, m, existingVal) {
+
+// WICHTIG: isAppend entscheidet, ob wir etwas Neues hinzufügen oder das Modal aus einem Fehler/Leerklick öffnen
+window.openAddModal = function(cat, type, m, existingVal, isAppend) {
     let safeM = (m !== undefined && m !== null && !isNaN(m)) ? m : window.CUR_M;
     window.addModalState = { cat:cat, type:type, month: parseInt(safeM) };
     window.setTxt('add-modal-title', cat);
-    let amtInput = document.getElementById('add-modal-amt');
     
+    let amtInput = document.getElementById('add-modal-amt');
     if (amtInput) {
-        if(existingVal !== undefined && existingVal !== null && existingVal !== '') {
+        if(existingVal !== undefined && existingVal !== null && existingVal !== '' && !isAppend) {
             amtInput.value = parseFloat(existingVal);
         } else {
             amtInput.value = '';
@@ -1763,7 +1775,7 @@ window.saveAddModal = function() {
     let freqEl = document.querySelector('input[name="add-freq"]:checked');
     let freq = freqEl ? freqEl.value : 'once';
     
-    window.entries = window.entries.filter(function(e) { return !(e.year === window.activeYear && e.month === window.addModalState.month && e.cat === window.addModalState.cat && e.type === window.addModalState.type); });
+    // GANZ WICHTIG: Keine Filter/Delete-Logik mehr hier! Wir löschen KEINE bestehenden Einträge.
     
     if(!isNaN(a) && a > 0) {
         if(freq === 'once') {
@@ -1771,10 +1783,9 @@ window.saveAddModal = function() {
         } else {
             window.recurring[window.addModalState.cat] = {active:true, amount:a, type:window.addModalState.type, frequency:freq, startMonth:window.addModalState.month};
         }
+        window.saveData('mhb_app_entries', window.entries); 
+        window.saveData('mhb_app_recurring', window.recurring); 
     }
-    
-    window.saveData('mhb_app_entries', window.entries); 
-    window.saveData('mhb_app_recurring', window.recurring); 
     
     amtEl.value = ''; 
     window.closeAddModal(); 
@@ -1836,11 +1847,30 @@ document.addEventListener('keydown', function(e) {
 
 // --- CLOUD ---
 window.API_URL = 'https://api.jsonbin.io/v3/b';
-window.syncToCloud = async function() {
+
+window.autoSaveToCloud = function() {
+    let apiKey = window.loadData('mhb_app_cloud_key', '');
+    let binId = window.loadData('mhb_app_cloud_bin', '');
+    if(!apiKey || !binId) return;
+
+    let dataToSync = { entries:window.entries, accounts:window.accounts, recurring:window.recurring, expGroups:window.expGroups, incGroups:window.incGroups, kontoGroups:window.kontoGroups, favCats:window.favCats, contracts:window.contracts, cashback:window.cashbackEntries, cbsitelist:window.cbSiteList };
+
+    fetch(`${window.API_URL}/${binId}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json', 'X-Master-Key': apiKey },
+        body: JSON.stringify(dataToSync),
+        keepalive: true
+    }).catch(function(e){ console.log('Auto-Save Error', e); });
+};
+
+window.addEventListener('visibilitychange', function() { if (document.visibilityState === 'hidden') window.autoSaveToCloud(); });
+window.addEventListener('beforeunload', function() { window.autoSaveToCloud(); });
+
+window.syncToCloud = async function(isAuto = false) {
   let apiKey = document.getElementById('cloud-api-key').value.trim();
   let binId = document.getElementById('cloud-bin-id').value.trim();
-  if(!apiKey) { window.showToast('❌ API Key fehlt'); return; }
-  window.showToast('⏳ Sichern...');
+  if(!apiKey) { if(!isAuto) window.showToast('❌ API Key fehlt'); return; }
+  if(!isAuto) window.showToast('⏳ Sichern...');
   let dataToSync = { entries:window.entries, accounts:window.accounts, recurring:window.recurring, expGroups:window.expGroups, incGroups:window.incGroups, kontoGroups:window.kontoGroups, favCats:window.favCats, contracts:window.contracts, cashback:window.cashbackEntries, cbsitelist:window.cbSiteList };
   try {
     if(!binId) {
@@ -1850,17 +1880,17 @@ window.syncToCloud = async function() {
       else throw new Error('Bin Fehler.');
     } else {
       const res = await fetch(`${window.API_URL}/${binId}`, { method: 'PUT', headers: { 'Content-Type': 'application/json', 'X-Master-Key': apiKey }, body: JSON.stringify(dataToSync) });
-      if(res.ok) { window.saveData('mhb_app_cloud_key', apiKey); window.saveData('mhb_app_cloud_bin', binId); window.showToast('✅ Cloud aktualisiert!'); } 
+      if(res.ok) { window.saveData('mhb_app_cloud_key', apiKey); window.saveData('mhb_app_cloud_bin', binId); if(!isAuto) window.showToast('✅ Cloud aktualisiert!'); } 
       else throw new Error('Fehler beim Aktualisieren.');
     }
-  } catch(e) { window.showToast('❌ Fehler: ' + e.message); }
+  } catch(e) { if(!isAuto) window.showToast('❌ Fehler: ' + e.message); }
 }
 
-window.loadFromCloud = async function() {
+window.loadFromCloud = async function(isAuto = false) {
   let apiKey = document.getElementById('cloud-api-key').value.trim();
   let binId = document.getElementById('cloud-bin-id').value.trim();
-  if(!apiKey || !binId) { window.showToast('❌ Key/Bin fehlen'); return; }
-  window.showToast('⏳ Lade...');
+  if(!apiKey || !binId) { if(!isAuto) window.showToast('❌ Key/Bin fehlen'); return; }
+  if(isAuto) window.showToast('🔄 Auto-Sync läuft...'); else window.showToast('⏳ Lade...');
   try {
     const res = await fetch(`${window.API_URL}/${binId}/latest`, { headers: { 'X-Master-Key': apiKey } });
     const json = await res.json();
@@ -1876,9 +1906,10 @@ window.loadFromCloud = async function() {
       window.saveData('mhb_app_konto_groups', window.kontoGroups); window.saveData('mhb_app_favs', window.favCats); window.saveData('mhb_app_contracts', window.contracts);
       window.saveData('mhb_app_cashback', window.cashbackEntries); window.saveData('mhb_app_cbsitelist', window.cbSiteList);
       window.saveData('mhb_app_cloud_key', apiKey); window.saveData('mhb_app_cloud_bin', binId);
-      window.refreshAll(); window.showToast('✅ Daten geladen!');
+      window.refreshAll(); 
+      if(isAuto) window.showToast('✅ Daten auf aktuellstem Stand'); else window.showToast('✅ Daten geladen!');
     }
-  } catch(e) { window.showToast('❌ Fehler'); }
+  } catch(e) { if(!isAuto) window.showToast('❌ Fehler beim Laden'); }
 }
 
 window.exportDataText = function() {
@@ -1942,7 +1973,12 @@ window.init = function(){
     let cloudKey = window.loadData('mhb_app_cloud_key', ''); if(cloudKey) { let el = document.getElementById('cloud-api-key'); if(el) el.value = cloudKey; }
     let binId = window.loadData('mhb_app_cloud_bin', ''); if(binId) { let el2 = document.getElementById('cloud-bin-id'); if(el2) el2.value = binId; }
     
-    window.refreshAll(); setTimeout(function() { window.navTo('dash', document.querySelector('.bot-tab')); }, 100);
+    window.refreshAll(); 
+    setTimeout(function() { window.navTo('dash', document.querySelector('.bot-tab')); }, 100);
+
+    if (cloudKey && binId) {
+        setTimeout(function() { window.loadFromCloud(true); }, 800);
+    }
 }
 document.addEventListener('DOMContentLoaded', window.init);
 </script>
