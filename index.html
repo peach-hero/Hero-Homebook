@@ -648,6 +648,51 @@ if(!Array.isArray(window.expGroups)) window.expGroups = [];
 
 window.cbSiteList = window.loadData('mhb_app_cbsitelist', ['Shoop', 'Corporate Benefits', 'Benefitsbuddy', 'TopCashback', 'Payback', 'iGraal', 'Check24', 'mycashbacks', 'Shopmate', 'Euroclix']);
 
+// --- DATEN-INTEGRITÄT (RETTUNGS-AUTOMATIK FÜR ALTE BACKUPS) ---
+window.ensureDataIntegrity = function() {
+    if(!window.expGroups || window.expGroups.length === 0) {
+        window.expGroups = [
+            {id:'wohnen', label:'🏠 Wohnen', open:true, items: ['Miete', 'Strom', 'Internet']},
+            {id:'lebenshaltung', label:'🛒 Lebenshaltung', open:true, items: ['Lebensmittel', 'Drogerie', 'Restaurant']},
+            {id:'mobilitaet', label:'🚗 Mobilität', open:true, items: ['Tanken', 'ÖPNV', 'Versicherung']},
+            {id:'freizeit', label:'🎉 Freizeit', open:true, items: ['Shopping', 'Hobbys', 'Urlaub']},
+            {id:'sonstiges', label:'📦 Sonstiges', open:true, items: ['Handyvertrag', 'Sparplan']}
+        ];
+    }
+    if(!window.incGroups || window.incGroups.length === 0) {
+        window.incGroups = [{id:'haupteinkommen', label:'💰 Haupteinkommen', open:true, items: ['Gehalt', 'Sonstiges']}];
+    }
+    if(!window.kontoGroups || window.kontoGroups.length === 0) {
+        window.kontoGroups = [{id:'grp1', label:'Girokonto', open:true},{id:'grp2', label:'Krypto', open:true},{id:'grp3', label:'Depot', open:true}];
+    }
+
+    let knownExpCats = new Set();
+    window.expGroups.forEach(g => (g.items||[]).forEach(c => knownExpCats.add(c)));
+    
+    let knownIncCats = new Set();
+    window.incGroups.forEach(g => (g.items||[]).forEach(c => knownIncCats.add(c)));
+
+    let missingExp = new Set();
+    let missingInc = new Set();
+
+    window.entries.forEach(e => {
+        if(e.type === 'exp' && !knownExpCats.has(e.cat)) missingExp.add(e.cat);
+        if(e.type === 'inc' && !knownIncCats.has(e.cat)) missingInc.add(e.cat);
+    });
+
+    if(missingExp.size > 0) {
+        let recGrp = window.expGroups.find(g => g.id === 'recovered_exp');
+        if(!recGrp) { recGrp = {id:'recovered_exp', label:'🔄 Wiederhergestellt (Ausgaben)', open:true, items: []}; window.expGroups.push(recGrp); }
+        missingExp.forEach(c => { recGrp.items.push(c); knownExpCats.add(c); });
+    }
+    
+    if(missingInc.size > 0) {
+        let recGrp = window.incGroups.find(g => g.id === 'recovered_inc');
+        if(!recGrp) { recGrp = {id:'recovered_inc', label:'🔄 Wiederhergestellt (Einnahmen)', open:true, items: []}; window.incGroups.push(recGrp); }
+        missingInc.forEach(c => { recGrp.items.push(c); knownIncCats.add(c); });
+    }
+};
+
 // ----- HILFSFUNKTIONEN -----
 window.setTxt = function(id, text) { let el = document.getElementById(id); if (el) el.textContent = text; }
 window.setHtml = function(id, html) { let el = document.getElementById(id); if (el) el.innerHTML = html; }
@@ -1197,7 +1242,10 @@ window.renderCbSiteChips = function() {
     let container = document.getElementById('cb-site-chips');
     if(!container) return;
     let html = '';
-    let sortedSites = window.cbSiteList.slice().sort(function(a, b) { return a.toLowerCase().localeCompare(b.toLowerCase()); });
+    
+    let sortedSites = window.cbSiteList.slice().sort(function(a, b) { 
+        return a.toLowerCase().localeCompare(b.toLowerCase()); 
+    });
     
     sortedSites.forEach(function(site) {
         let isSelected = document.getElementById('cb-site-hidden').value === site;
@@ -1207,6 +1255,7 @@ window.renderCbSiteChips = function() {
                     <span class="chip-del-btn" onclick="window.deleteCbSite('${window.safeStr(site)}', event)" title="Seite löschen">✖</span>
                  </div>`;
     });
+    
     html += `<div class="cb-chip cb-chip-add" onclick="window.addNewCbSite()">➕ Neu</div>`;
     container.innerHTML = html;
 }
@@ -1233,7 +1282,9 @@ window.deleteCbSite = function(site, event) {
     if(confirm(`Möchtest du die Seite "${site}" aus der Auswahl entfernen?`)) {
         window.cbSiteList = window.cbSiteList.filter(function(s) { return s !== site; });
         window.saveData('mhb_app_cbsitelist', window.cbSiteList);
-        if(document.getElementById('cb-site-hidden').value === site) document.getElementById('cb-site-hidden').value = '';
+        if(document.getElementById('cb-site-hidden').value === site) {
+            document.getElementById('cb-site-hidden').value = '';
+        }
         window.renderCbSiteChips();
     }
 }
@@ -1248,6 +1299,7 @@ window.addCashback = function() {
     let site = document.getElementById('cb-site-hidden').value.trim();
     let shop = document.getElementById('cb-shop').value.trim();
     let rate = document.getElementById('cb-rate').value.trim();
+
     if(!shop || !site) { window.showToast('❌ Shop und Seite auswählen'); return; }
 
     window.cashbackEntries.push({ site: site, shop: shop, rate: rate, ts: Date.now() });
@@ -1258,17 +1310,21 @@ window.addCashback = function() {
     document.getElementById('cb-rate').value = '';
     document.getElementById('cb-site-hidden').value = '';
     window.renderCbSiteChips();
+    
     window.showToast('✅ Cashback gespeichert');
 }
 
 window.refreshCashback = function() {
     window.renderCbSiteChips();
+    
     let searchEl = document.getElementById('cb-search');
     let search = searchEl ? searchEl.value.toLowerCase() : '';
     let html = '';
     
     let dlShops = new Set();
-    window.cashbackEntries.forEach(function(e) { if(e.shop) dlShops.add(e.shop); });
+    window.cashbackEntries.forEach(function(e) {
+        if(e.shop) dlShops.add(e.shop);
+    });
     let shopList = document.getElementById('cb-shop-list');
     if(shopList) shopList.innerHTML = Array.from(dlShops).sort().map(function(s) { return `<option value="${window.safeStr(s)}">`; }).join('');
 
@@ -1305,8 +1361,10 @@ window.refreshCashback = function() {
                 </div>
             </div>`;
         });
+        
         html += `</div></div>`;
     });
+    
     window.setHtml('cashback-list', html || '<div style="text-align:center; padding:20px; color:var(--text-dim);">Keine Einträge.</div>');
 }
 
@@ -1326,9 +1384,434 @@ window.deleteCashback = function(idx) {
     }
 }
 
+// --- BILD UPLOAD LOGIK ---
+window.processImage = function(file, callback) {
+    if(!file) return;
+    let reader = new FileReader();
+    reader.onload = function(e) {
+        let img = new Image();
+        img.onload = function() {
+            let canvas = document.createElement('canvas');
+            let max = 800; 
+            let w = img.width, h = img.height;
+            if(w > max || h > max) {
+                if(w > h) { h = Math.round(h * max / w); w = max; }
+                else { w = Math.round(w * max / h); h = max; }
+            }
+            canvas.width = w; canvas.height = h;
+            let ctx = canvas.getContext('2d');
+            ctx.drawImage(img, 0, 0, w, h);
+            callback(canvas.toDataURL('image/jpeg', 0.6)); 
+        };
+        img.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+};
+
+window.handleContractImage = function(event, mode) {
+    let file = event.target.files[0];
+    if(!file) return;
+    window.processImage(file, function(b64) {
+        if(mode === 'new') {
+            window.newContractImg = b64;
+            let prev = document.getElementById('ct-img-preview');
+            prev.src = b64; prev.style.display = 'block';
+        } else if (mode === 'edit') {
+            window.editContractImg = b64;
+            let prev = document.getElementById('edit-ct-img-preview');
+            prev.src = b64; prev.style.display = 'block';
+            document.getElementById('edit-ct-img-remove').style.display = 'block';
+        }
+    });
+};
+
+window.openImageModal = function(src) {
+    document.getElementById('img-modal-content').src = src;
+    document.getElementById('img-modal').style.display = 'flex';
+};
+
+// --- PERSÖNLICH ---
+window.addContract = function() {
+    let group = document.getElementById('ct-group').value.trim() || 'Sonstiges';
+    let type = document.getElementById('ct-type').value.trim();
+    let provider = document.getElementById('ct-provider').value.trim();
+    let account = document.getElementById('ct-account').value.trim();
+    let id = document.getElementById('ct-id').value.trim();
+    let end = document.getElementById('ct-end').value;
+    let note = document.getElementById('ct-note').value.trim();
+    
+    if(!type) { window.showToast('❌ Bitte Art eingeben'); return; }
+    
+    window.contracts.push({ 
+        group:group, type:type, provider:provider, account:account, 
+        id:id, end:end, note:note, canceled: false, img: window.newContractImg 
+    });
+    
+    window.saveData('mhb_app_contracts', window.contracts); window.refreshContracts();
+    
+    ['ct-group','ct-type','ct-provider','ct-account','ct-id','ct-end','ct-note'].forEach(function(i) { document.getElementById(i).value = ''; });
+    window.newContractImg = '';
+    document.getElementById('ct-img-preview').style.display = 'none';
+    document.getElementById('ct-img-preview').src = '';
+    
+    window.showToast('✅ Gespeichert');
+}
+
+window.toggleContractGroup = function(grpStr) {
+    window.contractGroupState[grpStr] = !(window.contractGroupState[grpStr] !== false);
+    window.refreshContracts();
+}
+
+window.toggleContractCanceled = function(idx) {
+    window.contracts[idx].canceled = !window.contracts[idx].canceled;
+    window.saveData('mhb_app_contracts', window.contracts);
+    window.refreshContracts();
+}
+
+window.deleteContract = function(idx) {
+    if(confirm('Eintrag wirklich löschen?')) { window.contracts.splice(idx,1); window.saveData('mhb_app_contracts', window.contracts); window.refreshContracts(); }
+}
+
+window.openEditContractModal = function(idx) {
+    let c = window.contracts[idx];
+    if(!c) return;
+    document.getElementById('edit-ct-idx').value = idx;
+    document.getElementById('edit-ct-group').value = c.group || '';
+    document.getElementById('edit-ct-type').value = c.type || '';
+    document.getElementById('edit-ct-provider').value = c.provider || '';
+    document.getElementById('edit-ct-account').value = c.account || '';
+    document.getElementById('edit-ct-id').value = c.id || '';
+    document.getElementById('edit-ct-end').value = c.end || '';
+    document.getElementById('edit-ct-note').value = c.note || '';
+    
+    window.editContractImg = c.img || '';
+    let preview = document.getElementById('edit-ct-img-preview');
+    let removeBtn = document.getElementById('edit-ct-img-remove');
+    
+    if(window.editContractImg) {
+        preview.src = window.editContractImg;
+        preview.style.display = 'block';
+        removeBtn.style.display = 'block';
+    } else {
+        preview.src = '';
+        preview.style.display = 'none';
+        removeBtn.style.display = 'none';
+    }
+    
+    document.getElementById('edit-contract-modal').style.display = 'flex';
+};
+
+window.removeEditContractImage = function() {
+    window.editContractImg = '';
+    document.getElementById('edit-ct-img-preview').style.display = 'none';
+    document.getElementById('edit-ct-img-remove').style.display = 'none';
+};
+
+window.closeEditContractModal = function() {
+    document.getElementById('edit-contract-modal').style.display = 'none';
+};
+
+window.saveEditContract = function() {
+    let idx = document.getElementById('edit-ct-idx').value;
+    let type = document.getElementById('edit-ct-type').value.trim();
+    if(!type) { window.showToast('❌ Art eingeben'); return; }
+    
+    window.contracts[idx] = {
+        group: document.getElementById('edit-ct-group').value.trim() || 'Sonstiges',
+        type: type,
+        provider: document.getElementById('edit-ct-provider').value.trim(),
+        account: document.getElementById('edit-ct-account').value.trim(),
+        id: document.getElementById('edit-ct-id').value.trim(),
+        end: document.getElementById('edit-ct-end').value,
+        note: document.getElementById('edit-ct-note').value.trim(),
+        canceled: window.contracts[idx].canceled, 
+        img: window.editContractImg
+    };
+    
+    window.saveData('mhb_app_contracts', window.contracts);
+    window.closeEditContractModal();
+    window.refreshContracts();
+    window.showToast('✅ Aktualisiert');
+};
+
+window.refreshContracts = function() {
+    let grouped = {};
+    let dlGroups = new Set();
+    
+    window.contracts.forEach(function(c, idx) {
+        let g = c.group || 'Sonstiges';
+        dlGroups.add(g);
+        if(!grouped[g]) grouped[g] = [];
+        let cObj = Object.assign({}, c, { _originalIndex: idx });
+        grouped[g].push(cObj);
+    });
+
+    let dl = document.getElementById('ct-group-list');
+    if(dl) dl.innerHTML = Array.from(dlGroups).map(function(g) { return `<option value="${window.safeStr(g)}">`; }).join('');
+
+    let now = new Date();
+    let warningLimit = new Date();
+    warningLimit.setMonth(now.getMonth() + 5);
+
+    let h = '';
+    Object.keys(grouped).sort().forEach(function(grp) {
+        let isOpen = window.contractGroupState[grp] !== false;
+        h += `<div class="grp-banner grp-banner-personal" onclick="window.toggleContractGroup('${window.safeStr(grp)}')">
+                <div style="display:flex; align-items:center; gap:8px;">
+                    <span style="color:var(--gold); font-size:18px;">${isOpen ? '▾' : '▸'}</span>
+                    <div class="grp-banner-title" style="margin:0;">${window.safeStr(grp)}</div>
+                </div>
+              </div>`;
+        
+        if(isOpen) grouped[grp].forEach(function(c) {
+            let dateStyle = "";
+            if (c.end) {
+                let contractDate = new Date(c.end);
+                if (contractDate <= warningLimit && !c.canceled) {
+                    dateStyle = "color: var(--red); font-weight: bold; border: 1px solid var(--red); padding: 1px 4px; border-radius: 4px;";
+                }
+            }
+
+            let statusClass = c.canceled ? 'is-canceled' : '';
+            let imgHtml = c.img ? `<img src="${c.img}" style="width:100%; max-height:120px; object-fit:cover; border-radius:8px; margin-top:8px; border:1px solid var(--border); cursor:pointer;" onclick="window.openImageModal('${c.img}')">` : '';
+            
+            h += `<div class="contract-card ${statusClass}">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+                    <div class="c-main-text" style="font-weight:800; color:var(--gold); font-size:14px;">${window.safeStr(c.type)}</div>
+                    <div style="display:flex; gap:12px; align-items:center;">
+                        <label style="font-size:11px; display:flex; align-items:center; gap:4px; cursor:pointer; color:var(--text-dim);">
+                            <input type="checkbox" ${c.canceled?'checked':''} onchange="window.toggleContractCanceled(${c._originalIndex})"> Gekündigt
+                        </label>
+                        <button type="button" class="btn-sm" style="color:var(--gold); border:none; padding:4px; background:transparent; font-size:14px;" onclick="window.openEditContractModal(${c._originalIndex})">✏️</button>
+                        <button type="button" class="btn-sm" style="color:var(--red); border:none; padding:4px; background:transparent; font-size:14px;" onclick="window.deleteContract(${c._originalIndex})">🗑️</button>
+                    </div>
+                </div>
+                ${c.provider ? `<div class="c-main-text" style="font-size:15px; margin-bottom:6px;"><b>${window.safeStr(c.provider)}</b></div>` : ''}
+                <div class="c-main-text" style="font-size:12px; color:var(--text-dim); line-height:1.5;">
+                    ${c.account ? `Konto-Nr: <span style="color:var(--text);">${window.safeStr(c.account)}</span><br>` : ''}
+                    ${c.id ? `Nummer: <span style="color:var(--text);">${window.safeStr(c.id)}</span><br>` : ''}
+                    Verlängerung am: <span style="${dateStyle}">${c.end ? new Date(c.end).toLocaleDateString('de-DE') : '-'}</span>
+                    ${c.note ? `<br><div style="margin-top:4px; padding:6px; background:rgba(255,255,255,0.05); border-radius:4px;">${window.safeStr(c.note)}</div>` : ''}
+                </div>
+                ${imgHtml}
+            </div>`;
+        });
+    });
+    window.setHtml('contract-list', h || '<div style="text-align:center; padding:20px; color:var(--text-dim);">Keine persönlichen Daten hinterlegt.</div>');
+}
+
+// --- KONTEN ---
+window.toggleKontoGroup = function(idx) { window.kontoGroups[idx].open = !window.kontoGroups[idx].open; window.saveData('mhb_app_konto_groups', window.kontoGroups); window.refreshKonten(); }
+window.toggleExpandCollapseAllKonten = function() {
+    let someClosed = window.kontoGroups.some(function(g) { return !g.open; });
+    window.kontoGroups.forEach(function(g) { g.open = someClosed; }); window.saveData('mhb_app_konto_groups', window.kontoGroups); window.refreshKonten();
+}
+
+window.refreshKonten = function() {
+    let html = '';
+    let kg = window.accounts.reduce(function(s,a) { return s + (parseFloat(a.balance)||0); }, 0);
+    window.setTxt('k-gesamt', window.fmt(kg));
+
+    let someClosed = window.kontoGroups.some(function(g) { return !g.open; });
+    let btnToggleAll = document.getElementById('btn-expand-collapse-konten');
+    if(btnToggleAll) btnToggleAll.innerHTML = someClosed ? '🔽 Alle ausklappen' : '▶️ Alle einklappen';
+
+    window.kontoGroups.forEach(function(g, gIdx) {
+        let accs = window.accounts.filter(function(a) { return a.grp === g.id; });
+        let gSum = accs.reduce(function(s,a) { return s + (parseFloat(a.balance)||0); }, 0);
+        
+        let moveUp = gIdx > 0 ? `<button type="button" class="btn-sm" style="background:transparent;color:var(--text-dim);font-size:14px;padding:2px;border:none;" onclick="window.moveKontoGroup(${gIdx}, -1); event.stopPropagation();">🔼</button>` : '';
+        let moveDown = gIdx < window.kontoGroups.length - 1 ? `<button type="button" class="btn-sm" style="background:transparent;color:var(--text-dim);font-size:14px;padding:2px;border:none;" onclick="window.moveKontoGroup(${gIdx}, 1); event.stopPropagation();">🔽</button>` : '';
+        
+        html += `<div class="grp-banner" onclick="window.toggleKontoGroup(${gIdx})">
+                   <div style="display:flex; align-items:center; gap:8px;">
+                       <span style="color:var(--gold); font-size:18px; line-height:1;">${g.open ? '▾' : '▸'}</span>
+                       <div class="grp-banner-title" style="margin:0;">${window.safeStr(g.label)}</div>
+                   </div>
+                   <div style="display:flex; align-items:center; gap:8px;">
+                       <div class="grp-banner-sum" style="margin:0; font-size:18px; margin-right:4px;">${window.fmt(gSum)}</div>
+                       ${moveUp} ${moveDown}
+                       <button type="button" class="btn-sm" style="background:transparent;color:var(--text-dim);font-size:16px;padding:4px;border:none;" onclick="window.manageSingleKontoGroup(${gIdx}); event.stopPropagation();">⚙️</button>
+                   </div>
+                 </div>`;
+        
+        if (g.open) {
+            if(accs.length > 0) {
+                accs.forEach(function(a) {
+                    let oldBal = null;
+                    if(a.history && a.history.length > 1) { oldBal = a.history[a.history.length - 2].bal; }
+                    let histBtn = (a.history && a.history.length > 1) ? `<button type="button" class="btn-sm" style="background:transparent; border:1px solid var(--blue); color:var(--blue);" onclick="window.openHistoryModal(${a.id})" title="Kontoverlauf ansehen">🕒 Verlauf</button>` : '';
+
+                    html += `<div class="konto-chip">
+                        <div style="display:flex; justify-content:space-between; align-items:center; width:100%;">
+                            <div class="konto-name">${window.safeStr(a.name)}</div>
+                            <div style="display:flex; gap:6px;">
+                                ${histBtn}
+                                <button type="button" class="btn-sm" onclick="window.renameKonto(${a.id})">✏️</button>
+                                <button type="button" class="btn-sm" style="color:var(--red);" onclick="window.delKonto(${a.id})">🗑️</button>
+                            </div>
+                        </div>
+                        <div style="display:flex; flex-direction:column; align-items:center; background:var(--nav-bg); padding:16px; border-radius:10px; border:1px solid var(--border);">
+                            <div style="display:flex; align-items:baseline; gap:10px;">
+                                ${oldBal !== null ? `<span style="color:var(--text-dim); text-decoration:line-through; font-size:13px;">${window.fmt(oldBal)}</span>` : ''}
+                                <span class="konto-bal" style="font-size:24px;">${window.fmt(a.balance)}</span>
+                            </div>
+                            <div style="display:flex; align-items:center; justify-content:center; gap:8px; margin-top:12px; width:100%; max-width:280px;">
+                                <input type="number" id="upd-bal-${a.id}" placeholder="Neuer Kontostand" style="flex:1; text-align:center; font-size:14px; padding:12px; border-radius:8px;" />
+                                <button type="button" class="btn-sm" style="background:var(--green); color:#fff; padding:12px 16px; font-size:16px; border-radius:8px;" onclick="window.updateKontoBal(${a.id})">💾</button>
+                            </div>
+                        </div>
+                    </div>`;
+                });
+            } else {
+                html += `<div style="text-align:center; padding:10px; color:var(--text-dim); font-size:12px; font-style:italic;">Keine Konten in dieser Gruppe.</div>`;
+            }
+        }
+    });
+    window.setHtml('konten-list', html);
+    let nkGrpSel = document.getElementById('nk-grp');
+    if(nkGrpSel) nkGrpSel.innerHTML = window.kontoGroups.map(function(g) { return `<option value="${window.safeStr(g.id)}">${window.safeStr(g.label)}</option>`; }).join('');
+}
+
+window.moveKontoGroup = function(idx, dir) {
+    if(idx + dir < 0 || idx + dir >= window.kontoGroups.length) return;
+    let temp = window.kontoGroups[idx];
+    window.kontoGroups[idx] = window.kontoGroups[idx + dir];
+    window.kontoGroups[idx + dir] = temp;
+    window.saveData('mhb_app_konto_groups', window.kontoGroups);
+    window.refreshKonten();
+}
+
+window.addKontoGroup = function() {
+    setTimeout(function() {
+        let n = prompt("Name der neuen Gruppe:");
+        if(n && n.trim() !== '') {
+            window.kontoGroups.push({id: 'grp_' + Date.now(), label: n.trim(), open: true});
+            window.saveData('mhb_app_konto_groups', window.kontoGroups); window.refreshAll(); window.showToast('✅ Gruppe hinzugefügt');
+        }
+    }, 10);
+}
+
+window.manageSingleKontoGroup = function(idx) {
+    setTimeout(function() {
+        let grp = window.kontoGroups[idx];
+        let action = prompt(`Aktion für Gruppe "${grp.label}":\n\n1 = Umbenennen\n2 = Löschen`, "1");
+        if(action === "1") {
+            let newName = prompt('Neuer Name:', grp.label);
+            if(newName && newName.trim() !== '') { window.kontoGroups[idx].label = newName.trim(); window.saveData('mhb_app_konto_groups', window.kontoGroups); window.refreshAll(); }
+        } else if (action === "2") {
+            if(confirm(`GANZE GRUPPE "${grp.label}" löschen? (Achtung: Konten darin verlieren ihre Zuweisung!)`)) { 
+                window.kontoGroups.splice(idx, 1); window.saveData('mhb_app_konto_groups', window.kontoGroups); window.refreshAll(); 
+            }
+        }
+    }, 10);
+}
+
+window.addKonto = function(){
+  let name=document.getElementById('nk-name').value.trim();
+  if(!name){window.showToast('❌ Name eingeben');return;}
+  let bal=parseFloat(document.getElementById('nk-bal').value.replace(',','.'))||0;
+  let grp=document.getElementById('nk-grp').value;
+  window.accounts.push({id:Date.now(), name:name, balance:bal, grp:grp, history:[{ts:Date.now(), bal:bal}]});
+  window.saveData('mhb_app_accounts',window.accounts);
+  document.getElementById('nk-name').value=''; document.getElementById('nk-bal').value='';
+  window.refreshAll(); window.showToast('✅ Konto gespeichert');
+}
+
+window.updateKontoBal = function(id) {
+    let a = window.accounts.find(function(x) { return x.id === id; });
+    let inputEl = document.getElementById('upd-bal-' + id);
+    if(!a || !inputEl) return;
+    let val = parseFloat(inputEl.value.replace(',','.'));
+    if(!isNaN(val)) { 
+        if(val !== a.balance) {
+            a.balance = val;
+            if(!a.history) a.history = [];
+            a.history.push({ts: Date.now(), bal: val});
+        }
+        inputEl.value = '';
+        window.saveData('mhb_app_accounts', window.accounts); window.refreshAll(); window.showToast('✅ Stand aktualisiert');
+    }
+}
+
+window.delKonto = function(id) {
+    if(confirm('Konto löschen?')) { window.accounts = window.accounts.filter(function(x) { return x.id !== id; }); window.saveData('mhb_app_accounts', window.accounts); window.refreshAll(); }
+}
+
+window.renameKonto = function(id) {
+  setTimeout(function() {
+      let a=window.accounts.find(function(x) { return x.id===id; }); if(!a)return;
+      let n=prompt('Neuer Kontoname:', a.name);
+      if(n && n.trim() !== '') { a.name=n.trim(); window.saveData('mhb_app_accounts',window.accounts); window.refreshAll(); }
+  }, 10);
+}
+
+window.openHistoryModal = function(id) {
+    let a = window.accounts.find(function(x) { return x.id===id; }); if(!a || !a.history) return;
+    let content = document.getElementById('history-modal-content');
+    let html = '';
+    let sorted = a.history.slice().sort(function(x,y) { return y.ts - x.ts; });
+    sorted.forEach(function(h) {
+        let d = new Date(h.ts);
+        let dateStr = d.toLocaleDateString('de-DE', {day:'2-digit', month:'2-digit', year:'numeric', hour:'2-digit', minute:'2-digit'});
+        html += `<div class="row-item" style="padding:6px 0; border-bottom:1px solid var(--border);">
+                    <span style="font-size:11px; color:var(--text-dim);">${dateStr}</span>
+                    <span style="font-weight:bold; color:var(--gold);">${window.fmt(h.bal)}</span>
+                 </div>`;
+    });
+    content.innerHTML = html;
+    document.getElementById('history-modal').style.display = 'flex';
+}
+window.closeHistoryModal = function() { document.getElementById('history-modal').style.display = 'none'; }
+
+
+// --- HISTORIE ---
+window.refreshUebersicht = function() {
+    let html = ''; let filtered = window.entries.filter(function(e) { return e.year == window.activeYear; });
+    for(let m=11; m>=0; m--) {
+        let mEntries = filtered.filter(function(e) { return e.month == m; });
+        if(mEntries.length > 0) {
+            html += `<div class="sec-label" style="color:var(--gold); border-bottom:1px solid var(--border); padding-bottom:4px;">${window.MONTHS[m]} ${window.activeYear}</div>`;
+            let grouped = {};
+            mEntries.forEach(function(e) { let k = e.cat + '|' + e.type; if(!grouped[k]) grouped[k] = []; grouped[k].push(e); });
+            Object.keys(grouped).forEach(function(k) {
+                let gEntries = grouped[k];
+                if(gEntries.length === 1) {
+                    let e = gEntries[0];
+                    let dStr = e.ts ? new Date(e.ts).toLocaleDateString('de-DE') : 'Unbekannt';
+                    html += `<div class="row-item">
+                        <div style="flex:1;"><div class="row-label">${window.safeStr(e.cat)}</div><div class="row-sub">${e.note ? window.safeStr(e.note) + ' | ' : ''}${dStr}</div></div>
+                        <div style="display:flex; align-items:center; gap:8px;"><span class="row-val ${e.type==='inc'?'green':'red'}">${e.type==='inc'?'+':'-'}${window.fmt(e.amount)}</span><button type="button" class="btn-sm" style="background:transparent;border:1px solid var(--border);" onclick="window.openEditModal(${window.entries.indexOf(e)})">✏️</button></div>
+                    </div>`;
+                } else {
+                    let totalAmt = gEntries.reduce(function(s, e) { return s + parseFloat(e.amount); }, 0);
+                    let type = gEntries[0].type;
+                    let groupHeaderId = 'hist_grp_' + m + '_' + k.replace(/[^a-zA-Z0-9]/g, '');
+                    html += `<div class="row-item" style="cursor:pointer; background:rgba(255,255,255,0.02); border-radius:6px; padding:8px;" onclick="document.getElementById('${groupHeaderId}').style.display = document.getElementById('${groupHeaderId}').style.display === 'none' ? 'block' : 'none';">
+                        <div style="flex:1;"><div class="row-label" style="font-weight:bold; color:var(--gold);">▾ ${window.safeStr(gEntries[0].cat)} <span style="font-size:10px; color:var(--text-dim);">(${gEntries.length} Einträge)</span></div></div>
+                        <div style="display:flex; align-items:center; gap:8px;"><span class="row-val ${type==='inc'?'green':'red'}">${type==='inc'?'+':'-'}${window.fmt(totalAmt)}</span></div>
+                    </div>`;
+                    html += `<div id="${groupHeaderId}" style="display:none; padding-left:15px; border-left:2px solid var(--border); margin-left:5px; margin-bottom:8px;">`;
+                    gEntries.forEach(function(e) {
+                        let dStr = e.ts ? new Date(e.ts).toLocaleDateString('de-DE') : 'Unbekannt';
+                        html += `<div class="row-item" style="border-bottom:none; padding:4px 0;">
+                            <div style="flex:1;"><div class="row-sub">${e.note ? window.safeStr(e.note) + ' | ' : ''}${dStr}</div></div>
+                            <div style="display:flex; align-items:center; gap:8px;"><span class="row-val ${e.type==='inc'?'green':'red'}" style="font-size:11px;">${window.fmt(e.amount)}</span><button type="button" class="btn-sm" style="font-size:10px; padding:2px 4px;" onclick="window.openEditModal(${window.entries.indexOf(e)})">✏️</button></div>
+                        </div>`;
+                    });
+                    html += `</div>`;
+                }
+            });
+        }
+    }
+    window.setHtml('ueb-buchungen', html || '<div style="color:var(--text-dim);font-size:13px;padding:10px 0;">Keine Buchungen.</div>');
+}
+
 // --- TABELLEN-LOGIK (AUFKLAPPBAR, NEUE EINTRÄGE OHNE LÖSCHEN) ---
 window.fmtT = function(v, color, bbl) {
-    if (color === 'neutral') { return `<span class="sum-bubble-neutral">${(isNaN(v)?0:v).toLocaleString('de-DE',{minimumFractionDigits:2})} €</span>`; }
+    if (color === 'neutral') {
+        return `<span class="sum-bubble-neutral">${(isNaN(v)?0:v).toLocaleString('de-DE',{minimumFractionDigits:2})} €</span>`;
+    }
     let c = color||(v>=0?'pos':'neg');
     return bbl ? `<span class="sum-bubble-${c}">${(isNaN(v)?0:v).toLocaleString('de-DE',{minimumFractionDigits:2})} €</span>` : `<span class="${c}" style="font-weight:700">${(isNaN(v)?0:v).toLocaleString('de-DE',{minimumFractionDigits:2})} €</span>`;
 }
@@ -1432,7 +1915,7 @@ window.buildTable = function() {
     visMonths.forEach(function(m) { tbl += `<th>${window.MONTHS_SHORT[m]}</th>`; });
     tbl += `<th>Gesamt</th><th>Ø / Monat</th></tr></thead><tbody>`;
 
-    // EINNAHMEN
+    // EINNAHMEN TOP LEVEL
     let addIncGrpBtn = editMode ? `<button type="button" class="edit-btn" style="color:var(--green); margin-left:8px;" onclick="window.addIncGroup(); event.stopPropagation();">➕ Gruppe</button>` : '';
     tbl += `<tr class="sec-row inc"><td><div style="display:flex; align-items:center;"><span>📥 EINNAHMEN</span>${addIncGrpBtn}</div></td>`;
     visMonths.forEach(function(m) { tbl += `<td>${window.fmtT(window.getTotalCellVal('inc', m, window.activeYear), 'pos', true)}</td>`; });
@@ -1453,13 +1936,15 @@ window.buildTable = function() {
             let isFav = window.favCats.includes(cat); let sCat = window.safeStr(cat);
             let itemIncActions = editMode ? `<div class="edit-tools-box" style="margin-left: 20px;"><button type="button" class="btn-action" style="color:var(--gold);" onclick="window.renameIncItem(${gIdx}, ${iIdx}); event.stopPropagation();">✏️</button><button type="button" class="btn-action" style="color:var(--red);" onclick="window.deleteIncItem(${gIdx}, ${iIdx}); event.stopPropagation();">🗑️</button></div>` : '';
             tbl += `<tr><td><div class="cat-container"><div class="cat-name-line" style="padding-left:12px;"><span class="fav-star ${isFav?'active':''}" onclick="window.toggleFav('${sCat}', event); event.stopPropagation();">${isFav?'★':'☆'}</span><span class="cat-name-text" title="${sCat}">${sCat}</span></div>${itemIncActions}</div></td>`;
+            
             visMonths.forEach(function(m) { tbl += window.generateCell(cat, m, 'inc'); });
+            
             let sumC = 0; for(let m=0;m<12;m++) sumC+=window.getCellVal(cat,m,'inc', window.activeYear);
             tbl += `<td>${window.fmtT(sumC, 'neutral')}</td><td>${window.fmtT(window.getCatAvg(cat, 'inc'), 'neutral')}</td></tr>`;
         });
     });
 
-    // AUSGABEN
+    // AUSGABEN TOP LEVEL
     let addExpGrpBtn = editMode ? `<button type="button" class="edit-btn" style="color:var(--red); margin-left:8px;" onclick="window.addExpGroup(); event.stopPropagation();">➕ Gruppe</button>` : '';
     tbl += `<tr class="sec-row exp"><td><div style="display:flex; align-items:center;"><span>📤 AUSGABEN</span>${addExpGrpBtn}</div></td>`;
     visMonths.forEach(function(m) { tbl += `<td>${window.fmtT(window.getTotalCellVal('exp', m, window.activeYear), 'neg', true)}</td>`; });
@@ -1480,7 +1965,9 @@ window.buildTable = function() {
             let isFav = window.favCats.includes(cat); let sCat = window.safeStr(cat);
             let itemExpActions = editMode ? `<div class="edit-tools-box" style="margin-left: 20px;"><button type="button" class="btn-action" style="color:var(--gold);" onclick="window.renameExpItem(${gIdx}, ${iIdx}); event.stopPropagation();">✏️</button><button type="button" class="btn-action" style="color:var(--red);" onclick="window.deleteExpItem(${gIdx}, ${iIdx}); event.stopPropagation();">🗑️</button></div>` : '';
             tbl += `<tr><td><div class="cat-container"><div class="cat-name-line" style="padding-left:12px;"><span class="fav-star ${isFav?'active':''}" onclick="window.toggleFav('${sCat}', event); event.stopPropagation();">${isFav?'★':'☆'}</span><span class="cat-name-text" title="${sCat}">${sCat}</span></div>${itemExpActions}</div></td>`;
+            
             visMonths.forEach(function(m) { tbl += window.generateCell(cat, m, 'exp'); });
+            
             let sumC = 0; for(let m=0;m<12;m++) sumC+=window.getCellVal(cat,m,'exp', window.activeYear);
             tbl += `<td>${window.fmtT(sumC, 'neutral')}</td><td>${window.fmtT(window.getCatAvg(cat, 'exp'), 'neutral')}</td></tr>`;
         });
@@ -1494,7 +1981,6 @@ window.buildTable = function() {
     window.setHtml('tabelle-wrap', tbl);
 }
 
-// RESTLICHE NOTWENDIGE FUNKTIONEN
 window.renderMiniOverview = function() {
   let html = `<table class="tbl" style="margin-bottom:0;"><thead><tr><th>Kategorie</th><th>${window.MONTHS_SHORT[window.CUR_M]}</th></tr></thead><tbody>`;
   html += `<tr class="sec-row inc"><td>📥 EINNAHMEN</td><td></td></tr>`;
@@ -1504,37 +1990,49 @@ window.renderMiniOverview = function() {
   html += `</tbody></table>`;
   window.setHtml('mini-overview', html);
 }
+
+window.renderTabelle = function() { try{ window.buildTable(); }catch(e){console.error(e)} }
+
 window.toggleTblGroup = function(type, idx) { 
     if(window.isEditMode) return;
     if(type === 'inc') { window.incGroups[idx].open = !window.incGroups[idx].open; window.saveData('mhb_app_inc_groups', window.incGroups); }
     else { window.expGroups[idx].open = !window.expGroups[idx].open; window.saveData('mhb_app_exp_groups', window.expGroups); }
     window.renderTabelle(); 
 }
+
 window.expandAllGroups = function() {
     window.incGroups.forEach(function(g) { g.open = true; }); window.expGroups.forEach(function(g) { g.open = true; });
     window.saveData('mhb_app_inc_groups', window.incGroups); window.saveData('mhb_app_exp_groups', window.expGroups); window.renderTabelle();
 }
+
 window.collapseAllGroups = function() {
     window.incGroups.forEach(function(g) { g.open = false; }); window.expGroups.forEach(function(g) { g.open = false; });
     window.saveData('mhb_app_inc_groups', window.incGroups); window.saveData('mhb_app_exp_groups', window.expGroups); window.renderTabelle();
 }
+
 window.toggleExpandCollapseAll = function() {
     let someClosed = window.incGroups.some(function(g) { return !g.open; }) || window.expGroups.some(function(g) { return !g.open; });
     window.incGroups.forEach(function(g) { g.open = someClosed; }); window.expGroups.forEach(function(g) { g.open = someClosed; });
     window.saveData('mhb_app_inc_groups', window.incGroups); window.saveData('mhb_app_exp_groups', window.expGroups); window.renderTabelle();
 }
+
 window.toggleEditMode = function() { window.isEditMode = !window.isEditMode; window.renderTabelle(); }
+
+// --- SCHNELLEINGABE ---
 window.toggleQsType = function() {
     let typeInputs = document.querySelectorAll('input[name="qs-type"]');
     if(!typeInputs.length) return;
     let type = 'exp'; typeInputs.forEach(function(r) { if(r.checked) type = r.value; });
     let card = document.getElementById('qs-card'), lE = document.getElementById('lbl-qs-exp'), lI = document.getElementById('lbl-qs-inc');
     if(!card || !lE || !lI) return;
+
     if(type === 'exp') {
-        card.style.borderColor = 'var(--red)'; lE.classList.add('active-exp'); lI.classList.remove('active-inc');
+        card.style.borderColor = 'var(--red)'; 
+        lE.classList.add('active-exp'); lI.classList.remove('active-inc');
         card.style.background = 'linear-gradient(180deg, var(--card-bg) 0%, rgba(244,67,54,0.05) 100%)';
     } else {
-        card.style.borderColor = 'var(--green)'; lI.classList.add('active-inc'); lE.classList.remove('active-exp');
+        card.style.borderColor = 'var(--green)'; 
+        lI.classList.add('active-inc'); lE.classList.remove('active-exp');
         card.style.background = 'linear-gradient(180deg, var(--card-bg) 0%, rgba(76,175,80,0.05) 100%)';
     }
     let sel = document.getElementById('qs-cat');
@@ -1542,50 +2040,155 @@ window.toggleQsType = function() {
         let arr = [];
         if(type === 'exp') { window.expGroups.forEach(function(g) { if(g.items) arr = arr.concat(g.items); }); } 
         else { window.incGroups.forEach(function(g) { if(g.items) arr = arr.concat(g.items); }); }
+        
         let favs = arr.filter(function(c) { return window.favCats.includes(c); }); 
         if(favs.length === 0) favs = arr;
         sel.innerHTML = favs.length ? favs.map(function(c) { return `<option value="${window.safeStr(c)}">${window.safeStr(c)}</option>`; }).join('') : '<option>Kategorien anlegen</option>';
     }
 }
+
 window.quickSaveUnified = function(){
   let amtInput = document.getElementById('qs-amt');
   if(!amtInput) return;
   let valStr = amtInput.value.replace(',','.');
   let a = parseFloat(valStr);
   if(isNaN(a) || a<=0) { window.showToast('❌ Betrag ungültig'); return; }
+  
   let catInput = document.getElementById('qs-cat');
   if(!catInput) return; let cat = catInput.value; if(cat.includes('Bitte')) return;
+  
   let dateVal = document.getElementById('qs-date').value;
   let d = new Date(); if(dateVal) { let pd = new Date(dateVal); if (!isNaN(pd.getTime())) d = pd; }
   let type = 'exp'; document.querySelectorAll('input[name="qs-type"]').forEach(function(r) { if(r.checked) type = r.value; });
   let noteInput = document.getElementById('qs-note');
+  
   window.entries.unshift({cat:cat, type:type, amount:a, month:d.getMonth(), year:d.getFullYear(), note:noteInput?noteInput.value.trim():'', ts:d.getTime()});
   window.saveData('mhb_app_entries',window.entries);
+  
   amtInput.value = ''; if(noteInput) noteInput.value = '';
-  let dIcon = document.getElementById('qs-date-icon'); let dWrap = document.getElementById('qs-date-wrap'); let dInput = document.getElementById('qs-date');
+  
+  let dIcon = document.getElementById('qs-date-icon');
+  let dWrap = document.getElementById('qs-date-wrap');
+  let dInput = document.getElementById('qs-date');
   if(dIcon && dWrap && dInput) {
-      dInput.value = new Date().toISOString().split('T')[0]; dInput.style.color = 'transparent'; dIcon.style.display = 'block'; dWrap.style.width = '48px';
+      dInput.value = new Date().toISOString().split('T')[0];
+      dInput.style.color = 'transparent';
+      dIcon.style.display = 'block';
+      dWrap.style.width = '48px';
   }
+
   let btn = document.getElementById('qs-save-btn');
   if(btn) { btn.style.background = 'var(--green)'; setTimeout(function() { btn.style.background = ''; }, 1000); }
+  
   window.refreshAll(); window.showToast('✅ Gespeichert');
 }
 
-// EINSTELLUNGEN (GRUPPEN & KATEGORIEN)
-window.addIncGroup = function() { setTimeout(function() { let name = prompt('Name der neuen Einnahmegruppe:'); if(name && name.trim() !== '') { let id = name.toLowerCase().replace(/[^a-z0-9]/g, ''); window.incGroups.push({ id: id, label: name.trim(), open: true, items: [] }); window.saveData('mhb_app_inc_groups', window.incGroups); window.refreshAll(); window.showToast('✅ Gruppe hinzugefügt'); } }, 10); }
-window.renameIncGroup = function(gIdx) { setTimeout(function() { let newName = prompt('Neuer Name:', window.incGroups[gIdx].label); if(newName && newName.trim() !== '') { window.incGroups[gIdx].label = newName.trim(); window.saveData('mhb_app_inc_groups', window.incGroups); window.refreshAll(); } }, 10); }
-window.deleteIncGroup = function(gIdx) { setTimeout(function() { if(confirm(`GANZE GRUPPE "${window.incGroups[gIdx].label}" löschen?`)) { window.incGroups.splice(gIdx, 1); window.saveData('mhb_app_inc_groups', window.incGroups); window.refreshAll(); } }, 10); }
-window.addIncItem = function(gIdx) { setTimeout(function() { let name = prompt(`Neue Kategorie für "${window.incGroups[gIdx].label}":`); if(name && name.trim() !== '') { window.incGroups[gIdx].items.push(name.trim()); window.saveData('mhb_app_inc_groups', window.incGroups); window.refreshAll(); window.showToast('✅ Hinzugefügt'); } }, 10); }
-window.renameIncItem = function(gIdx, iIdx) { setTimeout(function() { let oldCat = window.incGroups[gIdx].items[iIdx]; let newName = prompt('Neuer Name:', oldCat); if(newName && newName.trim() !== '') { window.incGroups[gIdx].items[iIdx] = newName.trim(); window.saveData('mhb_app_inc_groups', window.incGroups); window.entries.forEach(function(e) { if(e.cat === oldCat && e.type === 'inc') e.cat = newName.trim(); }); window.saveData('mhb_app_entries', window.entries); if(window.recurring[oldCat]) { window.recurring[newName.trim()] = window.recurring[oldCat]; delete window.recurring[oldCat]; window.saveData('mhb_app_recurring', window.recurring); } if(window.favCats.includes(oldCat)) { window.favCats = window.favCats.filter(function(c){return c!==oldCat;}); window.favCats.push(newName.trim()); window.saveData('mhb_app_favs', window.favCats); } window.refreshAll(); window.showToast('✅ Umbenannt'); } }, 10); }
-window.deleteIncItem = function(gIdx, iIdx) { setTimeout(function() { let oldCat = window.incGroups[gIdx].items[iIdx]; if(confirm(`Kategorie "${oldCat}" wirklich löschen?`)) { window.incGroups[gIdx].items.splice(iIdx, 1); window.saveData('mhb_app_inc_groups', window.incGroups); if(window.favCats.includes(oldCat)) { window.favCats = window.favCats.filter(function(c){return c!==oldCat;}); window.saveData('mhb_app_favs', window.favCats); } window.refreshAll(); } }, 10); }
-window.addExpGroup = function() { setTimeout(function() { let name = prompt('Name der neuen Ausgabengruppe:'); if(name && name.trim() !== '') { let id = name.toLowerCase().replace(/[^a-z0-9]/g, ''); window.expGroups.push({ id: id, label: name.trim(), open: true, items: [] }); window.saveData('mhb_app_exp_groups', window.expGroups); window.refreshAll(); window.showToast('✅ Gruppe hinzugefügt'); } }, 10); }
-window.renameExpGroup = function(gIdx) { setTimeout(function() { let newName = prompt('Neuer Name:', window.expGroups[gIdx].label); if(newName && newName.trim() !== '') { window.expGroups[gIdx].label = newName.trim(); window.saveData('mhb_app_exp_groups', window.expGroups); window.refreshAll(); } }, 10); }
-window.deleteExpGroup = function(gIdx) { setTimeout(function() { if(confirm(`GANZE GRUPPE "${window.expGroups[gIdx].label}" löschen?`)) { window.expGroups.splice(gIdx, 1); window.saveData('mhb_app_exp_groups', window.expGroups); window.refreshAll(); } }, 10); }
-window.addExpItem = function(gIdx) { setTimeout(function() { let name = prompt(`Neue Kategorie für "${window.expGroups[gIdx].label}":`); if(name && name.trim() !== '') { window.expGroups[gIdx].items.push(name.trim()); window.saveData('mhb_app_exp_groups', window.expGroups); window.refreshAll(); window.showToast('✅ Hinzugefügt'); } }, 10); }
-window.renameExpItem = function(gIdx, iIdx) { setTimeout(function() { let oldCat = window.expGroups[gIdx].items[iIdx]; let newName = prompt('Neuer Name:', oldCat); if(newName && newName.trim() !== '') { window.expGroups[gIdx].items[iIdx] = newName.trim(); window.saveData('mhb_app_exp_groups', window.expGroups); window.entries.forEach(function(e) { if(e.cat === oldCat && e.type === 'exp') e.cat = newName.trim(); }); window.saveData('mhb_app_entries', window.entries); if(window.recurring[oldCat]) { window.recurring[newName.trim()] = window.recurring[oldCat]; delete window.recurring[oldCat]; window.saveData('mhb_app_recurring', window.recurring); } if(window.favCats.includes(oldCat)) { window.favCats = window.favCats.filter(function(c){return c!==oldCat;}); window.favCats.push(newName.trim()); window.saveData('mhb_app_favs', window.favCats); } window.refreshAll(); window.showToast('✅ Umbenannt'); } }, 10); }
-window.deleteExpItem = function(gIdx, iIdx) { setTimeout(function() { let oldCat = window.expGroups[gIdx].items[iIdx]; if(confirm(`Kategorie "${oldCat}" wirklich löschen?`)) { window.expGroups[gIdx].items.splice(iIdx, 1); window.saveData('mhb_app_exp_groups', window.expGroups); if(window.favCats.includes(oldCat)) { window.favCats = window.favCats.filter(function(c){return c!==oldCat;}); window.saveData('mhb_app_favs', window.favCats); } window.refreshAll(); } }, 10); }
+// --- EINSTELLUNGEN EDIT ---
+window.addIncGroup = function() {
+    setTimeout(function() {
+        let name = prompt('Name der neuen Einnahmegruppe:');
+        if(name && name.trim() !== '') {
+            let id = name.toLowerCase().replace(/[^a-z0-9]/g, '');
+            window.incGroups.push({ id: id, label: name.trim(), open: true, items: [] });
+            window.saveData('mhb_app_inc_groups', window.incGroups); window.refreshAll(); window.showToast('✅ Gruppe hinzugefügt');
+        }
+    }, 10);
+}
+window.renameIncGroup = function(gIdx) {
+    setTimeout(function() {
+        let newName = prompt('Neuer Name:', window.incGroups[gIdx].label);
+        if(newName && newName.trim() !== '') { window.incGroups[gIdx].label = newName.trim(); window.saveData('mhb_app_inc_groups', window.incGroups); window.refreshAll(); }
+    }, 10);
+}
+window.deleteIncGroup = function(gIdx) {
+    setTimeout(function() {
+        if(confirm(`GANZE GRUPPE "${window.incGroups[gIdx].label}" löschen?`)) { window.incGroups.splice(gIdx, 1); window.saveData('mhb_app_inc_groups', window.incGroups); window.refreshAll(); }
+    }, 10);
+}
+window.addIncItem = function(gIdx) {
+    setTimeout(function() {
+        let name = prompt(`Neue Kategorie für "${window.incGroups[gIdx].label}":`);
+        if(name && name.trim() !== '') { window.incGroups[gIdx].items.push(name.trim()); window.saveData('mhb_app_inc_groups', window.incGroups); window.refreshAll(); window.showToast('✅ Hinzugefügt'); }
+    }, 10);
+}
+window.renameIncItem = function(gIdx, iIdx) {
+    setTimeout(function() {
+        let oldCat = window.incGroups[gIdx].items[iIdx];
+        let newName = prompt('Neuer Name:', oldCat);
+        if(newName && newName.trim() !== '') {
+            window.incGroups[gIdx].items[iIdx] = newName.trim(); window.saveData('mhb_app_inc_groups', window.incGroups);
+            window.entries.forEach(function(e) { if(e.cat === oldCat && e.type === 'inc') e.cat = newName.trim(); }); window.saveData('mhb_app_entries', window.entries);
+            if(window.recurring[oldCat]) { window.recurring[newName.trim()] = window.recurring[oldCat]; delete window.recurring[oldCat]; window.saveData('mhb_app_recurring', window.recurring); }
+            if(window.favCats.includes(oldCat)) { window.favCats = window.favCats.filter(function(c){return c!==oldCat;}); window.favCats.push(newName.trim()); window.saveData('mhb_app_favs', window.favCats); }
+            window.refreshAll(); window.showToast('✅ Umbenannt');
+        }
+    }, 10);
+}
+window.deleteIncItem = function(gIdx, iIdx) {
+    setTimeout(function() {
+        let oldCat = window.incGroups[gIdx].items[iIdx];
+        if(confirm(`Kategorie "${oldCat}" wirklich löschen?`)) {
+            window.incGroups[gIdx].items.splice(iIdx, 1); window.saveData('mhb_app_inc_groups', window.incGroups);
+            if(window.favCats.includes(oldCat)) { window.favCats = window.favCats.filter(function(c){return c!==oldCat;}); window.saveData('mhb_app_favs', window.favCats); }
+            window.refreshAll();
+        }
+    }, 10);
+}
+
+window.addExpGroup = function() {
+    setTimeout(function() {
+        let name = prompt('Name der neuen Ausgabengruppe:');
+        if(name && name.trim() !== '') {
+            let id = name.toLowerCase().replace(/[^a-z0-9]/g, '');
+            window.expGroups.push({ id: id, label: name.trim(), open: true, items: [] });
+            window.saveData('mhb_app_exp_groups', window.expGroups); window.refreshAll(); window.showToast('✅ Gruppe hinzugefügt');
+        }
+    }, 10);
+}
+window.renameExpGroup = function(gIdx) {
+    setTimeout(function() {
+        let newName = prompt('Neuer Name:', window.expGroups[gIdx].label);
+        if(newName && newName.trim() !== '') { window.expGroups[gIdx].label = newName.trim(); window.saveData('mhb_app_exp_groups', window.expGroups); window.refreshAll(); }
+    }, 10);
+}
+window.deleteExpGroup = function(gIdx) {
+    setTimeout(function() {
+        if(confirm(`GANZE GRUPPE "${window.expGroups[gIdx].label}" löschen?`)) { window.expGroups.splice(gIdx, 1); window.saveData('mhb_app_exp_groups', window.expGroups); window.refreshAll(); }
+    }, 10);
+}
+window.addExpItem = function(gIdx) {
+    setTimeout(function() {
+        let name = prompt(`Neue Kategorie für "${window.expGroups[gIdx].label}":`);
+        if(name && name.trim() !== '') { window.expGroups[gIdx].items.push(name.trim()); window.saveData('mhb_app_exp_groups', window.expGroups); window.refreshAll(); window.showToast('✅ Hinzugefügt'); }
+    }, 10);
+}
+window.renameExpItem = function(gIdx, iIdx) {
+    setTimeout(function() {
+        let oldCat = window.expGroups[gIdx].items[iIdx];
+        let newName = prompt('Neuer Name:', oldCat);
+        if(newName && newName.trim() !== '') {
+            window.expGroups[gIdx].items[iIdx] = newName.trim(); window.saveData('mhb_app_exp_groups', window.expGroups);
+            window.entries.forEach(function(e) { if(e.cat === oldCat && e.type === 'exp') e.cat = newName.trim(); }); window.saveData('mhb_app_entries', window.entries);
+            if(window.recurring[oldCat]) { window.recurring[newName.trim()] = window.recurring[oldCat]; delete window.recurring[oldCat]; window.saveData('mhb_app_recurring', window.recurring); }
+            if(window.favCats.includes(oldCat)) { window.favCats = window.favCats.filter(function(c){return c!==oldCat;}); window.favCats.push(newName.trim()); window.saveData('mhb_app_favs', window.favCats); }
+            window.refreshAll(); window.showToast('✅ Umbenannt');
+        }
+    }, 10);
+}
+window.deleteExpItem = function(gIdx, iIdx) {
+    setTimeout(function() {
+        let oldCat = window.expGroups[gIdx].items[iIdx];
+        if(confirm(`Kategorie "${oldCat}" wirklich löschen?`)) {
+            window.expGroups[gIdx].items.splice(iIdx, 1); window.saveData('mhb_app_exp_groups', window.expGroups);
+            if(window.favCats.includes(oldCat)) { window.favCats = window.favCats.filter(function(c){return c!==oldCat;}); window.saveData('mhb_app_favs', window.favCats); }
+            window.refreshAll();
+        }
+    }, 10);
+}
 
 // --- MODALS ---
+
+// WICHTIG: isAppend entscheidet, ob wir etwas Neues hinzufügen oder das Modal aus einem Fehler/Leerklick öffnen
 window.openAddModal = function(cat, type, m, existingVal, isAppend) {
     let safeM = (m !== undefined && m !== null && !isNaN(m)) ? m : window.CUR_M;
     window.addModalState = { cat:cat, type:type, month: parseInt(safeM) };
@@ -1615,6 +2218,7 @@ window.saveAddModal = function() {
     let freqEl = document.querySelector('input[name="add-freq"]:checked');
     let freq = freqEl ? freqEl.value : 'once';
     
+    // GANZ WICHTIG: Keine Filter/Delete-Logik mehr hier! Wir löschen KEINE bestehenden Einträge.
     if(!isNaN(a) && a > 0) {
         if(freq === 'once') {
             window.entries.unshift({cat:window.addModalState.cat, type:window.addModalState.type, amount:a, month:window.addModalState.month, year:window.activeYear, ts:Date.now()});
@@ -1758,6 +2362,8 @@ window.loadFromCloud = async function(isAuto = false) {
       window.saveData('mhb_app_cashback', window.cashbackEntries); window.saveData('mhb_app_cbsitelist', window.cbSiteList);
       window.saveData('mhb_app_emob_providers', window.emobProviders); window.saveData('mhb_app_emob_kmentries', window.emobKmEntries); window.saveData('mhb_app_emob_charges', window.emobCharges);
       window.saveData('mhb_app_cloud_key', apiKey); window.saveData('mhb_app_cloud_bin', binId);
+      
+      window.ensureDataIntegrity();
       window.refreshAll(); 
       if(isAuto) window.showToast('✅ Daten auf aktuellstem Stand');
       else window.showToast('✅ Daten geladen!');
@@ -1797,6 +2403,8 @@ window.importDataText = function() {
         
         document.getElementById('import-modal').style.display='none';
         document.getElementById('import-text-area').value = '';
+        
+        window.ensureDataIntegrity();
         window.refreshAll(); window.showToast('✅ Import fertig');
       } else {
         window.showToast('❌ Ungültige Datenstruktur');
@@ -1834,6 +2442,7 @@ window.init = function(){
     let cloudKey = window.loadData('mhb_app_cloud_key', ''); if(cloudKey) { let el = document.getElementById('cloud-api-key'); if(el) el.value = cloudKey; }
     let binId = window.loadData('mhb_app_cloud_bin', ''); if(binId) { let el2 = document.getElementById('cloud-bin-id'); if(el2) el2.value = binId; }
     
+    window.ensureDataIntegrity();
     window.refreshAll(); 
     setTimeout(function() { window.navTo('dash', document.querySelector('.bot-tab')); }, 100);
 
