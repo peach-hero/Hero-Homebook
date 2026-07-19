@@ -3,6 +3,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<!-- Diese 3 Zeilen machen die HTML zu einer echten Vollbild-App auf dem Handy -->
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#0f0f0f">
 <title>Haushaltsbuch PRO</title>
 <style>
 /* FARB-VARIABLEN (THEMING) */
@@ -666,6 +670,17 @@ window.ensureDataIntegrity = function() {
         window.kontoGroups = [{id:'grp1', label:'Girokonto', open:true},{id:'grp2', label:'Krypto', open:true},{id:'grp3', label:'Depot', open:true}];
     }
 
+    // Konten retten, die keine Gruppe haben
+    if (window.accounts && window.accounts.length > 0) {
+        let validGrps = new Set(window.kontoGroups.map(g => g.id));
+        window.accounts.forEach(a => {
+            if (!a.grp || !validGrps.has(a.grp)) {
+                a.grp = window.kontoGroups[0].id;
+            }
+        });
+        window.saveData('mhb_app_accounts', window.accounts);
+    }
+
     let knownExpCats = new Set();
     window.expGroups.forEach(g => (g.items||[]).forEach(c => knownExpCats.add(c)));
     
@@ -691,6 +706,10 @@ window.ensureDataIntegrity = function() {
         if(!recGrp) { recGrp = {id:'recovered_inc', label:'🔄 Wiederhergestellt (Einnahmen)', open:true, items: []}; window.incGroups.push(recGrp); }
         missingInc.forEach(c => { recGrp.items.push(c); knownIncCats.add(c); });
     }
+    
+    window.saveData('mhb_app_exp_groups', window.expGroups);
+    window.saveData('mhb_app_inc_groups', window.incGroups);
+    window.saveData('mhb_app_konto_groups', window.kontoGroups);
 };
 
 // ----- HILFSFUNKTIONEN -----
@@ -1165,6 +1184,7 @@ window.updateCharge = function(chargeId, kwhStr, priceStr, provStr) {
     let price = parseFloat(priceStr);
     let provName = charge.provider;
 
+    // Wenn ein Provider im Select gewählt wurde, überschreibe den Preis automatisch
     if(provStr && provStr !== "") {
         let parts = provStr.split('|');
         provName = parts[0];
@@ -1180,6 +1200,7 @@ window.updateCharge = function(chargeId, kwhStr, priceStr, provStr) {
     
     window.saveData('mhb_app_emob_charges', window.emobCharges);
     
+    // Ins Haushaltsbuch buchen
     let d = new Date(charge.date);
     if(isNaN(d.getTime())) d = new Date();
     
@@ -2188,7 +2209,6 @@ window.deleteExpItem = function(gIdx, iIdx) {
 
 // --- MODALS ---
 
-// WICHTIG: isAppend entscheidet, ob wir etwas Neues hinzufügen oder das Modal aus einem Fehler/Leerklick öffnen
 window.openAddModal = function(cat, type, m, existingVal, isAppend) {
     let safeM = (m !== undefined && m !== null && !isNaN(m)) ? m : window.CUR_M;
     window.addModalState = { cat:cat, type:type, month: parseInt(safeM) };
@@ -2218,7 +2238,6 @@ window.saveAddModal = function() {
     let freqEl = document.querySelector('input[name="add-freq"]:checked');
     let freq = freqEl ? freqEl.value : 'once';
     
-    // GANZ WICHTIG: Keine Filter/Delete-Logik mehr hier! Wir löschen KEINE bestehenden Einträge.
     if(!isNaN(a) && a > 0) {
         if(freq === 'once') {
             window.entries.unshift({cat:window.addModalState.cat, type:window.addModalState.type, amount:a, month:window.addModalState.month, year:window.activeYear, ts:Date.now()});
