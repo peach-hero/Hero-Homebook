@@ -19,7 +19,7 @@
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
       navigator.serviceWorker.register('./sw.js', { scope: './' })
-        .then(reg => console.log('ServiceWorker registriert:', reg.scope))
+        .then(reg => console.log('PWA ServiceWorker aktiv:', reg.scope))
         .catch(err => console.error('ServiceWorker Fehler:', err));
     });
   }
@@ -344,7 +344,6 @@ textarea { resize: vertical; min-height: 80px; font-weight: normal; }
 
   <!-- PAGE: E-MOBILITY -->
   <div class="page" id="page-emobility">
-    <!-- CSV Import -->
     <div class="card">
         <div class="card-title">CSV-Import Fahrten</div>
         <div class="upload-zone" id="upload-zone-text" onclick="document.getElementById('csv-upload').click()">Datei hier hochladen (tripStatistics.csv)</div>
@@ -353,7 +352,6 @@ textarea { resize: vertical; min-height: 80px; font-weight: normal; }
         <button class="btn btn-outline" style="margin-top:10px; border-color:var(--blue); color:var(--blue);" onclick="window.applyTarifToImport()">Standard-Tarif auf neue Importe anwenden</button>
     </div>
 
-    <!-- Fahrtkosten-Schnellrechner -->
     <div class="card">
         <div class="card-title">Fahrtkosten-Schnellrechner</div>
         <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:12px;">
@@ -366,7 +364,6 @@ textarea { resize: vertical; min-height: 80px; font-weight: normal; }
         </div>
     </div>
 
-    <!-- Tarife Verwalten -->
     <div class="card">
         <div class="card-title">Tarife & Strompreise verwalten</div>
         <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:12px;">
@@ -377,7 +374,6 @@ textarea { resize: vertical; min-height: 80px; font-weight: normal; }
         <div id="emob-provider-list" style="margin-top:16px;"></div>
     </div>
 
-    <!-- Bearbeitung der Importierten Ladevorgänge -->
     <div class="emob-collapse-card">
         <div class="emob-collapse-header" onclick="window.toggleChargeList()">
             <span id="charge-list-arrow" style="color:var(--gold); font-size:18px; transition: transform 0.2s;">▸</span>
@@ -386,7 +382,6 @@ textarea { resize: vertical; min-height: 80px; font-weight: normal; }
         <div id="emob-charges-list" style="display:none; padding:16px; border-top:1px solid var(--border);"></div>
     </div>
 
-    <!-- Monatsauswertung -->
     <div class="card">
         <div class="card-title">📊 Kombinierte Monatsauswertung</div>
         <div id="emob-monthly-evaluation-list"></div>
@@ -885,7 +880,7 @@ window.getMonthlyAccountHistoryLatest = function(grpLabel) {
 }
 
 window.createSvgChart = function(dataArr, color) {
-    if(!dataArr || dataArr.length === 0) return '<div style="color:var(--text-dim); padding:20px; text-align:center;">Keine Daten</div>';
+    if(!dataArr || dataArr.length === 0) return '<div style="color:var(--text-dim); padding:20px; text-anchor:middle;">Keine Daten</div>';
     let max = Math.max.apply(null, dataArr.concat([1])) * 1.2;
     let min = Math.min.apply(null, dataArr.concat([0]));
     let range = max - min || 1;
